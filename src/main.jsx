@@ -15,21 +15,32 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
 } from "react-router-dom";
+import { Provider } from "react-redux";
+import store from "./store/store.js";
+import { AddContactLayout, AddProductLayout } from "./Component/index.js";
 
 const route = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
-      <Route path="/" element={<DashBoard />}></Route>
-      <Route path="/products" element={<Products />}></Route>
+      <Route path="/" element={<DashBoard />}>
+        <Route path="addproduct/:id" element={<AddProductLayout />} />
+      </Route>
+      <Route path="/products" element={<Products />}>
+        <Route path="addproduct/:id" element={<AddProductLayout />} />
+      </Route>
       <Route path="/statics" element={<Statics />}></Route>
-      <Route path="/allcustomer" element={<AllCustomer />}></Route>
+      <Route path="/allcustomer" element={<AllCustomer />}>
+        <Route path="addcontact" element={<AddContactLayout />} />
+      </Route>
       <Route path="buysell" element={<Buy_Sell />}></Route>
     </Route>
   )
 );
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <RouterProvider router={route} />
-  </React.StrictMode>
+  <Provider store={store}>
+    <React.StrictMode>
+      <RouterProvider router={route} />
+    </React.StrictMode>
+  </Provider>
 );

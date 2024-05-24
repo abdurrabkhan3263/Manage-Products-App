@@ -13,6 +13,10 @@ import { BiSearchAlt as Search } from "react-icons/bi";
 import { FaPhoneFlip as Phone } from "react-icons/fa6";
 import { FaRegSave as Save } from "react-icons/fa";
 import { FaUpload as Upload } from "react-icons/fa";
+import { RxCrossCircled as Xcross } from "react-icons/rx";
+import { IoIosArrowBack as LeftArrow } from "react-icons/io";
+import { IoIosArrowForward as RightArrow } from "react-icons/io";
+import { MdRemove as Remove } from "react-icons/md";
 
 export {
   Logo,
@@ -28,4 +32,8 @@ export {
   Phone,
   Save,
   Upload,
+  Xcross,
+  LeftArrow,
+  RightArrow,
+  Remove,
 };

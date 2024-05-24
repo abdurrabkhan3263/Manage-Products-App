@@ -1,7 +1,13 @@
 import React from "react";
 
-function Container({ children }) {
-  return <div className="ml-[16%] mr-5 my-5 w-full">{children}</div>;
+function Container({ children, className }) {
+  return (
+    <div
+      className={`ml-[16%] h-screen py-5 pr-5 w-full ${className} overflow-hidden`}
+    >
+      {children}
+    </div>
+  );
 }
 
 export default Container;

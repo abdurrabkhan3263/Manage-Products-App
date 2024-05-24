@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SideNavLogo } from "./index";
 import {
   MdOutlineDashboard,
@@ -6,7 +6,7 @@ import {
   Contact,
   Graph,
 } from "../SideNav../../../../public/Assets/index";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const navContent = [
   { name: "Dashboard", icon: <MdOutlineDashboard />, path: "/" },
@@ -16,10 +16,28 @@ const navContent = [
   { name: "All Customer", icon: <Contact />, path: "/allcustomer" },
 ];
 function Nav() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const localIndex = JSON.parse(localStorage.getItem("index"));
+  const [currentIndex, setCurrentIndex] = useState(localIndex.index || 0);
   const navigate = useNavigate();
-  const transformValue = 8;
-
+  const location = useLocation();
+  useEffect(() => {
+    localStorage.setItem(
+      "index",
+      JSON.stringify({
+        path: location.pathname,
+        index: currentIndex,
+      })
+    );
+  }, [location]);
+  useEffect(() => {
+    if (currentIndex != 0) {
+      localStorage.setItem(
+        "index",
+        JSON.stringify({ path: location.pathname, index: currentIndex })
+      );
+    }
+    navigate(localIndex.path);
+  }, []);
   return (
     <div className="h-screen w-[15vw] fixed py-5 pl-5">
       <div className="w-full h-full bg-blue-600 rounded-xl">
@@ -34,17 +52,13 @@ function Nav() {
             Admin Tool
           </p>
           <ul className="px-2.5 flex flex-col  gap-y-5">
-            <div
-              className={`w-full right-0 pt-[1.7rem] pb-[1.7rem] absolute bg-white py-5 z-0 transition-all`}
-              style={{
-                transform: `translateY(${transformValue * currentIndex}vh)`,
-              }}
-            ></div>
             {navContent.map((navData, index) => (
               <li
                 key={navData.name}
                 className={`w-full text-center rounded-md py-3.5 font-semibold ${
-                  index === currentIndex ? "text-blue-700" : "text-white"
+                  index === currentIndex
+                    ? "text-blue-700 bg-white"
+                    : "text-white"
                 }  flex gap-x-12 items-center  cursor-pointer select-none relative z-50`}
                 onClick={() => {
                   navigate(navData.path);
