@@ -1,7 +1,7 @@
-import React from "react";
-import { Xcross } from "../../../public/Assets";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import AddProduct from "./AddProduct";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Xcross } from "../../../public/Assets";
 
 function AddProductLayout({ className }) {
   const navigate = useNavigate();

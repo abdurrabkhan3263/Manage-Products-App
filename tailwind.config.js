@@ -11,6 +11,9 @@ export default {
         contactgreen: "#1DCEF5",
         contactblue: "#1DCEF5",
       },
+      boxShadow: {
+        lightBox: " 0px 0px 35px rgba(0,0,0,0.1)",
+      },
     },
   },
   plugins: [],

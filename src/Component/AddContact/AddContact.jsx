@@ -4,8 +4,16 @@ import { Button } from "../UI";
 import { useForm } from "react-hook-form";
 
 function AddContact({ contactData }) {
-  const [customerImg, setCustomerImg] = useState("");
-  const { register, handleSubmit } = useForm();
+  const [customerImg, setCustomerImg] = useState(
+    contactData?.products[0].thumbnail || ""
+  );
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      customerName: contactData?.products[0].title || "",
+      customerAddress: contactData?.products[0].price || "",
+      customerPhone: contactData?.products[0].price || "",
+    },
+  });
   const [textAreaHeight, setTextAreaHeight] = useState(50);
   const addImg = useRef();
   const uploadIcon = useRef();

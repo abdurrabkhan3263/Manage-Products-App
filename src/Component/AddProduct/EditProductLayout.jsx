@@ -1,24 +1,14 @@
 import React, { useState, useEffect } from "react";
-import Container from "../Container/Container";
-import ProductCard from "../Component/Card/ProductCard";
-import { Button } from "../Component/UI";
-import { Add } from "../../public/Assets";
-import "../index.css";
-import { Outlet, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { resetDeleteData } from "../store/slice";
-import DataDelete from "../Component/Delete/DataDelete";
+import { Xcross } from "../../../public/Assets";
+import AddProduct from "./AddProduct";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-function Products() {
-  const [isAddProduct, setIsAddProduct] = useState(false);
-  const dispatch = useDispatch();
+function EditProductLayout({ className }) {
+  const [productData, setProductData] = useState(null);
   const navigate = useNavigate();
-  const showDeleteSection = useSelector((state) => state.deleteData);
-  const handleAddProduct = () => {
-    setIsAddProduct((prev) => !prev);
-    navigate("addproduct", { state: "/products" });
-  };
-  const productData = [
+  const location = useLocation();
+  const { id } = useParams();
+  const proData = [
     {
       $id: 1,
       productName: "round white watch with white band",
@@ -124,42 +114,26 @@ function Products() {
     },
   ];
   useEffect(() => {
-    if (showDeleteSection.deleteStatus) {
-      console.log("delete Karnai hai", showDeleteSection.id);
-      setTimeout(() => {
-        dispatch(resetDeleteData());
-      }, 1500);
-    }
-  }, [showDeleteSection]);
+    let db = proData.filter((data) => data.$id == id);
+    setProductData(...db);
+  }, [id]);
   return (
-    <Container className={"relative"}>
-      {showDeleteSection.showDelete && <DataDelete />}
-      <div className="w-full h-full">
-        <Outlet />
-        <div className="w-full flex justify-end h-[5%]">
-          <Button
-            type={"button"}
-            className={"flex items-center px-4 py-1 text-white bg-blue-600 "}
-            onClick={handleAddProduct}
-          >
-            <Add /> Add Product
-          </Button>
-        </div>
-        <div className="grid sm:grid-cols-3 lg:grid-cols-4 gap-10 w-full h-[95%] overflow-y-scroll py-4 scroll-smooth">
-          {productData.map((data, index) => {
-            return (
-              <div
-                key={index}
-                className="h-max rounded-lg overflow-hidden shadow-2xl select-none"
-              >
-                <ProductCard productData={data} />
-              </div>
-            );
-          })}
-        </div>
+    <div
+      className={`absolute w-[32%]  ${className} z-50  h-3/4 rounded-2xl bg-white shadow-2xl right-1/2 translate-x-1/2 bottom-1/2 translate-y-1/2 overflow-hidden`}
+    >
+      <div
+        className="p-1.5 text-4xl text-lightblue cursor-pointer inline-block"
+        onClick={() => {
+          navigate(location.state);
+        }}
+      >
+        <Xcross />
       </div>
-    </Container>
+      <div className="w-full h-[92%]">
+        {productData && <AddProduct productData={productData} />}
+      </div>
+    </div>
   );
 }
 
-export default Products;
+export default EditProductLayout;

@@ -1,7 +1,7 @@
 import React from "react";
 import { Xcross } from "../../../public/Assets";
 import AddContact from "./AddContact";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 function AddContactLayout({ className }) {
   const navigate = useNavigate();

@@ -1,4 +1,5 @@
 import Logo from "./Logo.png";
+import admin from "./admin.png";
 
 // ICONES
 import { MdOutlineDashboard } from "react-icons/md";
@@ -10,7 +11,7 @@ import { ImPrinter as Print } from "react-icons/im";
 import { FaEdit as Edit } from "react-icons/fa";
 import { RiDeleteBinLine as Delete } from "react-icons/ri";
 import { BiSearchAlt as Search } from "react-icons/bi";
-import { FaPhoneFlip as Phone } from "react-icons/fa6";
+import { FaPhone as Phone } from "react-icons/fa6";
 import { FaRegSave as Save } from "react-icons/fa";
 import { FaUpload as Upload } from "react-icons/fa";
 import { RxCrossCircled as Xcross } from "react-icons/rx";
@@ -36,4 +37,5 @@ export {
   LeftArrow,
   RightArrow,
   Remove,
+  admin,
 };

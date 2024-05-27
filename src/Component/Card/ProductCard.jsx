@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Button, Input, Select } from "../UI/index";
 import { useForm } from "react-hook-form";
-import { Edit } from "../../../public/Assets";
+import { Delete, Edit } from "../../../public/Assets";
 import { Outlet, useNavigate } from "react-router-dom";
-import AddProductLayout from "../AddProduct/AddProductLayout";
+import { useDispatch } from "react-redux";
+import { showDeleteSection } from "../../store/slice";
 
 function ProductCard({ productData }) {
-  const { productName, productImage, productPrice, productPriceOption } =
+  const { $id, productName, productImage, productPrice, productPriceOption } =
     productData;
   const [priceAndOption, setPriceAndOption] = useState(
     productPriceOption[0]?.price || productPrice
   );
   const [option, setOption] = useState(productPriceOption[0]?.name);
+  const dispatch = useDispatch();
   const [quantity, setQuantity] = useState(1);
   const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
@@ -37,22 +39,33 @@ function ProductCard({ productData }) {
     setPriceAndOption(selectData[0]);
   };
   const handleProductEdit = () => {
-    navigate("addproduct/434343434", { state: "/products" });
+    navigate(`editproduct/${$id}`, { state: "/products" });
   };
   const handleFormSubmit = (data) => {
     data.productName = productName;
-    data.option = { name: option, price: priceAndOption };
+    data.productPriceOption = { name: option, price: priceAndOption };
     alert(JSON.stringify(data));
   };
+  const handleProductDelete = () => {
+    dispatch(showDeleteSection({ id: 555, showDelete: true }));
+  };
   return (
-    <div>
-      <Outlet />
+    <div className="w-full">
+      <div className="relative">
+        <Outlet />
+      </div>
       <div className=" bg-green-400 relative">
         <div
           onClick={handleProductEdit}
-          className="flex justify-center items-center p-3 text-[26px] cursor-pointer rounded-full absolute right-0 top-0"
+          className="flex justify-center items-center p-3  text-[26px] cursor-pointer rounded-full absolute right-0 top-0"
         >
           <Edit />
+        </div>
+        <div
+          onClick={handleProductDelete}
+          className="flex justify-center items-center p-3  text-[26px] cursor-pointer rounded-full absolute left-0 top-0"
+        >
+          <Delete />
         </div>
         <img
           src={productImage && productImage}

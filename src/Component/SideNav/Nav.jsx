@@ -17,27 +17,29 @@ const navContent = [
 ];
 function Nav() {
   const localIndex = JSON.parse(localStorage.getItem("index"));
-  const [currentIndex, setCurrentIndex] = useState(localIndex.index || 0);
+  const [currentIndex, setCurrentIndex] = useState(
+    (localIndex && localIndex.index) || 0
+  );
   const navigate = useNavigate();
   const location = useLocation();
-  useEffect(() => {
-    localStorage.setItem(
-      "index",
-      JSON.stringify({
-        path: location.pathname,
-        index: currentIndex,
-      })
-    );
-  }, [location]);
-  useEffect(() => {
-    if (currentIndex != 0) {
-      localStorage.setItem(
-        "index",
-        JSON.stringify({ path: location.pathname, index: currentIndex })
-      );
-    }
-    navigate(localIndex.path);
-  }, []);
+  // useEffect(() => {
+  //   localStorage.setItem(
+  //     "index",
+  //     JSON.stringify({
+  //       path: location.pathname,
+  //       index: currentIndex,
+  //     })
+  //   );
+  // }, [currentIndex]);
+  // useEffect(() => {
+  //   if (currentIndex != 0) {
+  //     localStorage.setItem(
+  //       "index",
+  //       JSON.stringify({ path: location.pathname, index: currentIndex })
+  //     );
+  //   }
+  //   navigate(localIndex.path);
+  // }, []);
   return (
     <div className="h-screen w-[15vw] fixed py-5 pl-5">
       <div className="w-full h-full bg-blue-600 rounded-xl">

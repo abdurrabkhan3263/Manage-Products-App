@@ -2,12 +2,25 @@ import React, { useRef, useState, useEffect } from "react";
 import { Add, Remove, Upload } from "../../../public/Assets";
 import { useForm } from "react-hook-form";
 import { Button } from "../UI/index";
+import { useParams } from "react-router-dom";
 
 function AddProduct({ productData }) {
-  const [productImage, setProductImage] = useState("");
-  const [isCheck, setIsCheck] = useState(false);
-  const [optionCount, setOptionCount] = useState(1);
-  const { handleSubmit, register, setValue, getValues } = useForm();
+  const [productImage, setProductImage] = useState(
+    productData?.productImage || ""
+  );
+  const [isCheck, setIsCheck] = useState(
+    (productData?.productPriceOption && true) || false
+  );
+  const [optionCount, setOptionCount] = useState(
+    productData?.productPriceOption.length || 1
+  );
+  const { handleSubmit, register, setValue, getValues } = useForm({
+    defaultValues: {
+      productName: productData?.productName || "",
+      productPrice: productData?.productPrice || "",
+      productPriceOption: productData?.productPriceOption || "",
+    },
+  });
   const addImg = useRef();
   const uploadIcon = useRef();
   const handleProductImage = (e) => {
@@ -18,9 +31,6 @@ function AddProduct({ productData }) {
     }
   };
   useEffect(() => {
-    console.log(productData?.productName);
-  }, [productData]);
-  useEffect(() => {
     const handleMouseEnter = () => {
       uploadIcon.current.style.transform = `translateY(-4px)`;
     };
@@ -30,16 +40,21 @@ function AddProduct({ productData }) {
     addImg.current.addEventListener("mouseenter", handleMouseEnter);
     addImg.current.addEventListener("mouseleave", handleMouseLeave);
   }, []);
-
   useEffect(() => {
     if (isCheck) {
       setValue("productPrice", "");
     } else {
       setValue("productPriceOption", "");
+      setValue("productPrice", productData?.productPrice || "");
     }
+    console.log(isCheck);
   }, [isCheck]);
-
   const formSubmit = (data) => {
+    // if (id) {
+    //   console.log("update Karna Hai");
+    // } else {
+    //   console.log("new Product Add Karna Hai");
+    // }
     alert(JSON.stringify(data));
     console.log(data);
   };
@@ -64,9 +79,8 @@ function AddProduct({ productData }) {
             </div>
             <input
               type="file"
-              required={true}
               accept="image/png,image/jpeg,image/jpg"
-              {...register("productImage", { required: true })}
+              {...register("productImage")}
               className="absolute w-full h-full opacity-0 z-10 peer"
               onChange={handleProductImage}
             />
@@ -97,9 +111,12 @@ function AddProduct({ productData }) {
                 type="checkbox"
                 value={isCheck}
                 onChange={() => setIsCheck((prev) => !prev)}
+                checked={isCheck}
                 className="sr-only peer"
               />
-              <div className="w-[65px] relative h-8 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full cursor-pointer peer-checked:bg-blue-600 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-7 after:w-7 after:transition-all"></div>
+              <div
+                className={`w-[65px] relative h-8 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full cursor-pointer peer-checked:bg-blue-600 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-7 after:w-7 after:transition-all`}
+              ></div>
             </label>
           </div>
           <div className="w-full h-12 my-3 pl-2.5">

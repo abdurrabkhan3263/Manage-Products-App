@@ -17,22 +17,34 @@ import {
 } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store/store.js";
-import { AddContactLayout, AddProductLayout } from "./Component/index.js";
+import {
+  AddContactLayout,
+  AddProductLayout,
+  EditProductLayout,
+  EditContactLayout,
+  CustomerSeeDetails,
+  SeeProductDetails,
+} from "./Component/index.js";
 
 const route = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route path="/" element={<DashBoard />}>
-        <Route path="addproduct/:id" element={<AddProductLayout />} />
+        <Route path="addproduct" element={<AddProductLayout />} />
       </Route>
       <Route path="/products" element={<Products />}>
-        <Route path="addproduct/:id" element={<AddProductLayout />} />
+        <Route path="editproduct/:id" element={<EditProductLayout />} />
+        <Route path="addproduct" element={<AddProductLayout />} />
       </Route>
       <Route path="/statics" element={<Statics />}></Route>
       <Route path="/allcustomer" element={<AllCustomer />}>
         <Route path="addcontact" element={<AddContactLayout />} />
+        <Route path="editcontact/:id" element={<EditContactLayout />} />
+        <Route path="customerdetails/:id" element={<CustomerSeeDetails />} />
       </Route>
-      <Route path="buysell" element={<Buy_Sell />}></Route>
+      <Route path="buysell" element={<Buy_Sell />}>
+        <Route path="seeproductdetails/:id" element={<SeeProductDetails />} />
+      </Route>
     </Route>
   )
 );

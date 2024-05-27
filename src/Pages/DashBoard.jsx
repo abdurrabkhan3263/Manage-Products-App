@@ -2,12 +2,12 @@ import React from "react";
 import Container from "../Container/Container";
 import { Button } from "../Component/UI/index";
 import { Add } from "../../public/Assets";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, Link } from "react-router-dom";
 
 function DashBoard() {
   const navigate = useNavigate();
   const handleAddProduct = () => {
-    navigate("addproduct/434343434", { state: "/" });
+    navigate("addproduct", { state: "/" });
   };
   return (
     <Container>
