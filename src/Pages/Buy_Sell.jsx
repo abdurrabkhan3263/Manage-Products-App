@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Container from "../Container/Container";
-import { Delete, Edit, Print, Search } from "../../public/Assets/index";
+import { Search } from "../../public/Assets/index";
 import { Outlet, useNavigate } from "react-router-dom";
 import { DataTable, Pagination, DataDelete } from "../Component";
-import { useDispatch, useSelector } from "react-redux";
-import { resetDeleteData, showDeleteSection } from "../store/slice";
+import BuySellData from "../Component/DataTable/BuySellData";
 
 function Buy_Sell() {
   const [buySell, setBuySell] = useState(null);
   const [pageNum, setPageNum] = useState(1);
   const navigate = useNavigate();
-  const showDelete = useSelector((state) => state.deleteData);
-  const dispatch = useDispatch();
   const fetchData = async () => {
     let response = await fetch("http://dummyjson.com/users?limit=300");
     let data = await response.json();
@@ -20,15 +17,13 @@ function Buy_Sell() {
   useEffect(() => {
     fetchData();
   }, []);
-  useEffect(() => {
-    if (showDelete.deleteStatus) {
-      console.log("Delete Karna Hai ", showDelete.id);
-      dispatch(resetDeleteData());
-    }
-  }, [showDelete]);
   const tableHeading = [
     {
       id: 1,
+      name: "Image",
+    },
+    {
+      id: 2,
       name: "Name",
     },
     {
@@ -48,63 +43,10 @@ function Buy_Sell() {
       name: "Action",
     },
   ];
-  const actionData = [
-    {
-      path: "buysell",
-      elem: function () {
-        return (
-          <span className="cursor-pointer">
-            <Print />
-          </span>
-        );
-      },
-    },
-    {
-      path: "buysell",
-      elem: function () {
-        return (
-          <span className="cursor-pointer">
-            <Edit />
-          </span>
-        );
-      },
-    },
-    {
-      path: "buysell",
-      elem: function (id) {
-        return (
-          <span
-            className="cursor-pointer"
-            onClick={() => {
-              dispatch(showDeleteSection({ id: id, showDelete: true }));
-            }}
-          >
-            <Delete />
-          </span>
-        );
-      },
-    },
-    {
-      path: "buysell",
-      elem: function (id) {
-        return (
-          <span
-            onClick={() =>
-              navigate(`seeproductdetails/${id}`, {
-                state: "/buysell",
-              })
-            }
-          >
-            See Details
-          </span>
-        );
-      },
-    },
-  ];
+  const renderRow = BuySellData;
   return (
     <Container className="relative">
       <Outlet />
-      {showDelete.showDelete && <DataDelete />}
       <div className="flex items-center justify-between h-[5%]">
         <input
           type="text"
@@ -121,9 +63,9 @@ function Buy_Sell() {
             <DataTable
               tableHeading={tableHeading}
               tableData={buySell}
+              dataNum={10}
               pageNum={pageNum}
-              dataNum={15}
-              actionData={actionData}
+              renderRow={renderRow}
             />
           )}
         </div>

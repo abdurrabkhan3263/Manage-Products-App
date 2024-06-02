@@ -11,6 +11,7 @@ class DatabaseService {
       .setProject(conf.appWriteProjectId);
     this.databases = new Databases(this.client);
     this.bucket = new Storage(this.client);
+    this.deleteProduct = this.deleteProduct.bind(this);
   }
 
   /**
@@ -216,23 +217,41 @@ class DatabaseService {
     }
   }
 
+  async getProductList() {
+    try {
+      return await this.databases.listDocuments(
+        conf.appWriteDatabase,
+        conf.appWriteProductsListCollId
+      );
+    } catch (error) {
+      throw ("AppWrite :: Error :: Getting ProductData :: ", error);
+    }
+  }
+
   /**
    * The function `createProductDetails` asynchronously creates product details in a database using the
    * provided parameters.
    */
 
   async createProductDetails({
-    productsName,
+    productName,
     productPrice,
     productImage,
     productPriceOption,
+    productImageId,
   }) {
     try {
       return await this.databases.createDocument(
         conf.appWriteDatabase,
         conf.appWriteProductsListCollId,
         ID.unique(),
-        { productsName, productPrice, productImage, productPriceOption }
+        {
+          productName,
+          productPrice,
+          productImage,
+          productPriceOption,
+          productImageId,
+        }
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Create Product Details :: ", error);
@@ -250,14 +269,26 @@ class DatabaseService {
 
   async updateProductDetails(
     slug,
-    { productsName, productPrice, productImage, productPriceOption }
+    {
+      productName,
+      productPrice,
+      productImage,
+      productPriceOption,
+      productImageId,
+    }
   ) {
     try {
       return await this.databases.updateDocument(
         conf.appWriteDatabase,
         conf.appWriteProductsListCollId,
         slug,
-        { productsName, productPrice, productImage, productPriceOption }
+        {
+          productName,
+          productPrice,
+          productImage,
+          productPriceOption,
+          productImageId,
+        }
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Update Product Details :: ", error);
@@ -283,6 +314,18 @@ class DatabaseService {
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Delete Product List :: ", error);
+    }
+  }
+
+  async getProductById(id) {
+    try {
+      return await this.databases.getDocument(
+        conf.appWriteDatabase,
+        conf.appWriteProductsListCollId,
+        id
+      );
+    } catch (error) {
+      throw ("AppWrite :: Error :: Get Product Id :: ", error);
     }
   }
 
@@ -403,12 +446,12 @@ class DatabaseService {
    * the specified product ID and file.
    */
 
-  async addProductImg(file, productId) {
+  async addProductImg(File) {
     try {
       return await this.bucket.createFile(
         conf.appWriteProductImgStorage,
-        productId,
-        file
+        ID.unique(),
+        File
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Add Product Img :: ", error);
@@ -469,8 +512,12 @@ class DatabaseService {
    */
 
   async deleteProductImg(productId) {
+    if (!productId) return;
     try {
-      return await this.bucket.deleteFile(productId);
+      return await this.bucket.deleteFile(
+        conf.appWriteProductImgStorage,
+        productId
+      );
     } catch (error) {
       throw ("AppWrite :: Error :: Delete Product Image :: ", error);
     }

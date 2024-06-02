@@ -6,11 +6,6 @@ const initialValue = {
     status: false,
   },
   darkMode: false,
-  deleteData: {
-    id: null,
-    showDelete: false,
-    deleteStatus: false,
-  },
 };
 
 const authSlice = createSlice({
@@ -29,27 +24,8 @@ const authSlice = createSlice({
       console.log(!action.payload);
       // state.darkMode = action.payload;
     },
-    showDeleteSection: (state, action) => {
-      state.deleteData.id = action.payload.id;
-      state.deleteData.showDelete = action.payload.showDelete;
-    },
-    resetDeleteData: (state) => {
-      state.deleteData.id = null;
-      state.deleteData.showDelete = false;
-      state.deleteData.deleteStatus = false;
-    },
-    deleteData: (state, action) => {
-      state.deleteData.deleteStatus = action.payload;
-    },
   },
 });
 
-export const {
-  login,
-  logout,
-  toggleDarkMode,
-  resetDeleteData,
-  showDeleteSection,
-  deleteData,
-} = authSlice.actions;
+export const { login, logout, toggleDarkMode } = authSlice.actions;
 export default authSlice.reducer;

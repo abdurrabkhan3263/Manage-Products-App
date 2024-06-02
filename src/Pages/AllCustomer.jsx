@@ -3,16 +3,12 @@ import Container from "../Container/Container";
 import { Search, Edit, Phone, Delete } from "../../public/Assets";
 import { useNavigate, Outlet } from "react-router-dom";
 import { DataDelete, DataTable, Pagination } from "../Component";
-import { useSelector } from "react-redux";
-import { showDeleteSection, resetDeleteData } from "../store/slice";
-import { useDispatch } from "react-redux";
+import AllCustomerData from "../Component/DataTable/AllCustomerData";
 
 function AllCustomer() {
   const navigate = useNavigate();
   const [pageNum, setPage] = useState(1);
   const [customersData, setCustomerData] = useState([]);
-  const showDelete = useSelector((state) => state.deleteData);
-  const dispatch = useDispatch();
   const fetchData = async () => {
     const response = await fetch(`https://dummyjson.com/carts?limit=21`);
     const data = await response.json();
@@ -23,12 +19,6 @@ function AllCustomer() {
   useEffect(() => {
     fetchData();
   }, []);
-  useEffect(() => {
-    if (showDelete.deleteStatus) {
-      console.log("Delete Karna Hai:- ", showDelete.id);
-      dispatch(resetDeleteData());
-    }
-  }, [showDelete]);
   const handleAddContact = () => {
     navigate("addcontact", { state: "/allcustomer" });
   };
@@ -58,70 +48,10 @@ function AllCustomer() {
       name: "Action",
     },
   ];
-  const tableAction = [
-    {
-      path: "allcustomer",
-      elem: function (number) {
-        return (
-          <a href={`tel:${number}`}>
-            <Phone />
-          </a>
-        );
-      },
-    },
-    {
-      path: "allcustomer",
-      elem: function (id) {
-        return (
-          <span
-            className="cursor-pointer"
-            onClick={() => {
-              navigate(`editcontact/${id}`, {
-                state: "/allcustomer",
-              });
-            }}
-          >
-            <Edit />
-          </span>
-        );
-      },
-    },
-    {
-      path: "allcustomer",
-      elem: function (id) {
-        return (
-          <span
-            className="cursor-pointer text-xl"
-            onClick={() => {
-              dispatch(showDeleteSection({ id: id, showDelete: true }));
-            }}
-          >
-            <Delete />
-          </span>
-        );
-      },
-    },
-    {
-      path: "allcustomer",
-      elem: function (id) {
-        return (
-          <span
-            onClick={() =>
-              navigate(`customerdetails/${id}`, {
-                state: "/allcustomer",
-              })
-            }
-          >
-            See Details
-          </span>
-        );
-      },
-    },
-  ];
+  const renderRow = AllCustomerData;
   return (
     <Container>
       <div className="w-full h-full relative">
-        {showDelete.showDelete && <DataDelete />}
         <Outlet />
         <div className="flex items-center justify-between h-[5%]">
           <input
@@ -149,7 +79,7 @@ function AllCustomer() {
                 tableData={customersData}
                 pageNum={pageNum}
                 dataNum={10}
-                actionData={tableAction}
+                renderRow={renderRow}
               />
             )}
           </div>

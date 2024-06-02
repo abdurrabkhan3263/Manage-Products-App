@@ -5,14 +5,15 @@ import {
   Cart,
   Contact,
   Graph,
+  Invoice,
 } from "../SideNav../../../../public/Assets/index";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const navContent = [
   { name: "Dashboard", icon: <MdOutlineDashboard />, path: "/" },
   { name: "Products", icon: <Cart />, path: "/products" },
   { name: "Statics", icon: <Graph />, path: "/statics" },
-  { name: "Buy-Sell", icon: <MdOutlineDashboard />, path: "/buysell" },
+  { name: "Invoice", icon: <Invoice />, path: "/invoice" },
   { name: "All Customer", icon: <Contact />, path: "/allcustomer" },
 ];
 function Nav() {
@@ -20,8 +21,8 @@ function Nav() {
   const [currentIndex, setCurrentIndex] = useState(
     (localIndex && localIndex.index) || 0
   );
+  console.log("hello");
   const navigate = useNavigate();
-  const location = useLocation();
   // useEffect(() => {
   //   localStorage.setItem(
   //     "index",

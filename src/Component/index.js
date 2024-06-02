@@ -11,6 +11,10 @@ import DataDelete from "./Delete/DataDelete";
 import DataTable from "./DataTable/DataTable";
 import Pagination from "./Pagination/Pagination";
 import TableRow from "./DataTable/TableRow";
+import Error from "./Error/Error";
+import LoginForm from "./Form/LoginForm";
+import SignForm from "./Form/SignForm";
+import FormLayout from "./Form/FormLayout";
 
 export {
   AddProduct,
@@ -26,4 +30,8 @@ export {
   DataTable,
   Pagination,
   TableRow,
+  Error,
+  LoginForm,
+  SignForm,
+  FormLayout,
 };

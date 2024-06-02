@@ -2,12 +2,12 @@ import conf from "../config/config";
 import { Client, Account, ID } from "appwrite";
 
 class AuthService {
-  client;
+  client = new Client();
   account;
   constructor() {
-    this.client = new Client.setEndpoint(conf.appWriteUrl).setProject(
-      conf.appWriteProjectId
-    );
+    this.client
+      .setEndpoint(conf.appWriteUrl)
+      .setProject(conf.appWriteProjectId);
     this.account = new Account(this.client);
   }
 
@@ -76,8 +76,9 @@ object with `name`, `email`, and `password` properties as parameters. */
     try {
       return await this.account.get();
     } catch (error) {
-      throw ("AppWrite :: Error :: LogoutAccount :: , ", error);
+      throw new Error("AppWrite :: Error :: Get Current User :: , ", error);
     }
+    return null;
   }
 
   //   async phoneVerification() {

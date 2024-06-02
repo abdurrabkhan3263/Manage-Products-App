@@ -1,60 +1,99 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Button, Input, Select } from "../UI/index";
 import { useForm } from "react-hook-form";
-import { Delete, Edit } from "../../../public/Assets";
+import { Delete, Edit, image__not__available } from "../../../public/Assets";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { showDeleteSection } from "../../store/slice";
+import { DataDelete } from "../index";
+import { databaseService } from "../../appwrite";
 
 function ProductCard({ productData }) {
-  const { $id, productName, productImage, productPrice, productPriceOption } =
-    productData;
-  const [priceAndOption, setPriceAndOption] = useState(
-    productPriceOption[0]?.price || productPrice
-  );
-  const [option, setOption] = useState(productPriceOption[0]?.name);
+  const {
+    $id,
+    productName,
+    productImage,
+    productImageId,
+    productPrice,
+    productPriceOption,
+  } = productData;
+  const [priceData, setPriceData] = useState({
+    quantity: 1,
+    productPrice: productPrice,
+    option: null,
+    productOptionData: [],
+  });
   const dispatch = useDispatch();
   const [quantity, setQuantity] = useState(1);
+  const [isShowDelete, setIsShowDelete] = useState(false);
   const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
       productQuantity: 1,
-      productAmount: priceAndOption,
+      productAmount: priceData?.productPrice,
     },
   });
   const navigate = useNavigate();
-  useEffect(() => {
-    if (quantity <= 0) {
-      return;
-    }
-    productPrice
-      ? setValue("productAmount", quantity * productPrice)
-      : setValue("productAmount", quantity * priceAndOption);
-  }, [priceAndOption, productPrice, quantity, setValue]);
   const handleProductQuantity = (e) => {
     setQuantity(e.target.value);
+    setPriceData((prev) => ({ ...prev, quantity: e.target.value }));
   };
   const handleSelect = (e) => {
     let selectData = e.target.value.split(",");
-    setOption(selectData[1]);
-    setPriceAndOption(selectData[0]);
+    setPriceData((prev) => ({
+      ...prev,
+      option: selectData[1],
+      productPrice: parseInt(selectData[0]),
+    }));
   };
   const handleProductEdit = () => {
     navigate(`editproduct/${$id}`, { state: "/products" });
   };
   const handleFormSubmit = (data) => {
     data.productName = productName;
-    data.productPriceOption = { name: option, price: priceAndOption };
+    data.productPriceOption = {
+      name: priceData.option,
+      price: priceData.productPrice,
+    };
     alert(JSON.stringify(data));
   };
   const handleProductDelete = () => {
-    dispatch(showDeleteSection({ id: 555, showDelete: true }));
+    setIsShowDelete(true);
   };
+  useEffect(() => {
+    if (quantity <= 0) {
+      return;
+    }
+    productPrice
+      ? setValue("productAmount", quantity * productPrice)
+      : setValue("productAmount", quantity * priceData.productPrice);
+  }, [priceData.productPrice, productPrice, quantity]);
+  useEffect(() => {
+    const parsedData = JSON.parse(productPriceOption);
+    setPriceData((prev) => ({
+      ...prev,
+      option: parsedData ? parsedData[0]?.name : null,
+      productOptionData: parsedData || [],
+      productPrice: parsedData ? parseInt(parsedData[0]?.price) : productPrice,
+    }));
+  }, [productPriceOption, productPrice]);
+  const optionMemo = useMemo(
+    () => priceData.productOptionData,
+    [priceData.productOptionData]
+  );
   return (
     <div className="w-full">
+      <DataDelete
+        isShowDel={isShowDelete}
+        setIsShow={setIsShowDelete}
+        fileDetails={{
+          deleteFun: databaseService.deleteProduct,
+          productId: $id,
+          imgId: productImageId,
+        }}
+      />
       <div className="relative">
         <Outlet />
       </div>
-      <div className=" bg-green-400 relative">
+      <div className=" relative">
         <div
           onClick={handleProductEdit}
           className="flex justify-center items-center p-3  text-[26px] cursor-pointer rounded-full absolute right-0 top-0"
@@ -68,17 +107,15 @@ function ProductCard({ productData }) {
           <Delete />
         </div>
         <img
-          src={productImage && productImage}
+          src={productImage || image__not__available}
           alt="productImage"
-          className="h-48 w-full object-cover rounded-lg"
+          className="h-[250px] w-full object-cover rounded-lg"
         />
-        {/* Here Changes Occurs When DB Add */}
       </div>
       <div className="h-max mb-3 px-3">
         <h1 className="text-[22px] text-lightblue font-bold ">
           {productName && productName}
         </h1>
-        {/* Here Changes Occurs When DB Add */}
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <div className="w-full flex justify-between mt-2">
             <Input
@@ -94,10 +131,10 @@ function ProductCard({ productData }) {
             />
           </div>
           <div className="mt-5">
-            {productPriceOption && (
+            {optionMemo.length > 0 && (
               <Select
                 className={"px-8 py-1.5 rounded-md"}
-                option={productPriceOption}
+                option={optionMemo}
                 onChange={handleSelect}
               />
             )}
