@@ -5,7 +5,7 @@ function Button({ type, children, className, ...props }) {
     <div>
       <button
         type={type}
-        className={`text-xl font-medium rounded-md ${className}`}
+        className={`rounded-md text-xl font-medium ${className}`}
         {...props}
       >
         {children}

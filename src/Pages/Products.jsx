@@ -6,55 +6,56 @@ import { Add, no__data } from "../../public/Assets";
 import "../index.css";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import DataDelete from "../Component/Delete/DataDelete";
+import { Query } from "appwrite";
 import { useQuery } from "@tanstack/react-query";
 import { databaseService } from "../appwrite";
 
 function Products() {
-  const [isAddProduct, setIsAddProduct] = useState(false);
+  const currentUser = useSelector((state) => state.user?.user);
   const navigate = useNavigate();
   const handleAddProduct = () => {
-    setIsAddProduct((prev) => !prev);
     navigate("addproduct", { state: "/products" });
   };
   const productDataList = useQuery({
     queryKey: ["productList"],
     queryFn: async () => {
-      const response = await databaseService.getProductList();
+      const response = await databaseService.getProductList([
+        Query.equal("userId", currentUser.$id),
+      ]);
       if (response) {
         return response.documents;
       }
     },
-    retry: 0,
+    retry: 3,
     refetchOnReconnect: true,
     refetchOnMount: true,
   });
   return (
     <Container className={"relative"}>
-      <div className="w-full h-full">
+      <div className="h-full w-full">
         <Outlet />
-        <div className="w-full flex justify-end h-[5%]">
+        <div className="flex h-[5%] w-full justify-end">
           <Button
             type={"button"}
-            className={"flex items-center px-4 py-1 text-white bg-blue-600 "}
+            className={"flex items-center bg-blue-600 px-4 py-1 text-white"}
             onClick={handleAddProduct}
           >
             <Add /> Add Product
           </Button>
         </div>
         {productDataList.isLoading && (
-          <div className="h-[95%] flex justify-center items-center w-full bg-blue-500 text-5xl text-white">
+          <div className="flex h-[95%] w-full items-center justify-center bg-blue-500 text-5xl text-white">
             Loading.....
           </div>
         )}
         {productDataList.isError && (
-          <div className="w-full h-[95%] gap-y-4 flex flex-col justify-center items-center">
+          <div className="flex h-[95%] w-full flex-col items-center justify-center gap-y-4">
             <p className="text-2xl font-bold text-red-500">
               {productDataList.error.message}
             </p>
             <Button
               className={
-                "bg-lightblue duration-300 hover:bg-darkblue text-white px-6 py-1"
+                "bg-lightblue px-6 py-1 text-white duration-300 hover:bg-darkblue"
               }
               onClick={() => {
                 productDataList.refetch();
@@ -65,16 +66,16 @@ function Products() {
           </div>
         )}
         {productDataList?.data && (
-          <div className="grid sm:grid-cols-3 lg:grid-cols-4 gap-10 w-full h-[95%] overflow-y-scroll py-4 scroll-smooth">
+          <div className="grid h-[95%] w-full gap-10 overflow-y-scroll scroll-smooth py-4 sm:grid-cols-3 lg:grid-cols-4">
             {productDataList.data.length <= 0 ? (
-              <div className=" col-start-1 col-end-5 flex flex-col justify-center items-center">
+              <div className="col-start-1 col-end-5 flex flex-col items-center justify-center">
                 <div className="h-[36%] w-[36%] text-center">
                   <img
                     src={no__data}
                     alt="no__data"
                     className="h-full w-full object-contain"
                   />
-                  <p className="text-[26px] select-none text-red-500 mt-2 font-semibold">
+                  <p className="mt-2 select-none text-[26px] font-semibold text-red-500">
                     No Product Available
                   </p>
                 </div>
@@ -84,7 +85,7 @@ function Products() {
                 return (
                   <div
                     key={index}
-                    className="h-max rounded-lg overflow-hidden shadow-2xl select-none"
+                    className="h-max select-none overflow-hidden rounded-lg shadow-2xl"
                   >
                     <ProductCard productData={data} />
                   </div>

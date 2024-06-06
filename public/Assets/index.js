@@ -3,6 +3,9 @@ import admin from "./admin.png";
 import image__not__available from "./image__not__available.png";
 import no__data from "./no__data.jpg";
 import add__product__error from "./add__product__error.jpg";
+import butterfly__img from "./butterfly__img.jpg";
+import login__img from "./login__img.jpg";
+import google__logo from "./google__logo.png";
 
 // ICONES
 import { MdOutlineDashboard } from "react-icons/md";
@@ -22,12 +25,18 @@ import { IoIosArrowBack as LeftArrow } from "react-icons/io";
 import { IoIosArrowForward as RightArrow } from "react-icons/io";
 import { MdRemove as Remove } from "react-icons/md";
 import { TbFileInvoice as Invoice } from "react-icons/tb";
+import { IoMdEye as OpenEye } from "react-icons/io";
+import { IoMdEyeOff as CloseEye } from "react-icons/io";
+import { MdLogout as Logout } from "react-icons/md";
 
 export {
   Logo,
   image__not__available,
   no__data,
   add__product__error,
+  butterfly__img,
+  login__img,
+  google__logo,
   MdOutlineDashboard,
   Cart,
   Graph,
@@ -46,4 +55,7 @@ export {
   Remove,
   admin,
   Invoice,
+  OpenEye,
+  CloseEye,
+  Logout,
 };

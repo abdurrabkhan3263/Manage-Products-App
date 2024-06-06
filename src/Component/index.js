@@ -15,6 +15,8 @@ import Error from "./Error/Error";
 import LoginForm from "./Form/LoginForm";
 import SignForm from "./Form/SignForm";
 import FormLayout from "./Form/FormLayout";
+import ForgetPass from "./Form/ForgetPass";
+import ShowLogout from "./LogoutSection/ShowLogout";
 
 export {
   AddProduct,
@@ -34,4 +36,6 @@ export {
   LoginForm,
   SignForm,
   FormLayout,
+  ForgetPass,
+  ShowLogout,
 };

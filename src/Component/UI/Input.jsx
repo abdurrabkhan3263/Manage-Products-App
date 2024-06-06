@@ -1,9 +1,9 @@
 import React, { forwardRef, useId } from "react";
 
-function Input({ type, className, label, ...props }, ref) {
+function Input({ type, className, parentClass, label, ...props }, ref) {
   const id = useId();
   return (
-    <div>
+    <div className={parentClass}>
       {label && (
         <label
           className="mr-2 inline-block text-[16px] font-semibold"
@@ -16,7 +16,7 @@ function Input({ type, className, label, ...props }, ref) {
         ref={ref}
         type={type}
         {...props}
-        className={`outline-none bg-[#D9D9D9] focus:bg-[#c5c5c5] w-20 px-1 py-1 rounded-md ${className}`}
+        className={`w-20 rounded-md px-3 py-1 outline-none ${className}`}
       />
     </div>
   );

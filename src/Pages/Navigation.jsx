@@ -4,7 +4,7 @@ import { Nav } from "../Component/SideNav";
 
 function Navigation() {
   return (
-    <div>
+    <div className="w-full">
       <Nav />
       <Outlet />
     </div>

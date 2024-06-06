@@ -11,7 +11,7 @@ function DashBoard() {
   };
   return (
     <Container>
-      <div className="w-full h-full">
+      <div className="h-full">
         <Outlet />
         <div className="flex justify-between h-[10%]">
           <div>

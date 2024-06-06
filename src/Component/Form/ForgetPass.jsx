@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button, Input } from "../UI";
 import { useForm } from "react-hook-form";
 import { CloseEye, OpenEye } from "../../../public/Assets";
-import { authService } from "../../appwrite";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-function SignForm() {
+function ForgetPass() {
   const {
     register,
     handleSubmit,
-    setFocus,
     getValues,
+    setError,
+    clearErrors,
+    setFocus,
     formState: { errors },
   } = useForm();
-  const [passHidden, setPassHidden] = useState(true);
-  const useClient = useQueryClient();
-  const navigate = useNavigate();
-
+  const [passHidden, setPassHidden] = useState({
+    input1: true,
+    input2: true,
+  });
   useEffect(() => {
     register("email", {
       required: "Email is required",
@@ -28,31 +28,22 @@ function SignForm() {
     });
   }, [register]);
   useEffect(() => {
-    setFocus("name");
+    setFocus("email");
   }, [setFocus]);
-  const auth = useMutation({
-    mutationKey: ["sign"],
-    mutationFn: async (data) => await authService.createAccount(data),
-    onError: (error) => {
-      console.error("error on create account ", error);
-    },
-    onSuccess: async () => {
-      const loginData = await authService.loginAccount({
-        email: getValues("email"),
-        password: getValues("password"),
+  const onSubmit = (data) => {
+    if (getValues("password") !== getValues("repass")) {
+      return setError("repass", {
+        value: "customer",
+        message: "Passwords do not match",
       });
-      if (loginData) {
-        navigate("/");
-      }
-      useClient.invalidateQueries({ queryKey: ["signup"] });
-    },
-  });
-  const onSubmit = async (data) => {
-    auth.mutate(data);
+    } else {
+      clearErrors("repass");
+    }
+    alert(JSON.stringify(data));
   };
   return (
     <div className="flex h-[85%] w-full flex-col items-center justify-between">
-      <div className="max-h-[75px] min-h-[75px] px-7 text-center capitalize">
+      <div className="max-h-[75px] min-h-[75px] px-7 text-center">
         {errors.email && (
           <p className="font-semibold text-red-500">*{errors.email.message}</p>
         )}
@@ -64,8 +55,8 @@ function SignForm() {
         {errors.name && (
           <p className="font-semibold text-red-500">*{errors.name.message}</p>
         )}
-        {auth.isError && (
-          <p className="font-semibold text-red-500">*{auth.error.message}</p>
+        {errors.repass && (
+          <p className="font-semibold text-red-500">{errors.repass.message}</p>
         )}
       </div>
       <div className="w-full flex-grow px-7">
@@ -76,12 +67,6 @@ function SignForm() {
           <div className="flex flex-col gap-y-6">
             <Input
               className="h-[42px] w-full border border-black bg-white"
-              placeholder="Your Name"
-              type="text"
-              {...register("name", { required: "Name is required" })}
-            />
-            <Input
-              className="h-[42px] w-full border border-black bg-white"
               placeholder="Your Email"
               type="email"
               {...register("email")}
@@ -90,8 +75,8 @@ function SignForm() {
               <Input
                 className="h-full w-full"
                 parentClass="flex-grow h-full"
-                placeholder="Your Password"
-                type={passHidden ? "password" : "text"}
+                placeholder="Your New Password"
+                type={passHidden.input1 ? "password" : "text"}
                 {...register("password", {
                   required: "Password is required",
                   minLength: {
@@ -108,9 +93,39 @@ function SignForm() {
               />
               <span
                 className="inline-flex items-center pr-2 text-center text-xl"
-                onClick={() => setPassHidden((prev) => !prev)}
+                onClick={() =>
+                  setPassHidden((prev) => ({
+                    ...prev,
+                    input1: !prev.input1,
+                  }))
+                }
               >
-                {passHidden ? <CloseEye /> : <OpenEye />}
+                {passHidden.input1 ? <CloseEye /> : <OpenEye />}
+              </span>
+            </div>
+            <div className="mr-2 flex h-[42px] w-full rounded-md border border-black bg-white">
+              <Input
+                className="h-full w-full"
+                parentClass="flex-grow h-full"
+                placeholder="Re Enter Your New Password"
+                type={passHidden.input2 ? "password" : "text"}
+                required={true}
+                {...register("repass", {
+                  pattern: {
+                    value: getValues("password"),
+                    message: "Does Not Match The Pass",
+                  },
+                })}
+              />
+              <span
+                className="inline-flex items-center pr-2 text-center text-xl"
+                onClick={() =>
+                  setPassHidden((prev) => {
+                    return { ...prev, input2: !prev.input2 };
+                  })
+                }
+              >
+                {passHidden.input2 ? <CloseEye /> : <OpenEye />}
               </span>
             </div>
           </div>
@@ -119,7 +134,7 @@ function SignForm() {
               type="submit"
               className="w-full bg-lightblue py-1.5 text-base text-white transition-all hover:bg-darkblue"
             >
-              Sign Up
+              Forget
             </Button>
           </div>
         </form>
@@ -134,4 +149,4 @@ function SignForm() {
   );
 }
 
-export default SignForm;
+export default ForgetPass;
