@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer, useRef } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login, toggleDarkMode } from "./store/slice";
 import { logout } from "./store/slice";
 import useCurrentUser from "./Hook/useCurrentUser";
@@ -10,6 +10,8 @@ function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { data, isError, isSuccess, isLoading } = useCurrentUser();
+
+  const cartData = useSelector((state) => state.cart);
   useEffect(() => {
     if (isSuccess) {
       navigate("/");
@@ -18,8 +20,22 @@ function App() {
       navigate("/login");
       dispatch(logout());
     }
-  }, [data, isError, isSuccess]);
-  return <main>{isLoading ? <div>Loading.......</div> : <Outlet />}</main>;
+  }, [data, dispatch, isError, isSuccess, navigate]);
+  useEffect(() => {
+    console.log(cartData);
+  }, [cartData]);
+
+  return (
+    <main className="overflow-hidden">
+      {isLoading ? (
+        <div>Loading.......</div>
+      ) : (
+        <>
+          <Outlet />
+        </>
+      )}
+    </main>
+  );
 }
 
 export default App;

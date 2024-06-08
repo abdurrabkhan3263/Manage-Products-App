@@ -11,6 +11,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { databaseService } from "../../appwrite";
 import { useSelector } from "react-redux";
+import { GiConsoleController } from "react-icons/gi";
 
 function AddProduct({ productData }) {
   const [priceData, setPriceData] = useState({
@@ -60,7 +61,7 @@ function AddProduct({ productData }) {
       setValue("productPriceOption", "");
       setValue("productPrice", priceData.productPrice || "");
     }
-  }, [priceData.isCheck, priceData.productPrice, setValue]);
+  }, [priceData.isCheck]);
   useEffect(() => {
     const parsedData = JSON.parse(productData?.productPriceOption || "[]");
     setPriceData((prev) => ({
@@ -102,7 +103,8 @@ function AddProduct({ productData }) {
     },
   });
   const formSubmit = async (data) => {
-    data.productPrice = parseFloat(data.productPrice);
+    console.log(data);
+    data.productPrice = parseFloat(data.productPrice || "");
     data.productPriceOption = JSON.stringify(data.productPriceOption);
 
     const handleUploadImage = async (newImage) => {
@@ -271,7 +273,7 @@ function AddProduct({ productData }) {
                       }}
                       className="flex items-center justify-center gap-x-2.5 rounded-md bg-darkblue px-4 py-1 text-xl text-white"
                     >
-                      Add{" "}
+                      Add
                       <span>
                         <Add />
                       </span>
@@ -290,6 +292,10 @@ function AddProduct({ productData }) {
                           className="rounded-md border-none bg-lightgray px-2 py-2 font-medium outline-none"
                         />
                         <input
+                          type="text"
+                          required={true}
+                          placeholder="Enter Price"
+                          className="rounded-md border-none bg-lightgray px-2 py-1.5 outline-none"
                           {...register(`productPriceOption[${i}].price`, {
                             required: true,
                             validate: {
@@ -299,10 +305,6 @@ function AddProduct({ productData }) {
                                 ),
                             },
                           })}
-                          type="number"
-                          required={true}
-                          placeholder="Enter Price"
-                          className="rounded-md border-none bg-lightgray px-2 py-1.5 outline-none"
                         />
                       </div>
                     ))}
@@ -311,7 +313,7 @@ function AddProduct({ productData }) {
               ) : (
                 <div className="flex w-full justify-end">
                   <input
-                    type="number"
+                    type="text"
                     required={true}
                     placeholder="Enter Price"
                     {...register("productPrice", {

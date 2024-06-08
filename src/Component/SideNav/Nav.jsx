@@ -7,44 +7,29 @@ import {
   Graph,
   Invoice,
   Logout,
+  FaLuggageCart,
 } from "../SideNav../../../../public/Assets/index";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ShowLogout } from "../index.js";
 
-const navContent = [
-  { name: "Dashboard", icon: <MdOutlineDashboard />, path: "/" },
-  { name: "Products", icon: <Cart />, path: "/products" },
-  { name: "Statics", icon: <Graph />, path: "/statics" },
-  { name: "Invoice", icon: <Invoice />, path: "/invoice" },
-  { name: "All Customer", icon: <Contact />, path: "/allcustomer" },
-];
 function Nav() {
   const localIndex = JSON.parse(localStorage.getItem("index"));
   const currentUser = useSelector((state) => state.user.user);
+  const cartDataLen = useSelector((state) => state.cart.length);
   const [currentIndex, setCurrentIndex] = useState(
     (localIndex && localIndex.index) || 0,
   );
   const [handleLogout, setHandleLogout] = useState(false);
   const navigate = useNavigate();
-  // useEffect(() => {
-  //   localStorage.setItem(
-  //     "index",
-  //     JSON.stringify({
-  //       path: location.pathname,
-  //       index: currentIndex,
-  //     })
-  //   );
-  // }, [currentIndex]);
-  // useEffect(() => {
-  //   if (currentIndex != 0) {
-  //     localStorage.setItem(
-  //       "index",
-  //       JSON.stringify({ path: location.pathname, index: currentIndex })
-  //     );
-  //   }
-  //   navigate(localIndex.path);
-  // }, []);
+  const navContent = [
+    { name: "Dashboard", icon: <MdOutlineDashboard />, path: "/" },
+    { name: "Products", icon: <Cart />, path: "/products" },
+    { name: "Statics", icon: <Graph />, path: "/statics" },
+    { name: "Invoice", icon: <Invoice />, path: "/invoice" },
+    { name: "All Customer", icon: <Contact />, path: "/allcustomer" },
+    { name: "Cart", icon: <FaLuggageCart />, path: "/cart" },
+  ];
   return (
     <>
       <ShowLogout isShow={handleLogout} setShow={setHandleLogout} />
@@ -84,7 +69,7 @@ function Nav() {
               </ul>
             </div>
             <div className="mx-2.5 mb-4 flex items-center justify-between rounded-md bg-white p-2.5">
-              hello
+              <p className="font-semibold">{currentUser?.name || ""}</p>
               <span
                 className="cursor-pointer text-3xl text-darkblue"
                 onClick={() => setHandleLogout((prev) => !prev)}

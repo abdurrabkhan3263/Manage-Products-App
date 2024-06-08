@@ -1,217 +1,10 @@
-import React, { memo, useMemo } from "react";
+import React, { memo } from "react";
 import { Edit, Delete, Phone, admin } from "../../../public/Assets";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import TableRow from "./TableRow";
 
-function DataTable({ tableHeading, tableData, dataNum, pageNum, renderRow }) {
+function DataTable({ tableHeading, tableData, renderRow, setIsDelete }) {
   const navigate = useNavigate();
-  const displayData = useMemo(() => {
-    if (tableData) {
-      return tableData.slice(pageNum * dataNum - dataNum, pageNum * dataNum);
-    }
-  }, [pageNum, tableData, dataNum]);
-  const rowData = [
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-    {
-      id: 1,
-      name: "John Doe",
-      phoneNumber: "123-456-7890",
-      address: "123 Main St",
-      history: [
-        { date: "2022-05-25", action: "Purchase", amount: "$100" },
-        { date: "2022-05-27", action: "Return", amount: "$50" },
-      ],
-    },
-  ];
   return (
     <div>
       <table className="w-full table-fixed">
@@ -221,7 +14,7 @@ function DataTable({ tableHeading, tableData, dataNum, pageNum, renderRow }) {
               tableHeading.map((hData) => (
                 <th
                   key={hData.name}
-                  className="bg-lightblue text-white border py-1 text-lg"
+                  className="border bg-lightblue py-1 text-lg text-white"
                 >
                   {hData.name}
                 </th>
@@ -230,9 +23,15 @@ function DataTable({ tableHeading, tableData, dataNum, pageNum, renderRow }) {
         </thead>
         {/* Add The Data */}
         <tbody className="overflow-y-scroll">
-          {rowData.map((rowData, index) => (
-            <TableRow key={index} renderRow={renderRow} rowData={rowData} />
-          ))}
+          {tableData &&
+            tableData.map((rowData, index) => (
+              <TableRow
+                key={index}
+                renderRow={renderRow}
+                rowData={rowData}
+                setIsDelete={setIsDelete}
+              />
+            ))}
         </tbody>
       </table>
     </div>

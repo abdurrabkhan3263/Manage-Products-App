@@ -4,32 +4,32 @@ import { databaseService } from "../../appwrite";
 import { Error } from "../index";
 import { Xcross } from "../../../public/Assets";
 
-function DataDelete({ isShowDel, setIsShow, fileDetails }) {
+function DataDelete({ deleteData, setDeleteData, QueryKey }) {
   const queryClient = useQueryClient();
   const deleteMutation = useMutation({
     mutationKey: ["deleteProduct"],
     mutationFn: async (id) => {
-      return await fileDetails.deleteFun(id);
+      return await deleteData.deleteFun(id);
     },
     onSuccess: () => {
-      setIsShow(false);
-      queryClient.invalidateQueries({ queryKey: ["productList"] });
+      setDeleteData((prev) => ({ ...prev, isShow: false }));
+      queryClient.invalidateQueries({ queryKey: [QueryKey] });
     },
     onError: (error) => {
       console.log(error.message);
     },
   });
   const handleProductDelete = async () => {
-    if (!fileDetails.productId) return;
-    deleteMutation.mutate(fileDetails.productId);
-    if (!fileDetails.imgId) return;
-    await databaseService.deleteProductImg(fileDetails.imgId);
+    if (!deleteData.mainId) return;
+    deleteMutation.mutate(deleteData.mainId);
+    if (!deleteData.imgId) return;
+    await databaseService.deleteProductImg(deleteData.imgId);
   };
   return (
     <div
       className={`${
-        isShowDel ? "flex" : "hidden"
-      } absolute h-[45%] py-8 gap-y-5 w-1/4 text-center  flex-col justify-between shadow-lightBox bg-white rounded-xl border right-[55%] translate-x-[55%] bottom-1/2 translate-y-1/2 z-50`}
+        deleteData.isShow ? "flex" : "hidden"
+      } absolute bottom-1/2 right-[55%] z-50 h-[45%] w-1/4 translate-x-[55%] translate-y-1/2 flex-col justify-between gap-y-5 rounded-xl border bg-white py-8 text-center shadow-lightBox`}
     >
       {deleteMutation.isError ? (
         <>
@@ -40,23 +40,23 @@ function DataDelete({ isShowDel, setIsShow, fileDetails }) {
           <p>Deleting..........</p>
         </div>
       ) : (
-        <div className="flex justify-between flex-col h-full w-full">
-          <div className="w-full flex justify-center">
-            <h1 className="text-xl font-semibold text-wrap text-center mt-8 w-[70%]">
+        <div className="flex h-full w-full flex-col justify-between">
+          <div className="flex w-full justify-center">
+            <h1 className="mt-8 w-[70%] text-wrap text-center text-xl font-semibold">
               Do You Really Want To Delete It ?
             </h1>
           </div>
-          <div className="flex flex-col px-6 pt-5 gap-y-6">
+          <div className="flex flex-col gap-y-6 px-6 pt-5">
             <button
-              className="bg-lightblue hover:bg-darkblue duration-200 text-white py-2.5 font-semibold rounded-full"
+              className="rounded-full bg-lightblue py-2.5 font-semibold text-white duration-200 hover:bg-darkblue"
               onClick={handleProductDelete}
             >
               Delete
             </button>
             <button
-              className="bg-lightgray hover:bg-[#dfdfdf] duration-200 py-2.5 font-semibold rounded-full"
+              className="rounded-full bg-lightgray py-2.5 font-semibold duration-200 hover:bg-[#dfdfdf]"
               onClick={() => {
-                setIsShow(false);
+                setDeleteData((prev) => ({ ...prev, isShow: false }));
               }}
             >
               Cancel

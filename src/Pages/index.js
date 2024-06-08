@@ -5,6 +5,7 @@ import AllCustomer from "./AllCustomer";
 import Buy_Sell from "./Buy_Sell";
 import Login from "./Login";
 import Navigation from "./Navigation";
+import Cart from "./Cart";
 export {
   DashBoard,
   Products,
@@ -13,4 +14,5 @@ export {
   Buy_Sell,
   Login,
   Navigation,
+  Cart,
 };

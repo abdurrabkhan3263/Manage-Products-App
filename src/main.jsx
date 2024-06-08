@@ -10,6 +10,7 @@ import {
   Buy_Sell,
   Navigation,
   Login,
+  Cart,
 } from "./Pages/index.js";
 import {
   Route,
@@ -54,6 +55,7 @@ const route = createBrowserRouter(
         <Route path="invoice" element={<Buy_Sell />}>
           <Route path="seeproductdetails/:id" element={<SeeProductDetails />} />
         </Route>
+        <Route path="/cart" element={<Cart />} />
       </Route>
       <Route
         path="/login"

@@ -28,6 +28,7 @@ import { TbFileInvoice as Invoice } from "react-icons/tb";
 import { IoMdEye as OpenEye } from "react-icons/io";
 import { IoMdEyeOff as CloseEye } from "react-icons/io";
 import { MdLogout as Logout } from "react-icons/md";
+import { FaLuggageCart } from "react-icons/fa";
 
 export {
   Logo,
@@ -58,4 +59,5 @@ export {
   OpenEye,
   CloseEye,
   Logout,
+  FaLuggageCart,
 };

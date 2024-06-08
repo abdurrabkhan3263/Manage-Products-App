@@ -12,6 +12,7 @@ class DatabaseService {
     this.databases = new Databases(this.client);
     this.bucket = new Storage(this.client);
     this.deleteProduct = this.deleteProduct.bind(this);
+    this.deleteCustomer = this.deleteCustomer.bind(this);
   }
 
   /**
@@ -29,6 +30,9 @@ class DatabaseService {
     customerHistory,
     customerLatest,
     listPdf,
+    belongsTo,
+    customerImageId,
+    customerImage,
   }) {
     try {
       return await this.databases.createDocument(
@@ -43,6 +47,9 @@ class DatabaseService {
           customerHistory,
           customerLatest,
           listPdf,
+          belongsTo,
+          customerImageId,
+          customerImage,
         },
       );
     } catch (error) {
@@ -72,6 +79,8 @@ class DatabaseService {
       customerHistory,
       customerLatest,
       listPdf,
+      customerImageId,
+      customerImage,
     },
   ) {
     try {
@@ -87,6 +96,8 @@ class DatabaseService {
           customerHistory,
           customerLatest,
           listPdf,
+          customerImageId,
+          customerImage,
         },
       );
     } catch (error) {
@@ -137,6 +148,18 @@ class DatabaseService {
       );
     } catch (error) {
       throw ("AppWrite :: Error :: gettingAllCustomer :: ", error);
+    }
+  }
+
+  async gettingCustomerById(slug) {
+    try {
+      return await this.databases.getDocument(
+        conf.appWriteDatabase,
+        conf.appWriteCustomerDetailsCollId,
+        slug,
+      );
+    } catch (error) {
+      throw new Error("AppWrite :: Error :: gettingCustomerById :: ", error);
     }
   }
 

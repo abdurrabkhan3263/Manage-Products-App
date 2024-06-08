@@ -2,16 +2,22 @@ import React, { useRef, useEffect, useState } from "react";
 import { Add, Upload } from "../../../public/Assets";
 import { Button } from "../UI";
 import { useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { databaseService } from "../../appwrite";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 function AddContact({ contactData }) {
+  const currentUser = useSelector((state) => state.user?.user);
+  const navigate = useNavigate();
   const [customerImg, setCustomerImg] = useState(
-    contactData?.products[0].thumbnail || ""
+    (contactData && contactData?.customerImage) || "",
   );
   const { register, handleSubmit } = useForm({
     defaultValues: {
-      customerName: contactData?.products[0].title || "",
-      customerAddress: contactData?.products[0].price || "",
-      customerPhone: contactData?.products[0].price || "",
+      customerName: (contactData && contactData?.customerName) || "",
+      customerAddress: (contactData && contactData?.customerAddress) || "",
+      phoneNumber: (contactData && contactData?.phoneNumber) || "",
     },
   });
   const [textAreaHeight, setTextAreaHeight] = useState(50);
@@ -43,19 +49,76 @@ function AddContact({ contactData }) {
       setTextAreaHeight(clientHeight);
     }
   };
-  const submitContact = (data) => {
-    alert(JSON.stringify(data));
+  const client = useQueryClient();
+  const customerAdd = useMutation({
+    mutationKey: ["add"],
+    mutationFn: async (data) => {
+      return databaseService.createCustomer(data);
+    },
+    onSuccess: () => {
+      navigate("/allcustomer");
+      client.invalidateQueries({
+        queryKey: ["customer"],
+        refetchType: "active",
+      });
+    },
+  });
+  const customerUpdate = useMutation({
+    mutationKey: ["update"],
+    mutationFn: async (data) => {
+      return await databaseService.updateCustomer(contactData.$id, {
+        ...data,
+      });
+    },
+    onSuccess: () => {
+      navigate("/allcustomer");
+      client.invalidateQueries({ queryKey: ["customer"] });
+    },
+  });
+  const submitContact = async (data) => {
+    const addImage = async (newImage) => {
+      if (!newImage) return "";
+      const imageId = await databaseService.addProductImg(newImage);
+      if (!imageId) return "";
+      const imageFile = databaseService.getProductImgForPreview(imageId.$id);
+      return { id: imageId.$id, href: imageFile.href };
+    };
+    const updateImage = async (oldImage, newImage) => {
+      if (!newImage) return "";
+      const imageFile = await addImage(newImage);
+      if (!imageFile) return "";
+      if (oldImage) await databaseService.deleteProductImg(oldImage);
+      return imageFile;
+    };
+    if (contactData?.$id) {
+      const imageData = await updateImage(
+        contactData?.customerImageId,
+        data.customerImage[0],
+      );
+      data.customerImage = imageData.href;
+      data.customerImageId = imageData.id;
+      customerUpdate.mutate(data);
+    } else {
+      const imageData = await addImage(data.customerImage[0]);
+      data.customerImage = imageData.href;
+      data.customerImageId = imageData.id;
+      data.belongsTo = currentUser.$id;
+      customerAdd.mutate(data);
+    }
   };
+  if (customerAdd.isPending || customerUpdate.isPending) {
+    return <div>adding........</div>;
+  }
   return (
-    <div className="w-full h-full relative">
+    <div className="relative h-full w-full">
       <form onSubmit={handleSubmit(submitContact)} className="h-full">
         <div className="h-[92%] overflow-hidden overflow-y-scroll">
           <div
             ref={addImg}
-            className="ml-2.5 overflow-hidden rounded-xl w-[280px] h-[280px] text-white bg-darkblue flex justify-center cursor-pointer relative select-none items-center flex-col gap-y-1"
+            className="relative ml-2.5 flex h-[280px] w-[280px] cursor-pointer select-none flex-col items-center justify-center gap-y-1 overflow-hidden rounded-xl bg-darkblue text-white"
           >
-            <div className="flex flex-col items-center relative z-10 justify-center">
-              <span className="text-3xl peer transition-all" ref={uploadIcon}>
+            <div className="relative z-10 flex flex-col items-center justify-center">
+              <span className="peer text-3xl transition-all" ref={uploadIcon}>
                 <Upload />
               </span>
               <p className="text-xl font-semibold peer-hover:translate-x-2">
@@ -68,12 +131,12 @@ function AddContact({ contactData }) {
               type="file"
               accept="image/png,image/jpeg,image/jpg"
               {...register("customerImage")}
-              className="absolute w-full h-full opacity-0 z-10 peer"
+              className="peer absolute z-10 h-full w-full opacity-0"
               onChange={handleCustomerImg}
             />
-            <div className="absolute overflow-hidden h-full w-full z-0">
+            <div className="absolute z-0 h-full w-full overflow-hidden">
               {customerImg && (
-                <img src={customerImg} className="w-full h-full object-cover" />
+                <img src={customerImg} className="h-full w-full object-cover" />
               )}
             </div>
           </div>
@@ -83,34 +146,34 @@ function AddContact({ contactData }) {
               required={true}
               placeholder="Enter Customer Name"
               {...register("customerName", { required: true })}
-              className="outline-none border-none font-medium bg-lightgray w-full py-3 px-3 mt-3 rounded-md"
+              className="mt-3 w-full rounded-md border-none bg-lightgray px-3 py-3 font-medium outline-none"
             />
           </div>
           <div className="pl-2.5">
             <input
-              type="phone"
+              type="text"
               required={true}
               placeholder="Enter Phone Number"
-              {...register("customerPhone", { required: true })}
-              className="outline-none border-none font-medium bg-lightgray w-full py-3 px-3 mt-3 rounded-md"
+              {...register("phoneNumber", { required: true })}
+              className="mt-3 w-full rounded-md border-none bg-lightgray px-3 py-3 font-medium outline-none"
             />
           </div>
           <div className="pl-2.5">
             <textarea
               placeholder="Enter Customer Address (optional)"
               {...register("customerAddress")}
-              className={`outline-none resize-none border-none font-medium bg-lightgray w-full py-3 px-3 mt-3 rounded-md`}
+              className={`mt-3 w-full resize-none rounded-md border-none bg-lightgray px-3 py-3 font-medium outline-none`}
               style={{ height: `${textAreaHeight}px` }}
               onChange={handleTextAreaHeight}
             />
           </div>
         </div>
         {/* Submit button */}
-        <div className="w-full flex justify-end absolute bottom-0 right-3 mb-4">
+        <div className="absolute bottom-0 right-3 mb-4 flex w-full justify-end">
           <Button
             type={"submit"}
             className={
-              "bg-lightblue text-white hover:bg-darkblue transition-all px-8 py-1"
+              "bg-lightblue px-8 py-1 text-white transition-all hover:bg-darkblue"
             }
           >
             Submit

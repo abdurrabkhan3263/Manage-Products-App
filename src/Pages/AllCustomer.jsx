@@ -4,21 +4,31 @@ import { Search, Edit, Phone, Delete } from "../../public/Assets";
 import { useNavigate, Outlet } from "react-router-dom";
 import { DataDelete, DataTable, Pagination } from "../Component";
 import AllCustomerData from "../Component/DataTable/AllCustomerData";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { databaseService } from "../appwrite";
+import { Query } from "appwrite";
+import { useSelector } from "react-redux";
 
 function AllCustomer() {
   const navigate = useNavigate();
   const [pageNum, setPage] = useState(1);
-  const [customersData, setCustomerData] = useState([]);
-  const fetchData = async () => {
-    const response = await fetch(`https://dummyjson.com/carts?limit=21`);
-    const data = await response.json();
-    if (data.carts.length > 0) {
-      setCustomerData(data.carts);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const [deleteData, setDeleteData] = useState({
+    isShow: false,
+    deleteFun: databaseService.deleteCustomer,
+    mainId: "",
+    imgId: "",
+  });
+  const currentUser = useSelector((state) => state.user?.user);
+  const { data, isError, isLoading, isSuccess } = useQuery({
+    queryKey: ["customer"],
+    queryFn: async () => {
+      return await databaseService.gettingAllCustomer([
+        Query.equal("belongsTo", currentUser.$id),
+      ]);
+    },
+    retryOnMount: true,
+    staleTime: 4000,
+  });
   const handleAddContact = () => {
     navigate("addcontact", { state: "/allcustomer" });
   };
@@ -51,41 +61,47 @@ function AllCustomer() {
   const renderRow = AllCustomerData;
   return (
     <Container>
-      <div className="w-full h-full relative">
+      <div className="relative h-full w-full">
+        <DataDelete
+          deleteData={deleteData}
+          setDeleteData={setDeleteData}
+          QueryKey={"customer"}
+        />
         <Outlet />
-        <div className="flex items-center justify-between h-[5%]">
+        <div className="flex h-[5%] items-center justify-between">
           <input
             type="text"
             placeholder={"Search"}
-            className="outline-none bg-[#f1f1f1] focus:bg-[#e4e4e4] px-2 py-2 rounded-md w-full text-black"
+            className="w-full rounded-md bg-[#f1f1f1] px-2 py-2 text-black outline-none focus:bg-[#e4e4e4]"
           />
-          <button className="flex justify-center items-center gap-4 text-xl ml-7 bg-darkblue rounded-md px-4 py-1 text-white">
+          <button className="ml-7 flex items-center justify-center gap-4 rounded-md bg-darkblue px-4 py-1 text-xl text-white">
             Search <Search />
           </button>
         </div>
-        <div className="w-full flex justify-end">
+        <div className="flex w-full justify-end">
           <button
-            className="bg-darkblue text-white px-4 py-2 mt-4 font-semibold rounded-lg text-base"
+            className="mt-4 rounded-lg bg-darkblue px-4 py-2 text-base font-semibold text-white"
             onClick={handleAddContact}
           >
             Add New Customer
           </button>
         </div>
-        <div className="h-[83%] overflow-hidden overflow-y-scroll w-full mt-4 relative">
+        <div className="relative mt-4 h-[83%] w-full overflow-hidden overflow-y-scroll">
           <div className="bg-white">
-            {customersData && (
+            {data && data?.documents && (
               <DataTable
                 tableHeading={tableHeading}
-                tableData={customersData}
+                tableData={data.documents}
                 pageNum={pageNum}
                 dataNum={10}
                 renderRow={renderRow}
+                setIsDelete={setDeleteData}
               />
             )}
           </div>
         </div>
       </div>
-      {customersData && customersData.length >= 10 && (
+      {false && (
         <Pagination
           pageNum={pageNum}
           setPage={setPage}
