@@ -21,9 +21,6 @@ function App() {
       dispatch(logout());
     }
   }, [data, dispatch, isError, isSuccess, navigate]);
-  useEffect(() => {
-    console.log(cartData);
-  }, [cartData]);
 
   return (
     <main className="overflow-hidden">

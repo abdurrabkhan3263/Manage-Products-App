@@ -17,6 +17,8 @@ import SignForm from "./Form/SignForm";
 import FormLayout from "./Form/FormLayout";
 import ForgetPass from "./Form/ForgetPass";
 import ShowLogout from "./LogoutSection/ShowLogout";
+import ProductList from "./ProductCart/ProductList";
+import ProductTotal from "./ProductCart/ProductTotal";
 
 export {
   AddProduct,
@@ -38,4 +40,6 @@ export {
   FormLayout,
   ForgetPass,
   ShowLogout,
+  ProductList,
+  ProductTotal,
 };

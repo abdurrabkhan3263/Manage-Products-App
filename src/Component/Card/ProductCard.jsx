@@ -45,7 +45,7 @@ function ProductCard({ productData }) {
   const navigate = useNavigate();
   const handleProductQuantity = (e) => {
     setQuantity(e.target.value);
-    setPriceData((prev) => ({ ...prev, quantity: e.target.value }));
+    setPriceData((prev) => ({ ...prev, quantity: parseInt(e.target.value) }));
   };
   const handleSelect = (e) => {
     let selectData = e.target.value.split(",");
@@ -85,7 +85,7 @@ function ProductCard({ productData }) {
     [priceData.productOptionData],
   );
   const handleFormSubmit = (data) => {
-    data.id = productData.$id;
+    data.$id = productData.$id;
     data.productName = productName;
     data.productPriceOption = {
       name: priceData.option,
@@ -93,6 +93,7 @@ function ProductCard({ productData }) {
     };
     dispatch(addProduct(data));
     setCartAddPopUp(true);
+    console.log(data);
   };
 
   const popUp = useRef();

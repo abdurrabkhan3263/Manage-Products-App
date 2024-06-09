@@ -9,7 +9,7 @@ const initialValue = {
   cart: [],
 };
 
-const authSlice = createSlice({
+const appSlice = createSlice({
   name: "user",
   initialState: initialValue,
   reducers: {
@@ -27,12 +27,12 @@ const authSlice = createSlice({
     },
     addProduct: (state, action) => {
       let isHave = state.cart.some(
-        (cartItem) => cartItem.id === action.payload.id,
+        (cartItem) => cartItem.$id === action.payload.$id,
       );
-      state.cart.push(action.payload);
+      state.cart.unshift(action.payload);
       if (isHave) {
         const proData = state.cart
-          .filter((value) => value.id === action.payload.id)
+          .filter((value) => value.$id === action.payload.$id)
           .reduce(
             (acc, current) => {
               acc.productAmount += current.productAmount;
@@ -46,19 +46,25 @@ const authSlice = createSlice({
             },
           );
         const allData = [
-          ...state.cart.filter((value) => value.id !== action.payload.id),
           proData,
+          ...state.cart.filter((value) => value.$id !== action.payload.$id),
         ];
         state.cart = allData;
       }
     },
     removeProduct: (state, action) => {
-      state.cart = state.cart.filter((value) => value.id != action.payload.id);
+      state.cart = state.cart.filter((value) => value.$id !== action.payload);
     },
     editProduct: (state, action) => {
-      state.cart = state.map((value) =>
-        action.id === value.id ? { ...value, ...action.payload } : value,
+      const index = state.cart.findIndex(
+        (data) => data.$id === action.payload.$id,
       );
+      if (index !== -1) {
+        state.cart[index] = { ...state.cart[index], ...action.payload };
+      }
+    },
+    clearProduct: (state) => {
+      state.cart = [];
     },
   },
 });
@@ -70,5 +76,6 @@ export const {
   addProduct,
   removeProduct,
   editProduct,
-} = authSlice.actions;
-export default authSlice.reducer;
+  clearProduct,
+} = appSlice.actions;
+export default appSlice.reducer;
