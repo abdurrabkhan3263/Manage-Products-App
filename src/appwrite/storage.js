@@ -11,6 +11,8 @@ class DatabaseService {
       .setProject(conf.appWriteProjectId);
     this.databases = new Databases(this.client);
     this.bucket = new Storage(this.client);
+    this.deleteProduct = this.deleteProduct.bind(this);
+    this.deleteCustomer = this.deleteCustomer.bind(this);
   }
 
   /**
@@ -28,6 +30,9 @@ class DatabaseService {
     customerHistory,
     customerLatest,
     listPdf,
+    belongsTo,
+    customerImageId,
+    customerImage,
   }) {
     try {
       return await this.databases.createDocument(
@@ -42,7 +47,10 @@ class DatabaseService {
           customerHistory,
           customerLatest,
           listPdf,
-        }
+          belongsTo,
+          customerImageId,
+          customerImage,
+        },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Create Customer :: ", error);
@@ -71,7 +79,9 @@ class DatabaseService {
       customerHistory,
       customerLatest,
       listPdf,
-    }
+      customerImageId,
+      customerImage,
+    },
   ) {
     try {
       return await this.databases.updateDocument(
@@ -86,7 +96,9 @@ class DatabaseService {
           customerHistory,
           customerLatest,
           listPdf,
-        }
+          customerImageId,
+          customerImage,
+        },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: UpdateCustomer :: ", error);
@@ -109,7 +121,7 @@ class DatabaseService {
       return await this.databases.deleteDocument(
         conf.appWriteDatabase,
         conf.appWriteCustomerDetailsCollId,
-        userId
+        userId,
       );
     } catch (error) {
       throw ("AppWrite :: Error :: deleteCustomer :: ", error);
@@ -132,10 +144,22 @@ class DatabaseService {
       return await this.databases.listDocuments(
         conf.appWriteDatabase,
         conf.appWriteCustomerDetailsCollId,
-        Query && Query
+        Query && Query,
       );
     } catch (error) {
       throw ("AppWrite :: Error :: gettingAllCustomer :: ", error);
+    }
+  }
+
+  async gettingCustomerById(slug) {
+    try {
+      return await this.databases.getDocument(
+        conf.appWriteDatabase,
+        conf.appWriteCustomerDetailsCollId,
+        slug,
+      );
+    } catch (error) {
+      throw new Error("AppWrite :: Error :: gettingCustomerById :: ", error);
     }
   }
 
@@ -152,7 +176,7 @@ class DatabaseService {
         conf.appWriteDatabase,
         conf.appWriteBuyHistory,
         ID.unique(),
-        { customerId, customerDetails, buyProduct }
+        { customerId, customerDetails, buyProduct },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Create Customer Buy History :: ", error);
@@ -188,7 +212,7 @@ class DatabaseService {
       return await this.databases.createDocument(
         conf.appWriteDatabase,
         conf.createGraphData,
-        { userId, productNamePrice, buyDate }
+        { userId, productNamePrice, buyDate },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: CreateGraph Data :: ", error);
@@ -209,10 +233,22 @@ class DatabaseService {
       return await this.databases.listDocuments(
         conf.appWriteDatabase,
         conf.appWriteGraphData,
-        [Query.equal("userId", userId)]
+        [Query.equal("userId", userId)],
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Getting All Graph Data :: ", error);
+    }
+  }
+
+  async getProductList(Query = []) {
+    try {
+      return await this.databases.listDocuments(
+        conf.appWriteDatabase,
+        conf.appWriteProductsListCollId,
+        Query,
+      );
+    } catch (error) {
+      throw ("AppWrite :: Error :: Getting ProductData :: ", error);
     }
   }
 
@@ -222,17 +258,26 @@ class DatabaseService {
    */
 
   async createProductDetails({
-    productsName,
+    productName,
     productPrice,
     productImage,
     productPriceOption,
+    productImageId,
+    userId,
   }) {
     try {
       return await this.databases.createDocument(
         conf.appWriteDatabase,
         conf.appWriteProductsListCollId,
         ID.unique(),
-        { productsName, productPrice, productImage, productPriceOption }
+        {
+          productName,
+          productPrice,
+          productImage,
+          productPriceOption,
+          productImageId,
+          userId,
+        },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Create Product Details :: ", error);
@@ -250,14 +295,28 @@ class DatabaseService {
 
   async updateProductDetails(
     slug,
-    { productsName, productPrice, productImage, productPriceOption }
+    {
+      productName,
+      productPrice,
+      productImage,
+      productPriceOption,
+      productImageId,
+      userId,
+    },
   ) {
     try {
       return await this.databases.updateDocument(
         conf.appWriteDatabase,
         conf.appWriteProductsListCollId,
         slug,
-        { productsName, productPrice, productImage, productPriceOption }
+        {
+          productName,
+          productPrice,
+          productImage,
+          productPriceOption,
+          productImageId,
+          userId,
+        },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Update Product Details :: ", error);
@@ -279,10 +338,22 @@ class DatabaseService {
       return await this.databases.deleteDocument(
         conf.appWriteDatabase,
         conf.appWriteProductsListCollId,
-        slug
+        slug,
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Delete Product List :: ", error);
+    }
+  }
+
+  async getProductById(id) {
+    try {
+      return await this.databases.getDocument(
+        conf.appWriteDatabase,
+        conf.appWriteProductsListCollId,
+        id,
+      );
+    } catch (error) {
+      throw ("AppWrite :: Error :: Get Product Id :: ", error);
     }
   }
 
@@ -300,7 +371,7 @@ class DatabaseService {
         conf.appWriteDatabase,
         conf.appWriteCreateSell,
         ID.unique(),
-        { customerDetails, buyDate, productList }
+        { customerDetails, buyDate, productList },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Create Sell :: ", error);
@@ -323,7 +394,7 @@ class DatabaseService {
         conf.appWriteDatabase,
         conf.appWriteCreateSell,
         slug,
-        { customerDetails, productList, buyDate }
+        { customerDetails, productList, buyDate },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: UpdateSell :: ", error);
@@ -345,7 +416,7 @@ class DatabaseService {
       return await this.databases.deleteDocument(
         conf.appWriteDatabase,
         conf.appWriteCreateSell,
-        docId
+        docId,
       );
     } catch (error) {
       throw ("AppWrite :: Error :: DeleteSell :: ", error);
@@ -365,7 +436,7 @@ class DatabaseService {
         conf.appWriteDatabase,
         conf.appWritePdfCollection,
         pdfFileId,
-        { userId, createDate }
+        { userId, createDate },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Create Pdf :: ", error);
@@ -403,12 +474,12 @@ class DatabaseService {
    * the specified product ID and file.
    */
 
-  async addProductImg(file, productId) {
+  async addProductImg(File) {
     try {
       return await this.bucket.createFile(
         conf.appWriteProductImgStorage,
-        productId,
-        file
+        ID.unique(),
+        File,
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Add Product Img :: ", error);
@@ -432,7 +503,7 @@ class DatabaseService {
     try {
       return await this.bucket.updateFile(
         conf.appWriteProductImgStorage,
-        productId
+        productId,
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Update Product Image :: ", error);
@@ -469,8 +540,12 @@ class DatabaseService {
    */
 
   async deleteProductImg(productId) {
+    if (!productId) return;
     try {
-      return await this.bucket.deleteFile(productId);
+      return await this.bucket.deleteFile(
+        conf.appWriteProductImgStorage,
+        productId,
+      );
     } catch (error) {
       throw ("AppWrite :: Error :: Delete Product Image :: ", error);
     }
@@ -490,7 +565,7 @@ class DatabaseService {
       return await this.bucket.createFile(
         conf.appWriteCreatePdf,
         ID.unique(),
-        file
+        file,
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Add Product Img :: ", error);

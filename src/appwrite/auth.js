@@ -2,12 +2,12 @@ import conf from "../config/config";
 import { Client, Account, ID } from "appwrite";
 
 class AuthService {
-  client;
+  client = new Client();
   account;
   constructor() {
-    this.client = new Client.setEndpoint(conf.appWriteUrl).setProject(
-      conf.appWriteProjectId
-    );
+    this.client
+      .setEndpoint(conf.appWriteUrl)
+      .setProject(conf.appWriteProjectId);
     this.account = new Account(this.client);
   }
 
@@ -20,13 +20,9 @@ object with `name`, `email`, and `password` properties as parameters. */
         ID.unique(),
         email,
         password,
-        name
+        name,
       );
-      if (userData) {
-        this.loginAccount(email, password);
-      } else {
-        return userData;
-      }
+      return userData;
     } catch (error) {
       throw ("AppWrite :: CreateAccount :: Error :: ", error);
     }
@@ -42,9 +38,12 @@ object with `name`, `email`, and `password` properties as parameters. */
    * @returns The `loginStatus` variable is being returned from the `loginAccount` method.
    */
 
-  async loginAccount(email, password) {
+  async loginAccount({ email, password }) {
     try {
-      let loginStatus = await this.account.loginAccount(email, password);
+      let loginStatus = await this.account.createEmailPasswordSession(
+        email,
+        password,
+      );
       return loginStatus;
     } catch (error) {
       throw ("AppWrite :: Error :: LoginAccount :: ", error);
@@ -59,7 +58,7 @@ object with `name`, `email`, and `password` properties as parameters. */
    */
   async logoutAccount() {
     try {
-      return await this.account.deleteSession();
+      return await this.account.deleteSessions();
     } catch (error) {
       throw ("AppWrite :: Error :: LogoutAccount :: ,", error);
     }
@@ -76,8 +75,9 @@ object with `name`, `email`, and `password` properties as parameters. */
     try {
       return await this.account.get();
     } catch (error) {
-      throw ("AppWrite :: Error :: LogoutAccount :: , ", error);
+      throw new Error("AppWrite :: Error :: Get Current User :: , ", error);
     }
+    return null;
   }
 
   //   async phoneVerification() {
