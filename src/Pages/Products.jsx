@@ -26,6 +26,7 @@ function Products() {
         return response.documents;
       }
     },
+    enabled: true,
     retry: 3,
     refetchOnReconnect: true,
     refetchOnMount: true,

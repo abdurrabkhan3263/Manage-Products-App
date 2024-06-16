@@ -29,6 +29,7 @@ import { IoMdEye as OpenEye } from "react-icons/io";
 import { IoMdEyeOff as CloseEye } from "react-icons/io";
 import { MdLogout as Logout } from "react-icons/md";
 import { FaLuggageCart } from "react-icons/fa";
+import { BsCashCoin as Money } from "react-icons/bs";
 
 export {
   Logo,
@@ -60,4 +61,5 @@ export {
   CloseEye,
   Logout,
   FaLuggageCart,
+  Money,
 };

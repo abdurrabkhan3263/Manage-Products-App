@@ -4,7 +4,7 @@ import ProductTable from "./Product Table/ProductTable";
 function ProductList({ className }) {
   return (
     <div
-      className={`${className} col-start-1 col-end-5 row-start-2 row-end-7 overflow-hidden overflow-y-scroll border-2 border-black`}
+      className={`${className} col-span-7 row-start-3 row-end-12 overflow-hidden overflow-y-scroll rounded-xl bg-slate-200`}
     >
       <ProductTable />
     </div>

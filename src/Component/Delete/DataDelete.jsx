@@ -13,7 +13,10 @@ function DataDelete({ deleteData, setDeleteData, QueryKey }) {
     },
     onSuccess: () => {
       setDeleteData((prev) => ({ ...prev, isShow: false }));
-      queryClient.invalidateQueries({ queryKey: [QueryKey] });
+      queryClient.invalidateQueries({
+        queryKey: ["productList"],
+        refetchType: "active",
+      });
     },
     onError: (error) => {
       console.log(error.message);
