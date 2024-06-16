@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { addProduct, removeProduct, editProduct } from "./thunkFile";
 
 const initialValue = {
   user: {
@@ -25,57 +26,49 @@ const appSlice = createSlice({
       console.log(!action.payload);
       // state.darkMode = action.payload;
     },
-    addProduct: (state, action) => {
-      let isHave = state.cart.some(
-        (cartItem) => cartItem.$id === action.payload.$id,
-      );
-      state.cart.unshift(action.payload);
-      if (isHave) {
-        const proData = state.cart
-          .filter((value) => value.$id === action.payload.$id)
-          .reduce(
-            (acc, current) => {
-              acc.productAmount += current.productAmount;
-              acc.productQuantity += parseInt(current.productQuantity);
-              return acc;
-            },
-            {
-              ...state.cart.find((value) => value.id === action.payload.id),
-              productAmount: 0,
-              productQuantity: 0,
-            },
-          );
-        const allData = [
-          proData,
-          ...state.cart.filter((value) => value.$id !== action.payload.$id),
-        ];
-        state.cart = allData;
-      }
-    },
-    removeProduct: (state, action) => {
-      state.cart = state.cart.filter((value) => value.$id !== action.payload);
-    },
-    editProduct: (state, action) => {
-      const index = state.cart.findIndex(
-        (data) => data.$id === action.payload.$id,
-      );
-      if (index !== -1) {
-        state.cart[index] = { ...state.cart[index], ...action.payload };
-      }
-    },
     clearProduct: (state) => {
       state.cart = [];
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(addProduct.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(addProduct.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.cart = action.payload;
+      })
+      .addCase(addProduct.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      });
+    builder
+      .addCase(removeProduct.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(removeProduct.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.cart = action.payload;
+      })
+      .addCase(removeProduct.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload.message;
+      });
+    builder
+      .addCase(editProduct.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(editProduct.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.cart = action.payload;
+      })
+      .addCase(editProduct.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload.message;
+      });
+  },
 });
 
-export const {
-  login,
-  logout,
-  toggleDarkMode,
-  addProduct,
-  removeProduct,
-  editProduct,
-  clearProduct,
-} = appSlice.actions;
+export const { login, logout, toggleDarkMode, clearProduct } = appSlice.actions;
 export default appSlice.reducer;

@@ -1,16 +1,18 @@
-import { useState, useEffect, useReducer, useRef } from "react";
+import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { login, toggleDarkMode } from "./store/slice";
 import { logout } from "./store/slice";
 import useCurrentUser from "./Hook/useCurrentUser";
+import { databaseService } from "./appwrite";
+import { addProduct } from "./store/thunkFile";
 
 function App() {
   // const [darkMode, setDarkMode] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { data, isError, isSuccess, isLoading } = useCurrentUser();
-
+  const currentUser = useSelector((state) => state.user.user?.$id);
   const cartData = useSelector((state) => state.cart);
   useEffect(() => {
     if (isSuccess) {
@@ -21,6 +23,14 @@ function App() {
       dispatch(logout());
     }
   }, [data, dispatch, isError, isSuccess, navigate]);
+  useEffect(() => {
+    (async function () {
+      const response = await databaseService.getAllOrder(currentUser);
+      if (response && response.documents.length > 0) {
+        dispatch(addProduct({ fromDataBase: response.documents.reverse() }));
+      }
+    })();
+  }, [currentUser, navigate]);
 
   return (
     <main className="overflow-hidden">

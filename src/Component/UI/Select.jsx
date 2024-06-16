@@ -11,7 +11,11 @@ function Select({ className, option = [], ...props }, ref) {
         {option.map((optionData, index) => (
           <option
             key={index}
-            value={[parseFloat(optionData.price), optionData.name]}
+            value={[
+              parseFloat(optionData.price),
+              optionData.name,
+              optionData.opId,
+            ]}
           >
             {optionData.name}
           </option>

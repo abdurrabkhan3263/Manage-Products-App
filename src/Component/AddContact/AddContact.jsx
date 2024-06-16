@@ -53,7 +53,7 @@ function AddContact({ contactData }) {
   const customerAdd = useMutation({
     mutationKey: ["add"],
     mutationFn: async (data) => {
-      return databaseService.createCustomer(data);
+      return await databaseService.createCustomer(data);
     },
     onSuccess: () => {
       navigate("/allcustomer");

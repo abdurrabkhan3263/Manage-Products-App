@@ -6,7 +6,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { DataDelete } from "../index";
 import { databaseService } from "../../appwrite";
-import { addProduct } from "../../store/slice";
+import { addProduct } from "../../store/thunkFile";
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -25,6 +25,7 @@ function ProductCard({ productData }) {
     productPrice: productPrice,
     option: "",
     productOptionData: [],
+    opId: "",
   });
   const cartData = useSelector((state) => state.cart);
   const dispatch = useDispatch();
@@ -44,8 +45,12 @@ function ProductCard({ productData }) {
   const [cartAddPopUp, setCartAddPopUp] = useState(false);
   const navigate = useNavigate();
   const handleProductQuantity = (e) => {
-    setQuantity(e.target.value);
-    setPriceData((prev) => ({ ...prev, quantity: parseInt(e.target.value) }));
+    const productQuan = parseInt(e.target.value);
+    if (productQuan <= 1) {
+      setValue("productQuantity", 1);
+    }
+    setQuantity(productQuan);
+    setPriceData((prev) => ({ ...prev, quantity: e.target.value }));
   };
   const handleSelect = (e) => {
     let selectData = e.target.value.split(",");
@@ -53,6 +58,7 @@ function ProductCard({ productData }) {
       ...prev,
       option: selectData[1],
       productPrice: selectData[0],
+      opId: selectData[2],
     }));
   };
   const handleProductEdit = () => {
@@ -78,24 +84,29 @@ function ProductCard({ productData }) {
       productPrice: parsedData
         ? parseFloat(parsedData[0]?.price)
         : productPrice,
+      opId: parsedData ? parsedData[0]?.opId : "",
     }));
   }, [productPriceOption, productPrice]);
   const optionMemo = useMemo(
     () => priceData.productOptionData,
     [priceData.productOptionData],
   );
-  const handleFormSubmit = (data) => {
-    data.$id = productData.$id;
-    data.productName = productName;
-    data.productPriceOption = {
-      name: priceData.option,
-      price: priceData.productPrice,
-    };
-    dispatch(addProduct(data));
+  const handleFormSubmit = async (data) => {
+    dispatch(
+      addProduct({
+        ...data,
+        ...productData,
+        $id: productData.isOption ? priceData.opId : productData.$id,
+        productPriceOption: JSON.stringify({
+          option: priceData.option,
+          price: priceData.productPrice,
+        }),
+        productPrice: parseFloat(priceData.productPrice),
+        productQuantity: parseInt(priceData.quantity),
+      }),
+    );
     setCartAddPopUp(true);
-    console.log(data);
   };
-
   const popUp = useRef();
   useGSAP(() => {
     if (cartAddPopUp) {
@@ -113,6 +124,7 @@ function ProductCard({ productData }) {
       setCartAddPopUp(false);
     }
   }, [cartData]);
+
   return (
     <div className="w-full">
       <span
@@ -162,7 +174,7 @@ function ProductCard({ productData }) {
               className={"border border-black"}
             />
             <Input
-              type="number"
+              type="text"
               {...register("productAmount")}
               label="Amount"
               className={"border border-black"}

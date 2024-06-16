@@ -11,7 +11,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { databaseService } from "../../appwrite";
 import { useSelector } from "react-redux";
-import { GiConsoleController } from "react-icons/gi";
+import useGenerateUniqueId from "../../Hook/useGenerateUniqueId";
 
 function AddProduct({ productData }) {
   const [priceData, setPriceData] = useState({
@@ -57,7 +57,9 @@ function AddProduct({ productData }) {
   useEffect(() => {
     if (priceData.isCheck) {
       setValue("productPrice", "");
+      setValue("isOption", true);
     } else {
+      setValue("isOption", false);
       setValue("productPriceOption", "");
       setValue("productPrice", priceData.productPrice || "");
     }
@@ -103,7 +105,6 @@ function AddProduct({ productData }) {
     },
   });
   const formSubmit = async (data) => {
-    console.log(data);
     data.productPrice = parseFloat(data.productPrice || "");
     data.productPriceOption = JSON.stringify(data.productPriceOption);
 
@@ -280,34 +281,38 @@ function AddProduct({ productData }) {
                     </button>
                   </div>
                   <div className="my-3">
-                    {Array.from({ length: priceData.optionCount }, (_, i) => (
-                      <div key={i} className="my-3 flex justify-between">
-                        <input
-                          type="text"
-                          required={true}
-                          placeholder="Enter Option"
-                          {...register(`productPriceOption[${i}].name`, {
-                            required: true,
-                          })}
-                          className="rounded-md border-none bg-lightgray px-2 py-2 font-medium outline-none"
-                        />
-                        <input
-                          type="text"
-                          required={true}
-                          placeholder="Enter Price"
-                          className="rounded-md border-none bg-lightgray px-2 py-1.5 outline-none"
-                          {...register(`productPriceOption[${i}].price`, {
-                            required: true,
-                            validate: {
-                              matchPattern: (value) =>
-                                /^[0-9]+\.?[0-9]*$|^[0-9]*\.?[0-9]+$/.test(
-                                  value,
-                                ),
-                            },
-                          })}
-                        />
-                      </div>
-                    ))}
+                    {Array.from({ length: priceData.optionCount }, (_, i) => {
+                      let idd = useGenerateUniqueId();
+                      setValue(`productPriceOption[${i}.opId]`, idd);
+                      return (
+                        <div key={i} className="my-3 flex justify-between">
+                          <input
+                            type="text"
+                            required={true}
+                            placeholder="Enter Option"
+                            {...register(`productPriceOption[${i}].name`, {
+                              required: true,
+                            })}
+                            className="rounded-md border-none bg-lightgray px-2 py-2 font-medium outline-none"
+                          />
+                          <input
+                            type="text"
+                            required={true}
+                            placeholder="Enter Price"
+                            className="rounded-md border-none bg-lightgray px-2 py-1.5 outline-none"
+                            {...register(`productPriceOption[${i}].price`, {
+                              required: true,
+                              validate: {
+                                matchPattern: (value) =>
+                                  /^[0-9]+\.?[0-9]*$|^[0-9]*\.?[0-9]+$/.test(
+                                    value,
+                                  ),
+                              },
+                            })}
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               ) : (
