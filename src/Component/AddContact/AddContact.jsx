@@ -1,15 +1,14 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Add, Upload } from "../../../public/Assets";
+import { useRef, useEffect, useState } from "react";
+import { Upload } from "../../../public/Assets";
 import { Button } from "../UI";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { databaseService } from "../../appwrite";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-
+import { toastFunction } from "../../utils/toastFunction";
+import { useLocation, useNavigate } from "react-router-dom";
 function AddContact({ contactData }) {
   const currentUser = useSelector((state) => state.user?.user);
-  const navigate = useNavigate();
   const [customerImg, setCustomerImg] = useState(
     (contactData && contactData?.customerImage) || "",
   );
@@ -23,6 +22,8 @@ function AddContact({ contactData }) {
   const [textAreaHeight, setTextAreaHeight] = useState(50);
   const addImg = useRef();
   const uploadIcon = useRef();
+  const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
     const handleMouseEnter = () => {
       uploadIcon.current.style.transform = `translateY(-4px)`;
@@ -56,10 +57,14 @@ function AddContact({ contactData }) {
       return await databaseService.createCustomer(data);
     },
     onSuccess: () => {
-      navigate("/allcustomer");
+      navigate(location.state);
       client.invalidateQueries({
         queryKey: ["customer"],
         refetchType: "active",
+      });
+      toastFunction({
+        type: "success",
+        message: "Customer Added SuccessFully",
       });
     },
   });
@@ -71,8 +76,11 @@ function AddContact({ contactData }) {
       });
     },
     onSuccess: () => {
-      navigate("/allcustomer");
       client.invalidateQueries({ queryKey: ["customer"] });
+      toastFunction({
+        type: "success",
+        message: "Customer Updated SuccessFully",
+      });
     },
   });
   const submitContact = async (data) => {

@@ -13,6 +13,7 @@ const addProduct = createAsyncThunk(
     "cart": [],
     "status": "loading"
       */
+      console.log(product);
       if (product.fromDataBase)
         return { actionType: "database", allData: product.fromDataBase };
       const cartData = state.cart?.allData || [];

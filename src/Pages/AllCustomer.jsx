@@ -101,11 +101,11 @@ function AllCustomer() {
           </div>
         </div>
       </div>
-      {false && (
+      {data && data.documents && data.documents.length > 10 && (
         <Pagination
           pageNum={pageNum}
           setPage={setPage}
-          length={customersData && customersData.length}
+          length={data && data.documents && data.documents.length}
           dataCount={10}
         />
       )}

@@ -143,6 +143,21 @@ class DatabaseService {
     }
   }
 
+  async getCustomerBySearch(belongsTo, name) {
+    try {
+      return await this.databases.listDocuments(
+        conf.appWriteDatabase,
+        conf.appWriteCustomerDetailsCollId,
+        [
+          Query.equal("belongsTo", belongsTo),
+          Query.search("customerName", name),
+        ],
+      );
+    } catch (error) {
+      throw ("AppWrite :: Error Get Customer By Search :: Error ", error);
+    }
+  }
+
   async createGraphData({ userId, productNamePrice, buyDate }) {
     try {
       return await this.databases.createDocument(

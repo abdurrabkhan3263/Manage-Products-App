@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { addProduct, removeProduct, editProduct } from "./thunkFile";
+import { toastFunction } from "../utils/toastFunction";
 
 const initialValue = {
   user: {
@@ -8,6 +9,7 @@ const initialValue = {
   },
   darkMode: false,
   cart: [],
+  customerDetailsOfOrder: {},
 };
 
 const appSlice = createSlice({
@@ -28,6 +30,28 @@ const appSlice = createSlice({
     },
     clearProduct: (state) => {
       state.cart = [];
+    },
+    addCustomer: (state, action) => {
+      state.customerDetailsOfOrder = action.payload;
+    },
+    clearCustomer: (state) => {
+      state.customerDetailsOfOrder = {};
+    },
+    submitForm: (state, action) => {
+      const { cartData, customerDetails, user } = action.payload;
+      if (cartData.length <= 0) {
+        toastFunction({
+          type: "warn",
+          message: "Please Add Product In The Cart",
+        });
+      } else if (Object.keys(customerDetails).length <= 0) {
+        toastFunction({
+          type: "warn",
+          message: "Please Enter Customer Name",
+        });
+      } else {
+        console.log("hello");
+      }
     },
   },
   extraReducers: (builder) => {
@@ -50,6 +74,10 @@ const appSlice = createSlice({
       .addCase(removeProduct.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.cart = action.payload;
+        toastFunction({
+          type: "success",
+          message: "Removed Successfully",
+        });
       })
       .addCase(removeProduct.rejected, (state, action) => {
         state.status = "failed";
@@ -70,5 +98,15 @@ const appSlice = createSlice({
   },
 });
 
-export const { login, logout, toggleDarkMode, clearProduct } = appSlice.actions;
+export const {
+  login,
+  logout,
+  toggleDarkMode,
+  clearProduct,
+  addCustomer,
+  clearCustomer,
+  submitForm,
+  inputRequiredT,
+  inputRequiredF,
+} = appSlice.actions;
 export default appSlice.reducer;

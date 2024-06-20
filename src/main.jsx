@@ -55,7 +55,9 @@ const route = createBrowserRouter(
         <Route path="invoice" element={<Buy_Sell />}>
           <Route path="seeproductdetails/:id" element={<SeeProductDetails />} />
         </Route>
-        <Route path="/cart" element={<Cart />} />
+        <Route path="/cart" element={<Cart />}>
+          <Route path="addcontact" element={<AddContactLayout />} />
+        </Route>
       </Route>
       <Route
         path="/login"

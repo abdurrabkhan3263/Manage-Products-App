@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { databaseService } from "../../appwrite";
 import { useSelector } from "react-redux";
 import useGenerateUniqueId from "../../Hook/useGenerateUniqueId";
+import { toastFunction } from "../../utils/toastFunction";
 
 function AddProduct({ productData }) {
   const [priceData, setPriceData] = useState({
@@ -88,6 +89,10 @@ function AddProduct({ productData }) {
     onSuccess: () => {
       navigate(location.state);
       queryClient.invalidateQueries({ queryKey: ["productList"] });
+      toastFunction({
+        type: "success",
+        message: "Product Added SuccessFully",
+      });
     },
   });
   const mutationforUpdate = useMutation({
@@ -102,6 +107,10 @@ function AddProduct({ productData }) {
     onSuccess: () => {
       navigate(location.state);
       queryClient.invalidateQueries({ queryKey: ["productList"] });
+      toastFunction({
+        type: "success",
+        message: "Product Updated SuccessFully",
+      });
     },
   });
   const formSubmit = async (data) => {

@@ -10,13 +10,13 @@ function ProductTable() {
       <div className="sticky top-0 z-30 h-4 w-full bg-gray-200"></div>
       <table className="sticky top-4 z-10 w-full table-fixed">
         <thead className="sticky top-8 z-10">
-          <tr className="bg-white text-[19px] uppercase">
+          <tr className="bg-white text-[17px] uppercase">
             <th className="rounded-l-xl py-8">Product Image</th>
-            <th className="py-8">Name</th>
-            <th className="py-8">Price</th>
-            <th className="py-8">Quantity</th>
-            <th className="rounded-r-xl py-8">Total</th>
-            <th className="rounded-r-xl py-8">Action</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th className="rounded-r-xl">Action</th>
           </tr>
         </thead>
       </table>
