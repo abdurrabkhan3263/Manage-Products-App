@@ -128,7 +128,7 @@ const submitForm = createAsyncThunk(
       user: { user },
       customerDetailsOfOrder: customerDetails,
     } = state;
-    if (cartData.length <= 0 || !state.cart) {
+    if ((cartData && cartData.length <= 0) || state.cart.length <= 0) {
       toastFunction({
         type: "warn",
         message: "Please Add Product In The Cart",
@@ -166,14 +166,13 @@ const submitForm = createAsyncThunk(
       if (addDataIntoData) {
         const ids = cartData.map((items) => items.$id);
         await Promise.all(ids.map((id) => databaseService.removeOrder(id))); // ! Remove The Cart Data from Db
-        dispatch(clearProduct()); // ! Clear Cart Data from Redux
         const customerData = await databaseService.gettingCustomerById(
           customerDetails?.$id,
         );
-
         if (customerData) {
+          dispatch(clearProduct()); // ! Clear Cart Data from Redux
           const data = customerData;
-          data.totalAmount += totalAmount;
+          data.totalPrice += totalAmount;
           data.customerHistory.push(addDataIntoData?.$id);
           const updateCustomer = await databaseService.updateCustomer(
             data?.$id,

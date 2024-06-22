@@ -1,10 +1,7 @@
 import React, { memo } from "react";
-import { Edit, Delete, Phone, admin } from "../../../public/Assets";
-import { useNavigate, useParams } from "react-router-dom";
 import TableRow from "./TableRow";
 
-function DataTable({ tableHeading, tableData, renderRow, setIsDelete }) {
-  const navigate = useNavigate();
+function DataTable({ tableHeading, tableData, renderRow }) {
   return (
     <div>
       <table className="w-full table-fixed">
@@ -25,12 +22,7 @@ function DataTable({ tableHeading, tableData, renderRow, setIsDelete }) {
         <tbody className="overflow-y-scroll">
           {tableData &&
             tableData.map((rowData, index) => (
-              <TableRow
-                key={index}
-                renderRow={renderRow}
-                rowData={rowData}
-                setIsDelete={setIsDelete}
-              />
+              <TableRow key={index} renderRow={renderRow} rowData={rowData} />
             ))}
         </tbody>
       </table>

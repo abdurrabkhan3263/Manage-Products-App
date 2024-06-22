@@ -305,6 +305,32 @@ class DatabaseService {
     }
   }
 
+  async getInvoice(belongsTo, offsetNumber) {
+    try {
+      let invoiceData = await this.databases.listDocuments(
+        conf.appWriteDatabase,
+        conf.appWriteCreateSell,
+        [
+          Query.equal("userId", belongsTo),
+          Query.limit(10),
+          Query.offset(offsetNumber || 0),
+        ],
+      );
+      invoiceData = invoiceData?.documents;
+      const newArr = await Promise.all(
+        invoiceData.map(async (data) => {
+          const customer = await this.gettingCustomerById(
+            data?.customerDetails,
+          );
+          return { ...data, ...customer };
+        }),
+      );
+      return newArr;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async deleteSell(docId) {
     try {
       return await this.databases.deleteDocument(

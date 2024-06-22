@@ -31,7 +31,7 @@ function convertToIST(isoString) {
   const dayName = daysOfWeek[istTime.getUTCDay()];
   // Format the string as required
   const formattedString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}+05:30`;
-  const fullDate = `${dayName} ${day}-${month}-${year}`;
+  const fullDate = `${dayName.slice(0, 3)} ${day}-${month}-${year}`;
   const time = `${hours}:${minutes}`;
 
   return { formattedString, fullDate, time };
