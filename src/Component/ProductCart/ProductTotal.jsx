@@ -2,18 +2,16 @@ import React, { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "../UI";
 import { Money } from "../../../public/Assets";
-import { submitForm } from "../../store/slice";
+import { submitForm } from "../../store/thunkFile";
 
 function ProductTotal({ className }) {
-  const cartData = useSelector((state) => state.cart?.allData || []);
-  const user = useSelector((state) => state.user?.user);
-  const customerDetails = useSelector((state) => state?.customerDetailsOfOrder);
+  const cartData = useSelector((state) => state.cart?.allData) || [];
   const dispatch = useDispatch();
   const totalAmount = useMemo(() => {
     return cartData.reduce((acc, current) => acc + current.productAmount, 0);
   }, [cartData]);
   const handleCashOut = () => {
-    dispatch(submitForm({ cartData, user, customerDetails }));
+    dispatch(submitForm());
   };
   return (
     <div

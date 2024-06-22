@@ -7,7 +7,7 @@ import useCurrentUser from "./Hook/useCurrentUser";
 import { databaseService } from "./appwrite";
 import { addProduct } from "./store/thunkFile";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast, Bounce } from "react-toastify";
+import { ToastContainer, Bounce } from "react-toastify";
 
 function App() {
   // const [darkMode, setDarkMode] = useState(false);

@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { addProduct, removeProduct, editProduct } from "./thunkFile";
+import {
+  addProduct,
+  removeProduct,
+  editProduct,
+  submitForm,
+} from "./thunkFile";
 import { toastFunction } from "../utils/toastFunction";
+import { databaseService } from "../appwrite";
 
 const initialValue = {
   user: {
@@ -36,22 +42,6 @@ const appSlice = createSlice({
     },
     clearCustomer: (state) => {
       state.customerDetailsOfOrder = {};
-    },
-    submitForm: (state, action) => {
-      const { cartData, customerDetails, user } = action.payload;
-      if (cartData.length <= 0) {
-        toastFunction({
-          type: "warn",
-          message: "Please Add Product In The Cart",
-        });
-      } else if (Object.keys(customerDetails).length <= 0) {
-        toastFunction({
-          type: "warn",
-          message: "Please Enter Customer Name",
-        });
-      } else {
-        console.log("hello");
-      }
     },
   },
   extraReducers: (builder) => {
@@ -95,6 +85,14 @@ const appSlice = createSlice({
         state.status = "failed";
         state.error = action.payload.message;
       });
+    builder
+      .addCase(submitForm.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(submitForm.rejected, (state, action) => {
+        state.status = "rejected";
+        // state.error = action.payload.message;
+      });
   },
 });
 
@@ -105,7 +103,6 @@ export const {
   clearProduct,
   addCustomer,
   clearCustomer,
-  submitForm,
   inputRequiredT,
   inputRequiredF,
 } = appSlice.actions;

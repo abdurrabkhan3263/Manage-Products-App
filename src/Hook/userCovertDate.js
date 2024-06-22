@@ -1,5 +1,11 @@
 function convertToIST(isoString) {
-  const date = new Date(isoString);
+  let currentDate;
+  if (!isoString) {
+    const date = new Date();
+    currentDate = date.toISOString();
+  }
+  // const dateFun = isoString ? new Date(isoString) : new Date()
+  const date = new Date(isoString || currentDate);
   // Calculate the IST offset (5 hours 30 minutes ahead of UTC)
   const istOffset = 5.5 * 60 * 60 * 1000; // IST offset in milliseconds
   // Get the IST time
@@ -30,5 +36,4 @@ function convertToIST(isoString) {
 
   return { formattedString, fullDate, time };
 }
-
 export default convertToIST;

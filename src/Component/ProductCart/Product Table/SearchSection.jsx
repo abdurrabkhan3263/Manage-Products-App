@@ -9,8 +9,12 @@ import { useDispatch } from "react-redux";
 import { addCustomer, clearCustomer } from "../../../store/slice";
 
 function SearchSection() {
+  const customerName =
+    useSelector((state) => state?.customerDetailsOfOrder) || {};
   const [customer, setCustomer] = useState([]);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(
+    customerName?.customerName || "",
+  );
   const userId = useSelector((state) => state.user?.user?.$id);
   const userDetails = useSelector((state) => state.customerDetailsOfOrder);
   const dispatch = useDispatch();
@@ -33,9 +37,6 @@ function SearchSection() {
       }
     }
   }, [inputValue, userId]);
-  // React.useEffect(() => {
-  //   console.log(userDetails);
-  // }, [userDetails]);
   return (
     <div className="relative flex h-full w-full flex-col items-center justify-center gap-y-4 px-2 py-0.5">
       <div className="flex w-full justify-end">

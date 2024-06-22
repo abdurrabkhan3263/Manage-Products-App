@@ -76,6 +76,7 @@ function AddContact({ contactData }) {
       });
     },
     onSuccess: () => {
+      navigate(location.state);
       client.invalidateQueries({ queryKey: ["customer"] });
       toastFunction({
         type: "success",

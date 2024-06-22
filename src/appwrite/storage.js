@@ -122,13 +122,13 @@ class DatabaseService {
     }
   }
 
-  async createCustomerBuyHistory({ customerId, customerDetails, buyProduct }) {
+  async createCustomerBuyHistory({ userId, customerDetails, productList }) {
     try {
       return await this.databases.createDocument(
         conf.appWriteDatabase,
         conf.appWriteBuyHistory,
         ID.unique(),
-        { customerId, customerDetails, buyProduct },
+        { userId, customerDetails, productList },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Create Customer Buy History :: ", error);
@@ -279,13 +279,13 @@ class DatabaseService {
     }
   }
 
-  async createSell({ customerDetails, productList, buyDate }) {
+  async createSell({ customerDetails, productList, buyDate, userId }) {
     try {
       return await this.databases.createDocument(
         conf.appWriteDatabase,
         conf.appWriteCreateSell,
         ID.unique(),
-        { customerDetails, buyDate, productList },
+        { customerDetails, buyDate, productList, userId },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Create Sell :: ", error);
