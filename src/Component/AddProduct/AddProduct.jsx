@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { databaseService } from "../../appwrite";
 import { useSelector } from "react-redux";
 import useGenerateUniqueId from "../../Hook/useGenerateUniqueId";
+import { toastFunction } from "../../utils/toastFunction";
 
 function AddProduct({ productData }) {
   const [priceData, setPriceData] = useState({
@@ -88,6 +89,10 @@ function AddProduct({ productData }) {
     onSuccess: () => {
       navigate(location.state);
       queryClient.invalidateQueries({ queryKey: ["productList"] });
+      toastFunction({
+        type: "success",
+        message: "Product Added SuccessFully",
+      });
     },
   });
   const mutationforUpdate = useMutation({
@@ -102,6 +107,10 @@ function AddProduct({ productData }) {
     onSuccess: () => {
       navigate(location.state);
       queryClient.invalidateQueries({ queryKey: ["productList"] });
+      toastFunction({
+        type: "success",
+        message: "Product Updated SuccessFully",
+      });
     },
   });
   const formSubmit = async (data) => {
@@ -109,41 +118,35 @@ function AddProduct({ productData }) {
     data.productPriceOption = JSON.stringify(data.productPriceOption);
 
     const handleUploadImage = async (newImage) => {
-      if (!newImage) return null;
+      if (!newImage) return "";
       const imageFile = await databaseService.addProductImg(newImage);
-      if (!imageFile) return null;
+      if (!imageFile) return "";
       const imageUrl = databaseService.getProductImgForPreview(imageFile.$id);
       return { url: imageUrl.href, file: imageFile.$id };
     };
 
     const updateImage = async (newImage, oldImage) => {
-      if (!newImage) return null;
+      if (!newImage) return "";
       const imageFile = await handleUploadImage(newImage);
-      if (!imageFile) return null;
+      if (!imageFile) return "";
       await databaseService.deleteProductImg(oldImage);
       return imageFile;
     };
+
     let imageData;
     if (id) {
-      const newImage = data.productImage[0];
-      const oldImage = data.productImageId;
-      imageData = await updateImage(newImage, oldImage);
-      if (imageData) {
-        data.productImageId = imageData.file;
-        data.productImage = imageData.url;
-      } else {
-        data.productImage = "";
-      }
+      imageData = await updateImage(
+        data?.productImage[0],
+        productData?.productImageId,
+      );
+      data.productImageId = imageData.file;
+      data.productImage = imageData.url;
       mutationforUpdate.mutate({ ...data });
     } else {
-      const newImage = data.productImage[0];
+      const newImage = data?.productImage[0];
       imageData = await handleUploadImage(newImage);
-      if (imageData) {
-        data.productImageId = imageData.file;
-        data.productImage = imageData.url;
-      } else {
-        data.productImage = "";
-      }
+      data.productImageId = imageData.file || "";
+      data.productImage = imageData.url || "";
       mutation.mutate({ ...data });
     }
   };

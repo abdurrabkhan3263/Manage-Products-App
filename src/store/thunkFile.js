@@ -1,5 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { databaseService } from "../appwrite";
+import { toastFunction } from "../utils/toastFunction";
+import convertToIST from "../Hook/userCovertDate";
+import { clearProduct } from "./slice";
 
 const addProduct = createAsyncThunk(
   "cart/addProduct",
@@ -116,4 +119,79 @@ const editProduct = createAsyncThunk(
   },
 );
 
-export { addProduct, removeProduct, editProduct };
+const submitForm = createAsyncThunk(
+  "/user/submitForm",
+  async (_, { getState, rejectWithValue, dispatch }) => {
+    const state = getState();
+    const {
+      cart: { allData: cartData },
+      user: { user },
+      customerDetailsOfOrder: customerDetails,
+    } = state;
+    if ((cartData && cartData.length <= 0) || state.cart.length <= 0) {
+      toastFunction({
+        type: "warn",
+        message: "Please Add Product In The Cart",
+      });
+      return;
+    } else if (Object.keys(customerDetails).length <= 0) {
+      toastFunction({
+        type: "warn",
+        message: "Please Enter Customer Name",
+      });
+      return;
+    }
+    const filterCartData = cartData.map((items) => {
+      return {
+        isOption: items.isOption,
+        productAmount: items.productAmount,
+        productQuantity: items.productQuantity,
+        $id: items.$id,
+        productPriceOption: items.productPriceOption,
+        productName: items.productName,
+      };
+    });
+    const dataToSend = {
+      productList: JSON.stringify(filterCartData),
+      customerDetails: customerDetails?.$id,
+      userId: user?.$id,
+    };
+
+    const totalAmount = filterCartData.reduce(
+      (acc, current) => acc + current.productAmount,
+      0,
+    );
+    try {
+      const addDataIntoData = await databaseService.createSell(dataToSend);
+      if (addDataIntoData) {
+        const ids = cartData.map((items) => items.$id);
+        await Promise.all(ids.map((id) => databaseService.removeOrder(id))); // ! Remove The Cart Data from Db
+        const customerData = await databaseService.gettingCustomerById(
+          customerDetails?.$id,
+        );
+        if (customerData) {
+          dispatch(clearProduct()); // ! Clear Cart Data from Redux
+          const data = customerData;
+          data.totalPrice += totalAmount;
+          data.customerHistory.push(addDataIntoData?.$id);
+          const updateCustomer = await databaseService.updateCustomer(
+            data?.$id,
+            {
+              ...data,
+            },
+          );
+          toastFunction({
+            type: "success",
+            message: "Invoice created successfully",
+            theme: "colored",
+            closeTime: 1500,
+          });
+        }
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  },
+);
+
+export { addProduct, removeProduct, editProduct, submitForm };

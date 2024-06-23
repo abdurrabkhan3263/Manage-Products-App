@@ -1,5 +1,6 @@
 import conf from "../config/config";
 import { Client, Account, ID } from "appwrite";
+import { toastFunction } from "../utils/toastFunction";
 
 class AuthService {
   client = new Client();

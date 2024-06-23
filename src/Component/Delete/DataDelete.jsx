@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import React, { useState } from "react";
 import { databaseService } from "../../appwrite";
 import { Error } from "../index";
-import { Xcross } from "../../../public/Assets";
+import { toastFunction } from "../../utils/toastFunction";
 
 function DataDelete({ deleteData, setDeleteData, QueryKey }) {
   const queryClient = useQueryClient();
@@ -14,8 +13,12 @@ function DataDelete({ deleteData, setDeleteData, QueryKey }) {
     onSuccess: () => {
       setDeleteData((prev) => ({ ...prev, isShow: false }));
       queryClient.invalidateQueries({
-        queryKey: ["productList"],
+        queryKey: [QueryKey],
         refetchType: "active",
+      });
+      toastFunction({
+        type: "success",
+        message: "Deleted SuccessFully",
       });
     },
     onError: (error) => {

@@ -6,6 +6,8 @@ import { logout } from "./store/slice";
 import useCurrentUser from "./Hook/useCurrentUser";
 import { databaseService } from "./appwrite";
 import { addProduct } from "./store/thunkFile";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, Bounce } from "react-toastify";
 
 function App() {
   // const [darkMode, setDarkMode] = useState(false);
@@ -39,6 +41,19 @@ function App() {
       ) : (
         <>
           <Outlet />
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+            transition:Bounce
+          />
         </>
       )}
     </main>

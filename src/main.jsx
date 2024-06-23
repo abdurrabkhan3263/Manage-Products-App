@@ -7,7 +7,7 @@ import {
   Products,
   Statics,
   AllCustomer,
-  Buy_Sell,
+  Invoice,
   Navigation,
   Login,
   Cart,
@@ -52,10 +52,12 @@ const route = createBrowserRouter(
           <Route path="editcontact/:id" element={<EditContactLayout />} />
           <Route path="customerdetails/:id" element={<CustomerSeeDetails />} />
         </Route>
-        <Route path="invoice" element={<Buy_Sell />}>
+        <Route path="invoice" element={<Invoice />}>
           <Route path="seeproductdetails/:id" element={<SeeProductDetails />} />
         </Route>
-        <Route path="/cart" element={<Cart />} />
+        <Route path="/cart" element={<Cart />}>
+          <Route path="addcontact" element={<AddContactLayout />} />
+        </Route>
       </Route>
       <Route
         path="/login"

@@ -1,10 +1,15 @@
-import React, { memo } from "react";
-import { Edit, Delete, Phone, admin } from "../../../public/Assets";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { memo, useState } from "react";
 import TableRow from "./TableRow";
+import DataDelete from "../Delete/DataDelete";
+import { databaseService } from "../../appwrite";
 
-function DataTable({ tableHeading, tableData, renderRow, setIsDelete }) {
-  const navigate = useNavigate();
+function DataTable({
+  tableHeading,
+  tableData,
+  renderRow,
+  tableHeadingClass,
+  tableRowClass,
+}) {
   return (
     <div>
       <table className="w-full table-fixed">
@@ -14,7 +19,7 @@ function DataTable({ tableHeading, tableData, renderRow, setIsDelete }) {
               tableHeading.map((hData) => (
                 <th
                   key={hData.name}
-                  className="border bg-lightblue py-1 text-lg text-white"
+                  className={`border bg-lightblue ${tableHeadingClass} py-2 text-lg text-white`}
                 >
                   {hData.name}
                 </th>
@@ -25,12 +30,7 @@ function DataTable({ tableHeading, tableData, renderRow, setIsDelete }) {
         <tbody className="overflow-y-scroll">
           {tableData &&
             tableData.map((rowData, index) => (
-              <TableRow
-                key={index}
-                renderRow={renderRow}
-                rowData={rowData}
-                setIsDelete={setIsDelete}
-              />
+              <TableRow key={index} renderRow={renderRow} rowData={rowData} />
             ))}
         </tbody>
       </table>

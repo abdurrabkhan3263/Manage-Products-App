@@ -1,5 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { addProduct, removeProduct, editProduct } from "./thunkFile";
+import {
+  addProduct,
+  removeProduct,
+  editProduct,
+  submitForm,
+} from "./thunkFile";
+import { toastFunction } from "../utils/toastFunction";
+import { databaseService } from "../appwrite";
 
 const initialValue = {
   user: {
@@ -8,6 +15,7 @@ const initialValue = {
   },
   darkMode: false,
   cart: [],
+  customerDetailsOfOrder: {},
 };
 
 const appSlice = createSlice({
@@ -23,11 +31,17 @@ const appSlice = createSlice({
       state.user.status = false;
     },
     toggleDarkMode: (state, action) => {
-      console.log(!action.payload);
+      // console.log(!action.payload);
       // state.darkMode = action.payload;
     },
     clearProduct: (state) => {
       state.cart = [];
+    },
+    addCustomer: (state, action) => {
+      state.customerDetailsOfOrder = action.payload;
+    },
+    clearCustomer: (state) => {
+      state.customerDetailsOfOrder = {};
     },
   },
   extraReducers: (builder) => {
@@ -50,6 +64,10 @@ const appSlice = createSlice({
       .addCase(removeProduct.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.cart = action.payload;
+        toastFunction({
+          type: "success",
+          message: "Removed Successfully",
+        });
       })
       .addCase(removeProduct.rejected, (state, action) => {
         state.status = "failed";
@@ -67,8 +85,25 @@ const appSlice = createSlice({
         state.status = "failed";
         state.error = action.payload.message;
       });
+    builder
+      .addCase(submitForm.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(submitForm.rejected, (state, action) => {
+        state.status = "rejected";
+        // state.error = action.payload.message;
+      });
   },
 });
 
-export const { login, logout, toggleDarkMode, clearProduct } = appSlice.actions;
+export const {
+  login,
+  logout,
+  toggleDarkMode,
+  clearProduct,
+  addCustomer,
+  clearCustomer,
+  inputRequiredT,
+  inputRequiredF,
+} = appSlice.actions;
 export default appSlice.reducer;

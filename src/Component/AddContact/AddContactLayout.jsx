@@ -8,17 +8,17 @@ function AddContactLayout({ className }) {
   const location = useLocation();
   return (
     <div
-      className={`absolute w-[32%]  ${className} z-50  h-3/4 rounded-2xl bg-white shadow-2xl right-1/2 translate-x-1/2 bottom-1/2 translate-y-1/2 overflow-hidden`}
+      className={`absolute w-[32%] ${className} bottom-1/2 right-1/2 z-[60] h-3/4 translate-x-1/2 translate-y-1/2 overflow-hidden rounded-2xl bg-white shadow-2xl`}
     >
       <div
-        className="p-1.5 text-4xl text-lightblue cursor-pointer inline-block"
+        className="inline-block cursor-pointer p-1.5 text-4xl text-lightblue"
         onClick={() => {
           navigate(location.state);
         }}
       >
         <Xcross />
       </div>
-      <div className="w-full h-[92%]">
+      <div className="h-[92%] w-full">
         <AddContact />
       </div>
     </div>

@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { CloseEye, OpenEye } from "../../../public/Assets";
 import { authService } from "../../appwrite";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toastFunction } from "../../utils/toastFunction";
 
 function SignForm() {
   const {
@@ -34,40 +35,60 @@ function SignForm() {
     mutationKey: ["sign"],
     mutationFn: async (data) => await authService.createAccount(data),
     onError: (error) => {
-      console.error("error on create account ", error);
+      toastFunction({ type: "error", message: error.message });
     },
     onSuccess: async () => {
+      toastFunction({
+        type: "success",
+        message: "Your account has been created successfully!",
+        theme: "colored",
+        closeTime: 1500,
+      });
       const loginData = await authService.loginAccount({
         email: getValues("email"),
         password: getValues("password"),
       });
       if (loginData) {
-        navigate("/");
+        setTimeout(() => {
+          navigate("/");
+        }, 1600);
       }
       useClient.invalidateQueries({ queryKey: ["signup"] });
     },
   });
   const onSubmit = async (data) => {
+    if (!data.name.trim()) {
+      setFocus("name");
+      toastFunction({ type: "warn", message: "Name is Required" });
+      return;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      setFocus("email");
+      toastFunction({ type: "warn", message: "Invalid Email Address" });
+      return;
+    } else if (data.password.trim().length < 8) {
+      toastFunction({
+        type: "warn",
+        message: "Password is required and must be 8 to 13 character long",
+      });
+      return;
+    } else if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+        data.password,
+      )
+    ) {
+      setFocus("password");
+      toastFunction({
+        type: "warn",
+        message:
+          "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character",
+      });
+      return;
+    }
     auth.mutate(data);
   };
   return (
     <div className="flex h-[85%] w-full flex-col items-center justify-between">
-      <div className="max-h-[75px] min-h-[75px] px-7 text-center capitalize">
-        {errors.email && (
-          <p className="font-semibold text-red-500">*{errors.email.message}</p>
-        )}
-        {errors.password && (
-          <p className="font-semibold text-red-500">
-            *{errors.password.message}
-          </p>
-        )}
-        {errors.name && (
-          <p className="font-semibold text-red-500">*{errors.name.message}</p>
-        )}
-        {auth.isError && (
-          <p className="font-semibold text-red-500">*{auth.error.message}</p>
-        )}
-      </div>
+      <div className="max-h-[75px] min-h-[75px] px-7 text-center capitalize"></div>
       <div className="w-full flex-grow px-7">
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -78,7 +99,7 @@ function SignForm() {
               className="h-[42px] w-full border border-black bg-white"
               placeholder="Your Name"
               type="text"
-              {...register("name", { required: "Name is required" })}
+              {...register("name")}
             />
             <Input
               className="h-[42px] w-full border border-black bg-white"
@@ -92,19 +113,7 @@ function SignForm() {
                 parentClass="flex-grow h-full"
                 placeholder="Your Password"
                 type={passHidden ? "password" : "text"}
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 8,
-                    message: "Password must be at least 8 characters",
-                  },
-                  pattern: {
-                    value:
-                      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-                    message:
-                      "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character",
-                  },
-                })}
+                {...register("password")}
               />
               <span
                 className="inline-flex items-center pr-2 text-center text-xl"

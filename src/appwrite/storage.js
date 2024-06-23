@@ -13,6 +13,8 @@ class DatabaseService {
     this.bucket = new Storage(this.client);
     this.deleteProduct = this.deleteProduct.bind(this);
     this.deleteCustomer = this.deleteCustomer.bind(this);
+    this.deleteSell = this.deleteSell.bind(this);
+    this.deleteCustomer = this.deleteCustomer.bind(this);
   }
 
   async createCustomer({
@@ -122,13 +124,13 @@ class DatabaseService {
     }
   }
 
-  async createCustomerBuyHistory({ customerId, customerDetails, buyProduct }) {
+  async createCustomerBuyHistory({ userId, customerDetails, productList }) {
     try {
       return await this.databases.createDocument(
         conf.appWriteDatabase,
         conf.appWriteBuyHistory,
         ID.unique(),
-        { customerId, customerDetails, buyProduct },
+        { userId, customerDetails, productList },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Create Customer Buy History :: ", error);
@@ -140,6 +142,21 @@ class DatabaseService {
       return await this.databases.deleteDocument(customerId);
     } catch (error) {
       throw ("AppWrite :: Error :: Delete Customer Buy History :: ", error);
+    }
+  }
+
+  async getCustomerBySearch(belongsTo, name) {
+    try {
+      return await this.databases.listDocuments(
+        conf.appWriteDatabase,
+        conf.appWriteCustomerDetailsCollId,
+        [
+          Query.equal("belongsTo", belongsTo),
+          Query.search("customerName", name),
+        ],
+      );
+    } catch (error) {
+      throw ("AppWrite :: Error Get Customer By Search :: Error ", error);
     }
   }
 
@@ -264,20 +281,20 @@ class DatabaseService {
     }
   }
 
-  async createSell({ customerDetails, productList, buyDate }) {
+  async createSell({ customerDetails, productList, userId }) {
     try {
       return await this.databases.createDocument(
         conf.appWriteDatabase,
         conf.appWriteCreateSell,
         ID.unique(),
-        { customerDetails, buyDate, productList },
+        { customerDetails, productList, userId },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Create Sell :: ", error);
     }
   }
 
-  async updateSell(slug, { customerDetails, productList, buyDate }) {
+  async updateSell(slug, { customerDetails, productList, productName }) {
     try {
       return await this.databases.updateDocument(
         conf.appWriteDatabase,
@@ -287,6 +304,50 @@ class DatabaseService {
       );
     } catch (error) {
       throw ("AppWrite :: Error :: UpdateSell :: ", error);
+    }
+  }
+
+  async getInvoice(belongsTo, offsetNumber) {
+    if (!belongsTo) return [];
+    try {
+      let invoiceData = await this.databases.listDocuments(
+        conf.appWriteDatabase,
+        conf.appWriteCreateSell,
+        [
+          Query.equal("userId", belongsTo),
+          Query.limit(10),
+          Query.offset(offsetNumber || 0),
+        ],
+      );
+      invoiceData = invoiceData?.documents;
+      const newArr = await Promise.all(
+        invoiceData.map(async (data) => {
+          const response = await this.gettingCustomerById(
+            data?.customerDetails,
+          );
+          const { customerName, phoneNumber, totalPrice, totalUdhar } =
+            response;
+          data.productList = JSON.parse(data.productList);
+          return { ...data, customerName, phoneNumber, totalPrice, totalUdhar };
+        }),
+      );
+      return newArr;
+    } catch (error) {
+      throw new Error("Appwrite :: Error :: getInvice :: ", error.message);
+    }
+  }
+
+  async getInvoiceById(id) {
+    try {
+      const response = await this.databases.getDocument(
+        conf.appWriteDatabase,
+        conf.appWriteCreateSell,
+        id,
+      );
+      response.productList = JSON.parse(response.productList);
+      return [...response.productList];
+    } catch (error) {
+      throw new Error("AppWrite :: Error :: gettingOnlyInvoice :: ", error);
     }
   }
 

@@ -7,9 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { DataDelete } from "../index";
 import { databaseService } from "../../appwrite";
 import { addProduct } from "../../store/thunkFile";
-import { useRef } from "react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
+import { toastFunction } from "../../utils/toastFunction";
 
 function ProductCard({ productData }) {
   const {
@@ -27,7 +25,6 @@ function ProductCard({ productData }) {
     productOptionData: [],
     opId: "",
   });
-  const cartData = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const [quantity, setQuantity] = useState(1);
   const [deleteData, setDeleteData] = useState({
@@ -36,14 +33,34 @@ function ProductCard({ productData }) {
     mainId: $id,
     imgId: productImageId,
   });
-  const { register, handleSubmit, setValue } = useForm({
+  const { register, handleSubmit, setValue, getValues } = useForm({
     defaultValues: {
       productQuantity: 1,
       productAmount: priceData?.productPrice,
     },
   });
-  const [cartAddPopUp, setCartAddPopUp] = useState(false);
   const navigate = useNavigate();
+  useEffect(() => {
+    if (quantity <= 0) {
+      return;
+    }
+    productPrice
+      ? setValue("productAmount", quantity * productPrice)
+      : setValue("productAmount", quantity * priceData.productPrice);
+  }, [priceData.productPrice, productPrice, quantity]);
+  useEffect(() => {
+    const parsedData = JSON.parse(productPriceOption);
+    setPriceData((prev) => ({
+      ...prev,
+      option: parsedData ? parsedData[0]?.name : "",
+      productOptionData: parsedData || [],
+      productPrice:
+        parsedData && parsedData.length > 0
+          ? parseFloat(parsedData[0]?.price)
+          : productPrice,
+      opId: parsedData ? parsedData[0]?.opId : "",
+    }));
+  }, [productPriceOption, productPrice]);
   const handleProductQuantity = (e) => {
     const productQuan = parseInt(e.target.value);
     if (productQuan <= 1) {
@@ -67,26 +84,6 @@ function ProductCard({ productData }) {
   const handleProductDelete = () => {
     setDeleteData((prev) => ({ ...prev, isShow: true }));
   };
-  useEffect(() => {
-    if (quantity <= 0) {
-      return;
-    }
-    productPrice
-      ? setValue("productAmount", quantity * productPrice)
-      : setValue("productAmount", quantity * priceData.productPrice);
-  }, [priceData.productPrice, productPrice, quantity]);
-  useEffect(() => {
-    const parsedData = JSON.parse(productPriceOption);
-    setPriceData((prev) => ({
-      ...prev,
-      option: parsedData ? parsedData[0]?.name : "",
-      productOptionData: parsedData || [],
-      productPrice: parsedData
-        ? parseFloat(parsedData[0]?.price)
-        : productPrice,
-      opId: parsedData ? parsedData[0]?.opId : "",
-    }));
-  }, [productPriceOption, productPrice]);
   const optionMemo = useMemo(
     () => priceData.productOptionData,
     [priceData.productOptionData],
@@ -105,34 +102,13 @@ function ProductCard({ productData }) {
         productQuantity: parseInt(priceData.quantity),
       }),
     );
-    setCartAddPopUp(true);
+    toastFunction({
+      type: "success",
+      message: "Product is Added Successfully",
+    });
   };
-  const popUp = useRef();
-  useGSAP(() => {
-    if (cartAddPopUp) {
-      gsap.to(popUp.current, {
-        y: -65,
-        ease: "power2.inOut",
-        onComplete: () => {
-          gsap.to(popUp.current, {
-            y: 0,
-            delay: 0.3,
-            ease: "power2.out",
-          });
-        },
-      });
-      setCartAddPopUp(false);
-    }
-  }, [cartData]);
-
   return (
     <div className="w-full">
-      <span
-        ref={popUp}
-        className="absolute -bottom-12 right-[56%] z-[90] translate-x-1/2 rounded-full bg-darkblue px-6 py-2 font-semibold text-white"
-      >
-        Product Is Added Successfully
-      </span>
       <DataDelete
         deleteData={deleteData}
         setDeleteData={setDeleteData}

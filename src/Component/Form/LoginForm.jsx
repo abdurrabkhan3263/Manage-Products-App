@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authService } from "../../appwrite";
 import { useDispatch } from "react-redux";
 import { login, logout } from "../../store/slice";
+import { toastFunction } from "../../utils/toastFunction";
 
 function LoginForm() {
   const {
@@ -31,33 +32,33 @@ function LoginForm() {
     mutationKey: ["login"],
     mutationFn: async (data) => authService.loginAccount(data),
     onError: (error) => {
-      console.error("login account error :: ", error);
+      toastFunction({ type: "error", message: error.message });
     },
     onSuccess: () => {
-      navigate("/");
+      toastFunction({
+        type: "success",
+        message: "Logged In Successfully",
+        closeTime: 1500,
+      });
+      setTimeout(() => {
+        navigate("/");
+      }, 1600);
       useClient.invalidateQueries({ queryKey: ["login"] });
     },
   });
   const formSubmit = (data) => {
+    if (!data.email.trim() || !data.password.trim()) {
+      toastFunction({
+        type: "warn",
+        message: "Email and Password is Required",
+      });
+      return;
+    }
     authLogin.mutate(data);
   };
   return (
     <div className="flex h-[85%] flex-col items-center justify-between">
-      <div className="max-h-[75px] min-h-[75px] px-7 text-center capitalize">
-        {errors.email && (
-          <p className="font-semibold text-red-500">{errors.email.message}</p>
-        )}
-        {errors.password && (
-          <p className="font-semibold text-red-500">
-            {errors.password.message}
-          </p>
-        )}
-        {authLogin.isError && (
-          <p className="font-semibold text-red-500">
-            {authLogin.error.message}
-          </p>
-        )}
-      </div>
+      <div className="max-h-[75px] min-h-[75px] px-7 text-center capitalize"></div>
       <div className="h-full w-full px-7">
         <div className="flex h-[50px] w-full cursor-pointer items-center justify-center gap-x-2 rounded-full border border-black bg-white">
           <img src={google__logo} alt="google__logo" className="h-[60%]" />
@@ -73,14 +74,7 @@ function LoginForm() {
                 type={"email"}
                 className={"h-[42px] w-full border border-black bg-white"}
                 placeholder={"Your Email"}
-                {...register("email", {
-                  required: "Email Id Required",
-                  pattern: {
-                    value:
-                      /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
-                    message: "Invalid email address",
-                  },
-                })}
+                {...register("email")}
               ></Input>
               <div className="flex h-[42px] w-full rounded-md border border-black">
                 <Input
@@ -88,9 +82,7 @@ function LoginForm() {
                   className="h-full w-full"
                   parentClass="h-full flex-grow"
                   placeholder="Your Password"
-                  {...register("password", {
-                    required: "Password Required",
-                  })}
+                  {...register("password")}
                 />
                 <span
                   className="inline-flex cursor-pointer items-center pr-2 text-xl"

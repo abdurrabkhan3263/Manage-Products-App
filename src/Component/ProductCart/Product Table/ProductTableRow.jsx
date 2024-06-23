@@ -78,7 +78,7 @@ function ProductTableRow({ proData }) {
           </span>
         </div>
       </td>
-      <td>
+      <td className="rounded-r-xl">
         <div className="m-auto flex justify-center">
           <span
             className="cursor-pointer rounded-full bg-white p-3 text-2xl transition-all hover:bg-slate-200"
