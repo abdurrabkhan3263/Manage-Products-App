@@ -62,11 +62,6 @@ function AllCustomer() {
   return (
     <Container>
       <div className="relative h-full w-full">
-        <DataDelete
-          deleteData={deleteData}
-          setDeleteData={setDeleteData}
-          QueryKey={"customer"}
-        />
         <Outlet />
         <div className="flex h-[5%] items-center justify-between">
           <input
@@ -95,7 +90,6 @@ function AllCustomer() {
                 pageNum={pageNum}
                 dataNum={10}
                 renderRow={renderRow}
-                setIsDelete={setDeleteData}
               />
             )}
           </div>

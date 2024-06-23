@@ -2,38 +2,21 @@ import React from "react";
 import { Delete } from "../../../public/Assets";
 import { useDispatch } from "react-redux";
 
-function SeeProduct() {
+function SeeProduct(data) {
+  const { productName, productQuantity, productAmount, productPriceOption } =
+    data;
+  const price = JSON.parse(productPriceOption);
   const dispatch = useDispatch();
   return (
-    <tr className="border-b-2 border-black col-span-1">
-      <td className="text-center">
-        <div className="h-14 w-14 translate-x-1/3 z-0 rounded-full bg-lightgray overflow-hidden">
-          <img
-            src={
-              "https://images.unsplash.com/photo-1618083707368-b3823daa2726?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            }
-            alt={"abdur Rab"}
-            className="h-full w-full object-cover"
-          />
-        </div>
+    <tr className="col-span-1 border-b-2 border-black">
+      <td className="px-3 py-1.5 text-center text-base">
+        {productName} {price?.option && price.option}
       </td>
-      <td className="text-center text-base py-1.5">
-        Lorem ipsum dolor sit amet consectetur
+      <td className="py-1.5 text-center text-base">
+        ₹ {price && price?.price && price.price}
       </td>
-      <td className="text-center text-base py-1.5">2400</td>
-      <td className="text-center text-base py-1.5">5000000</td>
-      <td className="text-center text-base gap-x-8 py-1.5">
-        <div className="flex items-center justify-center gap-x-6 text-xl py-1.5">
-          <span
-            className="cursor-pointer text-xl"
-            onClick={() => {
-              dispatch(showDeleteSection({ id: 54, showDelete: true }));
-            }}
-          >
-            <Delete />
-          </span>
-        </div>
-      </td>
+      <td className="py-1.5 text-center text-base">{productQuantity}</td>
+      <td className="py-1.5 text-center text-base">₹ {productAmount}</td>
     </tr>
   );
 }

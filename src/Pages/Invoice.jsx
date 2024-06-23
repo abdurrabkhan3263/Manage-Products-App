@@ -1,30 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Container from "../Container/Container";
 import { Search } from "../../public/Assets/index";
-import { Outlet, useNavigate } from "react-router-dom";
-import { DataTable, Pagination, DataDelete } from "../Component";
+import { Outlet } from "react-router-dom";
+import { DataTable, Pagination } from "../Component";
 import BuySellData from "../Component/DataTable/BuySellData";
 import { databaseService } from "../appwrite";
 import { useSelector } from "react-redux";
+import { useQuery } from "@tanstack/react-query";
 
 function Invoice() {
-  const [buySell, setBuySell] = useState(null);
   const [pageNum, setPageNum] = useState(1);
   const currentUser = useSelector((state) => state.user.user?.$id);
-  const navigate = useNavigate();
-  const fetchData = async () => {
-    try {
-      let response = await databaseService.getInvoice(currentUser);
-      setBuySell(response.reverse());
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  };
-  useEffect(() => {
-    if (currentUser) {
-      fetchData();
-    }
-  }, [currentUser]);
+  const { data, isLoading } = useQuery({
+    queryKey: ["invoiceData"],
+    queryFn: async () => {
+      if (currentUser) {
+        return await databaseService.getInvoice(currentUser);
+      }
+      return [];
+    },
+    refetchOnReconnect: "always",
+  });
   const tableHeading = [
     {
       id: 1,
@@ -69,24 +65,35 @@ function Invoice() {
           Search <Search />
         </button>
       </div>
-      <div className="relative mt-4 h-[89%] w-full overflow-hidden overflow-y-scroll">
-        <div className="bg-white">
-          {buySell && buySell.length > 0 && (
-            <DataTable
-              tableHeading={tableHeading}
-              tableData={buySell}
-              dataNum={10}
-              pageNum={pageNum}
-              renderRow={renderRow}
-            />
+      <div
+        className={`relative mt-4 h-[89%] w-full overflow-hidden overflow-y-scroll`}
+      >
+        <div className="h-full">
+          {isLoading ? (
+            <div>
+              <p>Loading....</p>
+            </div>
+          ) : (
+            data &&
+            data.length > 0 && (
+              <DataTable
+                tableHeading={tableHeading}
+                tableData={data}
+                dataNum={10}
+                pageNum={pageNum}
+                renderRow={renderRow}
+                tableHeadingClass={""}
+                tableRowClass={""}
+              />
+            )
           )}
         </div>
       </div>
-      {buySell && buySell.length >= 15 && (
+      {data && data.length >= 15 && (
         <Pagination
           pageNum={pageNum}
           setPage={setPageNum}
-          length={buySell.length}
+          length={data.length}
           dataCount={15}
         />
       )}

@@ -141,7 +141,6 @@ const submitForm = createAsyncThunk(
       });
       return;
     }
-    const buyDate = convertToIST()?.formattedString;
     const filterCartData = cartData.map((items) => {
       return {
         isOption: items.isOption,
@@ -149,14 +148,15 @@ const submitForm = createAsyncThunk(
         productQuantity: items.productQuantity,
         $id: items.$id,
         productPriceOption: items.productPriceOption,
+        productName: items.productName,
       };
     });
     const dataToSend = {
       productList: JSON.stringify(filterCartData),
       customerDetails: customerDetails?.$id,
       userId: user?.$id,
-      buyDate,
     };
+
     const totalAmount = filterCartData.reduce(
       (acc, current) => acc + current.productAmount,
       0,

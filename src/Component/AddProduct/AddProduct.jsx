@@ -147,7 +147,6 @@ function AddProduct({ productData }) {
       imageData = await handleUploadImage(newImage);
       data.productImageId = imageData.file || "";
       data.productImage = imageData.url || "";
-      console.log(data);
       mutation.mutate({ ...data });
     }
   };

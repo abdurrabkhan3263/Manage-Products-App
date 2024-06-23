@@ -1,15 +1,15 @@
 import React from "react";
 import { RightArrow, LeftArrow } from "../../../public/Assets";
 
-function Pagination({ pageNum, setPage, length, dataCount }) {
+function Pagination({ pageNum, setPage, length, dataCount, className }) {
   const handlePageNumber = (e) => {
     const btnNum = parseInt(e.target.textContent);
     setPage(btnNum);
   };
   return (
-    <div className="sticky bottom-0 flex justify-between w-full ml">
+    <div className={`ml sticky bottom-0 flex w-full justify-between`}>
       <button
-        className="bg-darkblue text-white p-2 rounded-md"
+        className="rounded-md bg-darkblue p-2 text-white"
         onClick={() => {
           if (pageNum > 1) setPage((prev) => prev - 1);
         }}
@@ -23,8 +23,8 @@ function Pagination({ pageNum, setPage, length, dataCount }) {
             className={` ${
               pageNum === i + 1
                 ? "bg-lightblue text-white"
-                : "text-black bg-gray-200"
-            } px-4 rounded-md`}
+                : "bg-gray-200 text-black"
+            } rounded-md px-4`}
             onClick={handlePageNumber}
           >
             {i + 1}
@@ -32,7 +32,7 @@ function Pagination({ pageNum, setPage, length, dataCount }) {
         ))}
       </div>
       <button
-        className="bg-darkblue text-white p-2 rounded-md"
+        className="rounded-md bg-darkblue p-2 text-white"
         onClick={() => {
           if (pageNum < length / dataCount) setPage((prev) => prev + 1);
         }}

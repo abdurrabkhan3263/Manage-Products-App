@@ -1,7 +1,15 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import TableRow from "./TableRow";
+import DataDelete from "../Delete/DataDelete";
+import { databaseService } from "../../appwrite";
 
-function DataTable({ tableHeading, tableData, renderRow }) {
+function DataTable({
+  tableHeading,
+  tableData,
+  renderRow,
+  tableHeadingClass,
+  tableRowClass,
+}) {
   return (
     <div>
       <table className="w-full table-fixed">
@@ -11,7 +19,7 @@ function DataTable({ tableHeading, tableData, renderRow }) {
               tableHeading.map((hData) => (
                 <th
                   key={hData.name}
-                  className="border bg-lightblue py-1 text-lg text-white"
+                  className={`border bg-lightblue ${tableHeadingClass} py-2 text-lg text-white`}
                 >
                   {hData.name}
                 </th>

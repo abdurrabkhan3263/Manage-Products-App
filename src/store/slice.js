@@ -31,7 +31,7 @@ const appSlice = createSlice({
       state.user.status = false;
     },
     toggleDarkMode: (state, action) => {
-      console.log(!action.payload);
+      // console.log(!action.payload);
       // state.darkMode = action.payload;
     },
     clearProduct: (state) => {

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { databaseService } from "../appwrite";
+import { toastFunction } from "./toastFunction";
 
 const useQuery = useQueryClient();
 const addCartIntoDatabase = useMutation({
@@ -11,7 +12,10 @@ const addCartIntoDatabase = useMutation({
     useQuery.invalidateQueries({ queryKey: ["addOrder"] });
   },
   onError: (error) => {
-    console.log("Something Went Wrong While Adding The Order ::: ", error);
+    toastFunction({
+      type: "error",
+      message: "Something went wrong while adding the cart",
+    });
   },
 });
 

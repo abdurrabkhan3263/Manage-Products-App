@@ -4,19 +4,33 @@ import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { databaseService } from "../../appwrite";
 import { DataDelete } from "../index";
+import { useState } from "react";
 
 const AllCustomerData = (data, setIsDelete) => {
   const navigate = useNavigate();
+  const [deleteData, setDeleteData] = useState({
+    isShow: false,
+    deleteFun: databaseService.deleteCustomer,
+    mainId: data?.$id,
+    imgId: data?.customerImageId || "",
+  });
   const handleCustomerDelete = async () => {
-    setIsDelete((prev) => ({
+    setDeleteData((prev) => ({
       ...prev,
       isShow: true,
-      mainId: data.$id,
-      imgId: data?.customerImageId || "",
     }));
   };
   return (
     <>
+      <tr>
+        <td>
+          <DataDelete
+            deleteData={deleteData}
+            setDeleteData={setDeleteData}
+            QueryKey={"customer"}
+          />
+        </td>
+      </tr>
       <tr className="col-span-1 border-b-2 border-black">
         <td className="flex justify-center py-1.5 text-center text-lg">
           <div className="h-14 w-14 overflow-hidden rounded-full bg-lightgray">

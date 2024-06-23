@@ -13,6 +13,8 @@ class DatabaseService {
     this.bucket = new Storage(this.client);
     this.deleteProduct = this.deleteProduct.bind(this);
     this.deleteCustomer = this.deleteCustomer.bind(this);
+    this.deleteSell = this.deleteSell.bind(this);
+    this.deleteCustomer = this.deleteCustomer.bind(this);
   }
 
   async createCustomer({
@@ -279,20 +281,20 @@ class DatabaseService {
     }
   }
 
-  async createSell({ customerDetails, productList, buyDate, userId }) {
+  async createSell({ customerDetails, productList, userId }) {
     try {
       return await this.databases.createDocument(
         conf.appWriteDatabase,
         conf.appWriteCreateSell,
         ID.unique(),
-        { customerDetails, buyDate, productList, userId },
+        { customerDetails, productList, userId },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Create Sell :: ", error);
     }
   }
 
-  async updateSell(slug, { customerDetails, productList, buyDate }) {
+  async updateSell(slug, { customerDetails, productList, productName }) {
     try {
       return await this.databases.updateDocument(
         conf.appWriteDatabase,
@@ -306,6 +308,7 @@ class DatabaseService {
   }
 
   async getInvoice(belongsTo, offsetNumber) {
+    if (!belongsTo) return [];
     try {
       let invoiceData = await this.databases.listDocuments(
         conf.appWriteDatabase,
@@ -319,15 +322,32 @@ class DatabaseService {
       invoiceData = invoiceData?.documents;
       const newArr = await Promise.all(
         invoiceData.map(async (data) => {
-          const customer = await this.gettingCustomerById(
+          const response = await this.gettingCustomerById(
             data?.customerDetails,
           );
-          return { ...data, ...customer };
+          const { customerName, phoneNumber, totalPrice, totalUdhar } =
+            response;
+          data.productList = JSON.parse(data.productList);
+          return { ...data, customerName, phoneNumber, totalPrice, totalUdhar };
         }),
       );
       return newArr;
     } catch (error) {
-      throw new Error(error.message);
+      throw new Error("Appwrite :: Error :: getInvice :: ", error.message);
+    }
+  }
+
+  async getInvoiceById(id) {
+    try {
+      const response = await this.databases.getDocument(
+        conf.appWriteDatabase,
+        conf.appWriteCreateSell,
+        id,
+      );
+      response.productList = JSON.parse(response.productList);
+      return [...response.productList];
+    } catch (error) {
+      throw new Error("AppWrite :: Error :: gettingOnlyInvoice :: ", error);
     }
   }
 

@@ -13,7 +13,7 @@ function DataDelete({ deleteData, setDeleteData, QueryKey }) {
     onSuccess: () => {
       setDeleteData((prev) => ({ ...prev, isShow: false }));
       queryClient.invalidateQueries({
-        queryKey: ["productList"],
+        queryKey: [QueryKey],
         refetchType: "active",
       });
       toastFunction({
