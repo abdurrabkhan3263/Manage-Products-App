@@ -6,6 +6,7 @@ import add__product__error from "./add__product__error.jpg";
 import butterfly__img from "./butterfly__img.jpg";
 import login__img from "./login__img.jpg";
 import google__logo from "./google__logo.png";
+import internet__off from "./internet__off.jpg";
 
 // ICONES
 import { MdOutlineDashboard } from "react-icons/md";
@@ -36,6 +37,7 @@ export {
   image__not__available,
   no__data,
   add__product__error,
+  internet__off,
   butterfly__img,
   login__img,
   google__logo,

@@ -16,7 +16,7 @@ function Input({ type, className, parentClass, label, ...props }, ref) {
         ref={ref}
         type={type}
         {...props}
-        className={`w-20 rounded-md px-3 py-1 outline-none ${className}`}
+        className={`w-20 rounded-md px-3 py-1 outline-none ${className} `}
       />
     </div>
   );

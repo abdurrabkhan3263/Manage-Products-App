@@ -7,11 +7,12 @@ import BuySellData from "../Component/DataTable/BuySellData";
 import { databaseService } from "../appwrite";
 import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
+import { Loader, NoDataAvailable } from "../Assets";
 
 function Invoice() {
   const [pageNum, setPageNum] = useState(1);
   const currentUser = useSelector((state) => state.user.user?.$id);
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["invoiceData"],
     queryFn: async () => {
       if (currentUser) {
@@ -70,22 +71,22 @@ function Invoice() {
       >
         <div className="h-full">
           {isLoading ? (
-            <div>
-              <p>Loading....</p>
-            </div>
+            <Loader />
+          ) : data && data.length > 0 ? (
+            <DataTable
+              tableHeading={tableHeading}
+              tableData={data}
+              dataNum={10}
+              pageNum={pageNum}
+              renderRow={renderRow}
+              tableHeadingClass={""}
+              tableRowClass={""}
+            />
           ) : (
-            data &&
-            data.length > 0 && (
-              <DataTable
-                tableHeading={tableHeading}
-                tableData={data}
-                dataNum={10}
-                pageNum={pageNum}
-                renderRow={renderRow}
-                tableHeadingClass={""}
-                tableRowClass={""}
-              />
-            )
+            <NoDataAvailable
+              className={"flex h-full w-full items-center justify-center"}
+              imageClassName={"h-[70%] w-[70%]"}
+            />
           )}
         </div>
       </div>

@@ -8,6 +8,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { databaseService } from "../appwrite";
 import { Query } from "appwrite";
 import { useSelector } from "react-redux";
+import { Loader, NoDataAvailable } from "../Assets";
 
 function AllCustomer() {
   const navigate = useNavigate();
@@ -82,14 +83,21 @@ function AllCustomer() {
           </button>
         </div>
         <div className="relative mt-4 h-[83%] w-full overflow-hidden overflow-y-scroll">
-          <div className="bg-white">
-            {data && data?.documents && (
+          <div className="h-full bg-white">
+            {isLoading ? (
+              <Loader />
+            ) : data && data?.documents && data?.documents.length > 0 ? (
               <DataTable
                 tableHeading={tableHeading}
                 tableData={data.documents}
                 pageNum={pageNum}
                 dataNum={10}
                 renderRow={renderRow}
+              />
+            ) : (
+              <NoDataAvailable
+                className={"flex h-full w-full items-center justify-center"}
+                imageClassName={"h-[70%] w-[70%]"}
               />
             )}
           </div>

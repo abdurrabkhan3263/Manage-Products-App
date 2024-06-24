@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { Query } from "appwrite";
 import { useQuery } from "@tanstack/react-query";
 import { databaseService } from "../appwrite";
+import { Loader, NoDataAvailable } from "../Assets";
 
 function Products() {
   const currentUser = useSelector((state) => state.user?.user);
@@ -45,8 +46,8 @@ function Products() {
           </Button>
         </div>
         {productDataList.isLoading && (
-          <div className="flex h-[95%] w-full items-center justify-center bg-blue-500 text-5xl text-white">
-            Loading.....
+          <div className="flex h-[95%] w-full items-center justify-center text-5xl text-white">
+            <Loader />
           </div>
         )}
         {productDataList.isError && (
@@ -69,18 +70,12 @@ function Products() {
         {productDataList?.data && (
           <div className="grid h-[95%] w-full gap-10 overflow-y-scroll scroll-smooth py-4 sm:grid-cols-3 lg:grid-cols-4">
             {productDataList.data.length <= 0 ? (
-              <div className="col-start-1 col-end-5 flex flex-col items-center justify-center">
-                <div className="h-[36%] w-[36%] text-center">
-                  <img
-                    src={no__data}
-                    alt="no__data"
-                    className="h-full w-full object-contain"
-                  />
-                  <p className="mt-2 select-none text-[26px] font-semibold text-red-500">
-                    No Product Available
-                  </p>
-                </div>
-              </div>
+              <NoDataAvailable
+                className={
+                  "flex items-center justify-center sm:col-span-3 lg:col-span-4"
+                }
+                imageClassName={"h-[53%] w-[53%]"}
+              />
             ) : (
               productDataList.data.map((data, index) => {
                 return (
