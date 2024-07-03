@@ -1,5 +1,27 @@
+import { current } from "@reduxjs/toolkit";
 import conf from "../config/config";
 import { Client, Databases, Storage, ID, Query } from "appwrite";
+
+const findPercentage = (thisMonth, lastMonth) => {
+  if (lastMonth === 0) {
+    return thisMonth === 0 ? "0%" : "Infinity%";
+  }
+
+  const increasingValue = thisMonth - lastMonth;
+  const percentage = (increasingValue / lastMonth) * 100;
+
+  return `${percentage.toFixed(2)}%`;
+};
+
+function getCustomDate(number) {
+  const date = new Date();
+  date.setDate(date.getDate() - number);
+  return {
+    day: date.getDate(),
+    month: date.getMonth() + 1,
+    year: date.getFullYear(),
+  };
+}
 
 class DatabaseService {
   client = new Client();
@@ -59,6 +81,7 @@ class DatabaseService {
       phoneNumber,
       customerAddress,
       totalUdhar,
+      totalPrice,
       customerHistory,
       customerLatest,
       listPdf,
@@ -76,6 +99,7 @@ class DatabaseService {
           phoneNumber,
           customerAddress,
           totalUdhar,
+          totalPrice,
           customerHistory,
           customerLatest,
           listPdf,
@@ -102,10 +126,13 @@ class DatabaseService {
 
   async gettingAllCustomer(Query = []) {
     try {
-      return await this.databases.listDocuments(
+      const response = await this.databases.listDocuments(
         conf.appWriteDatabase,
         conf.appWriteCustomerDetailsCollId,
         Query && Query,
+      );
+      return (
+        Array.isArray(response?.documents) && response?.documents.reverse()
       );
     } catch (error) {
       throw ("AppWrite :: Error :: gettingAllCustomer :: ", error);
@@ -281,13 +308,14 @@ class DatabaseService {
     }
   }
 
-  async createSell({ customerDetails, productList, userId }) {
+  async createSell({ customerDetails, productList, userId, totalAmount }) {
+    console.log("hello");
     try {
       return await this.databases.createDocument(
         conf.appWriteDatabase,
         conf.appWriteCreateSell,
         ID.unique(),
-        { customerDetails, productList, userId },
+        { customerDetails, productList, userId, totalAmount },
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Create Sell :: ", error);
@@ -348,6 +376,26 @@ class DatabaseService {
       return [...response.productList];
     } catch (error) {
       throw new Error("AppWrite :: Error :: gettingOnlyInvoice :: ", error);
+    }
+  }
+
+  async getCustomerBuyHistory(id) {
+    if (!id) return;
+    try {
+      const invoiceData = await this.databases.listDocuments(
+        conf.appWriteDatabase,
+        conf.appWriteCreateSell,
+        [Query.equal("customerDetails", id)],
+      );
+      const filteredData = invoiceData?.documents.map((invoData) => {
+        const productList = JSON.parse(invoData?.productList);
+        return { ...invoData, productList };
+      });
+      return filteredData;
+    } catch (error) {
+      throw new Error(
+        `Appwrite :: Error :: while getting the customer buy history ${error}`,
+      );
     }
   }
 
@@ -536,5 +584,213 @@ class DatabaseService {
   }
 }
 
+class DashBoardService extends DatabaseService {
+  constructor() {
+    super();
+  }
+  async getAllSellData() {
+    try {
+      const { documents, total } = await this.databases.listDocuments(
+        conf.appWriteDatabase,
+        conf.appWriteCreateSell,
+      );
+      return { documents, total };
+    } catch (error) {
+      throw new Error(`Something went wrong while fetching the sell data`);
+    }
+  }
+
+  async totalCustomerWithPercentage() {
+    try {
+      const { documents, total } = await this.databases.listDocuments(
+        conf.appWriteDatabase,
+        conf.appWriteCustomerDetailsCollId,
+      );
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth() + 1;
+      const previousMonth = currentMonth === 0 ? 1 : currentMonth - 1;
+      const currentYear = currentDate.getFullYear();
+      const previousYear = currentMonth === 1 ? currentYear - 1 : currentYear;
+
+      const [currentMonDocs, prevMonDocs] = documents.reduce(
+        (acc, current) => {
+          const [year, month] = current.$createdAt.split("-").map(Number);
+
+          if (year === currentYear && month === currentMonth) {
+            acc[0].push(current);
+          } else if (
+            (year === currentYear && month === previousMonth) ||
+            (year === previousYear && month === previousMonth)
+          ) {
+            acc[1].push(current);
+          }
+          return acc;
+        },
+        [[], []],
+      );
+
+      const getPercentage = findPercentage(
+        currentMonDocs.length,
+        prevMonDocs.length,
+      );
+
+      return { customerCount: total, percentage: getPercentage };
+    } catch (error) {
+      throw new Error(
+        `Something went wrong while fetching total customer ${error}`,
+      );
+    }
+  }
+
+  async getSellToday() {
+    const currentDay = getCustomDate(0);
+    const yesterDay = getCustomDate(1);
+    const nextToYesterDay = getCustomDate(2);
+
+    const { documents } = await this.getAllSellData();
+
+    let currentDaySell = 0;
+    let previousDaySell = 0;
+
+    for (let i = documents.length - 1; i > 0; i--) {
+      const current = documents[i];
+      let [year, month, day] = current.$createdAt.split("-");
+      year = Number(year);
+      month = Number(month);
+      day = Number(day.slice(0, 2));
+      if (
+        year === currentDay.year &&
+        month === currentDay.month &&
+        day === currentDay.day
+      ) {
+        currentDaySell += current.totalAmount;
+      } else if (
+        year === yesterDay.year &&
+        month === yesterDay.month &&
+        yesterDay.day === day
+      ) {
+        previousDaySell += current.totalAmount;
+      } else if (
+        year === nextToYesterDay.year &&
+        month === nextToYesterDay.month &&
+        day === nextToYesterDay.day
+      ) {
+        break;
+      }
+    }
+
+    const percentage = findPercentage(currentDaySell, previousDaySell);
+
+    return { currentDaySell, percentage };
+  }
+
+  async getMonthlySell() {
+    const { documents } = await this.getAllSellData();
+
+    const date = new Date();
+    const currentMonth = date.getMonth() + 1;
+    const previousMonth = currentMonth === 1 ? 12 : currentMonth - 1;
+    const fullYear = date.getFullYear();
+    const currentPrevYear = currentMonth === 1 ? fullYear - 1 : fullYear;
+    const prevTwoMonth = getCustomDate(3);
+
+    let currentMonthTotalSell = 0;
+    let previousMonthTotalSell = 0;
+    for (let i = documents.length - 1; i >= 0; i--) {
+      const current = documents[i];
+      const [year, month] = current.$createdAt.split("-").map(Number);
+      if (year === currentPrevYear && currentMonth === month)
+        currentMonthTotalSell += current.totalAmount;
+      else if (year === currentPrevYear && month === previousMonth) {
+        previousMonthTotalSell += current.totalAmount;
+      } else if (year === prevTwoMonth.year && month === prevTwoMonth.month) {
+        break;
+      }
+    }
+
+    const percentage = findPercentage(
+      currentMonthTotalSell,
+      previousMonthTotalSell,
+    );
+    return { currentMonthTotalSell, percentage };
+  }
+
+  async getYearlySell() {
+    const { documents } = await this.getAllSellData();
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const previousYear = currentYear - 1;
+
+    let previousYearTotalAmount = 0;
+    let currentYearTotalAmount = 0;
+
+    let docLength = documents.length;
+    while (docLength--) {
+      const current = documents[docLength];
+      const year = Number(current.$createdAt.split("-")[0]);
+      if (year === currentYear) currentYearTotalAmount += current.totalAmount;
+      else if (year === previousYear)
+        previousYearTotalAmount += current.totalAmount;
+      else if (year === previousYear - 1) break;
+    }
+
+    const percentage = findPercentage(
+      currentYearTotalAmount,
+      previousYearTotalAmount,
+    );
+    return { currentYearTotalAmount, percentage };
+  }
+
+  async getYearlySellByMonth() {
+    const { documents } = await this.getAllSellData();
+    const date = new Date();
+    const fullYear = date.getFullYear();
+
+    let totalSellData = Array(12).fill(undefined);
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "July",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    for (let i = documents.length - 1; i >= 0; i--) {
+      const current = documents[i];
+      const [year, month] = current.$createdAt.split("-").map(Number);
+      if (year === fullYear - 1) break;
+      if (!totalSellData[month - 1]) {
+        totalSellData[month - 1] = {
+          month: months[month - 1],
+          Amount: current.totalAmount,
+        };
+      } else {
+        totalSellData[month - 1].Amount += current.totalAmount;
+      }
+    }
+
+    totalSellData = totalSellData.map((items, index) => {
+      if (!items) {
+        return {
+          month: months[index],
+          Amount: 0,
+        };
+      } else {
+        return items;
+      }
+    });
+
+    return totalSellData;
+  }
+}
+
 const databaseService = new DatabaseService();
-export default databaseService;
+const dashBoardData = new DashBoardService();
+export { databaseService, dashBoardData };

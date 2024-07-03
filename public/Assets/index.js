@@ -31,6 +31,11 @@ import { IoMdEyeOff as CloseEye } from "react-icons/io";
 import { MdLogout as Logout } from "react-icons/md";
 import { FaLuggageCart } from "react-icons/fa";
 import { BsCashCoin as Money } from "react-icons/bs";
+import { FaArrowLeftLong as LongLeftArrow } from "react-icons/fa6";
+import { IoPerson as Person } from "react-icons/io5";
+import { MdAttachMoney as Doller } from "react-icons/md";
+import { MdOutlineCalendarMonth as Calender } from "react-icons/md";
+import { MdDoneAll as All } from "react-icons/md";
 
 export {
   Logo,
@@ -64,4 +69,9 @@ export {
   Logout,
   FaLuggageCart,
   Money,
+  LongLeftArrow,
+  Person,
+  Doller,
+  Calender,
+  All,
 };

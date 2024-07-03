@@ -56,6 +56,10 @@ function AllCustomer() {
     },
     {
       id: 6,
+      name: "Total Amount",
+    },
+    {
+      id: 7,
       name: "Action",
     },
   ];
@@ -86,10 +90,10 @@ function AllCustomer() {
           <div className="h-full bg-white">
             {isLoading ? (
               <Loader />
-            ) : data && data?.documents && data?.documents.length > 0 ? (
+            ) : Array.isArray(data) && data.length > 0 ? (
               <DataTable
                 tableHeading={tableHeading}
-                tableData={data.documents}
+                tableData={data}
                 pageNum={pageNum}
                 dataNum={10}
                 renderRow={renderRow}
@@ -103,7 +107,7 @@ function AllCustomer() {
           </div>
         </div>
       </div>
-      {data && data.documents && data.documents.length > 10 && (
+      {Array.isArray(data) && data.length > 10 && (
         <Pagination
           pageNum={pageNum}
           setPage={setPage}

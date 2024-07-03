@@ -3,7 +3,7 @@ import "./loader.css";
 
 function Loader() {
   return (
-    <div className="loader">
+    <div className="loaders">
       <div className="justify-content-center jimu-primary-loading"></div>
     </div>
   );

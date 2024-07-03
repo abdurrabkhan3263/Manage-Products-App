@@ -1,4 +1,4 @@
 import authService from "./auth";
-import databaseService from "./storage";
+import { databaseService, dashBoardData } from "./storage";
 
-export { authService, databaseService };
+export { authService, databaseService, dashBoardData };

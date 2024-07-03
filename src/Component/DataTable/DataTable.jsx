@@ -30,7 +30,12 @@ function DataTable({
         <tbody className="overflow-y-scroll">
           {tableData &&
             tableData.map((rowData, index) => (
-              <TableRow key={index} renderRow={renderRow} rowData={rowData} />
+              <TableRow
+                key={index}
+                renderRow={renderRow}
+                rowData={rowData}
+                sr={index}
+              />
             ))}
         </tbody>
       </table>

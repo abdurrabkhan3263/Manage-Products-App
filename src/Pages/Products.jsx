@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Container from "../Container/Container";
 import ProductCard from "../Component/Card/ProductCard";
 import { Button } from "../Component/UI";
-import { Add, no__data } from "../../public/Assets";
+import { Add } from "../../public/Assets";
 import "../index.css";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -10,6 +10,7 @@ import { Query } from "appwrite";
 import { useQuery } from "@tanstack/react-query";
 import { databaseService } from "../appwrite";
 import { Loader, NoDataAvailable } from "../Assets";
+import AddButton from "../Assets/AddButton";
 
 function Products() {
   const currentUser = useSelector((state) => state.user?.user);
@@ -36,14 +37,13 @@ function Products() {
     <Container className={"relative"}>
       <div className="h-full w-full">
         <Outlet />
-        <div className="flex h-[5%] w-full justify-end">
-          <Button
-            type={"button"}
-            className={"flex items-center bg-blue-600 px-4 py-1 text-white"}
-            onClick={handleAddProduct}
-          >
-            <Add /> Add Product
-          </Button>
+        <div className="flex w-full justify-end">
+          <AddButton type={"submit"} onClick={handleAddProduct}>
+            <span className={`IconContainer text-[22px] text-[#FEFEFA]`}>
+              <Add />
+            </span>
+            <p className="text">Add Product</p>
+          </AddButton>
         </div>
         {productDataList.isLoading && (
           <div className="flex h-[95%] w-full items-center justify-center text-5xl text-white">
@@ -81,7 +81,7 @@ function Products() {
                 return (
                   <div
                     key={index}
-                    className="h-max select-none overflow-hidden rounded-lg shadow-2xl"
+                    className="h-max select-none overflow-hidden rounded-2xl border py-1 shadow-xl duration-100 ease-in hover:shadow-2xl"
                   >
                     <ProductCard productData={data} />
                   </div>

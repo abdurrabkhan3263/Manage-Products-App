@@ -2,8 +2,14 @@ import React from "react";
 import Container from "../Container/Container";
 import { Button } from "../Component/UI/index";
 import { Add } from "../../public/Assets";
-import { Outlet, useNavigate, Link } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import {
+  MonthlySaleData,
+  SaleChart,
+  TopBuyer,
+  ProductCategory,
+} from "../Component/Dashboard Component";
 
 function DashBoard() {
   const navigate = useNavigate();
@@ -21,7 +27,6 @@ function DashBoard() {
             <h2 className="text-3xl font-bold text-gray-800">
               {currentUser?.name || ""}
             </h2>
-            {/* change Here After Add DB */}
           </div>
           <Button
             type={"button"}
@@ -31,18 +36,27 @@ function DashBoard() {
             <Add /> Add Product
           </Button>
         </div>
-        <div className="grid h-[90%] w-full grid-cols-12 grid-rows-2 gap-x-4 gap-y-4">
-          <div className="col-start-1 col-end-7 w-full rounded-lg bg-green-500 text-center">
-            Items1
+        <div className="grid h-[90%] w-full grid-cols-[repeat(15,1fr)] grid-rows-[repeat(15,1fr)] gap-x-4 gap-y-4">
+          <div className="col-start-1 col-end-7 row-start-1 row-end-8 w-full rounded-lg shadow-lightBox transition-shadow hover:shadow-custom">
+            <MonthlySaleData />
           </div>
-          <div className="col-start-7 col-end-13 rounded-lg bg-red-400 text-center">
-            Items2
+          <div
+            className="col-start-7 col-end-[16] row-start-1 row-end-8 overflow-hidden rounded-lg text-center"
+            style={{ boxShadow: "0px 0px 28px #00000028" }}
+          >
+            <SaleChart />
           </div>
-          <div className="col-start-[-13] col-end-[-6] rounded-lg bg-orange-500 text-center">
-            Items3
+          <div
+            className="col-start-1 col-end-11 row-start-8 row-end-[16] overflow-hidden rounded-lg text-center"
+            style={{ boxShadow: "0px 0px 28px #00000028" }}
+          >
+            <TopBuyer />
           </div>
-          <div className="col-start-[-6] col-end-[-1] rounded-lg bg-gray-500 text-center">
-            Items4
+          <div
+            className="col-start-11 col-end-[16] row-start-8 row-end-[16] overflow-hidden rounded-lg text-center"
+            style={{ boxShadow: "0px 0px 28px #00000028" }}
+          >
+            <ProductCategory />
           </div>
         </div>
       </div>

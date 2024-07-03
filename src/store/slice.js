@@ -6,7 +6,6 @@ import {
   submitForm,
 } from "./thunkFile";
 import { toastFunction } from "../utils/toastFunction";
-import { databaseService } from "../appwrite";
 
 const initialValue = {
   user: {

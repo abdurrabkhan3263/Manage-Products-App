@@ -92,14 +92,11 @@ const useClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <React.StrictMode>
-      <QueryClientProvider client={useClient}>
-        <RouterProvider router={route} />
-        <ReactQueryDevtools
-          initialIsOpen={false}
-          buttonPosition="bottom-left"
-        />
-      </QueryClientProvider>
-    </React.StrictMode>
+    {/* <React.StrictMode> */}
+    <QueryClientProvider client={useClient}>
+      <RouterProvider router={route} />
+      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
+    </QueryClientProvider>
+    {/* </React.StrictMode> */}
   </Provider>,
 );

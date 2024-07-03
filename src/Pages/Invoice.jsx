@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Container from "../Container/Container";
 import { Search } from "../../public/Assets/index";
 import { Outlet } from "react-router-dom";
@@ -12,24 +12,22 @@ import { Loader, NoDataAvailable } from "../Assets";
 function Invoice() {
   const [pageNum, setPageNum] = useState(1);
   const currentUser = useSelector((state) => state.user.user?.$id);
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["invoiceData"],
     queryFn: async () => {
-      if (currentUser) {
-        return await databaseService.getInvoice(currentUser);
-      }
-      return [];
+      return await databaseService.getInvoice(currentUser);
     },
     refetchOnReconnect: "always",
+    enabled: !!currentUser,
   });
   const tableHeading = [
     {
       id: 1,
-      name: "Date",
+      name: "Image",
     },
     {
       id: 2,
-      name: "Image",
+      name: "Date",
     },
     {
       id: 3,
@@ -38,10 +36,6 @@ function Invoice() {
     {
       id: 4,
       name: "Phone Number",
-    },
-    {
-      id: 5,
-      name: "Total Price",
     },
     {
       id: 6,
@@ -72,10 +66,10 @@ function Invoice() {
         <div className="h-full">
           {isLoading ? (
             <Loader />
-          ) : data && data.length > 0 ? (
+          ) : Array.isArray(data) && data.length > 0 ? (
             <DataTable
               tableHeading={tableHeading}
-              tableData={data}
+              tableData={data.reverse()}
               dataNum={10}
               pageNum={pageNum}
               renderRow={renderRow}

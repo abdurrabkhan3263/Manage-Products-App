@@ -9,7 +9,8 @@ import { Xcross } from "../../../public/Assets";
 import { DataTable } from "../index";
 import SeeProduct from "./SeeProduct";
 import { databaseService } from "../../appwrite";
-import { useSelector } from "react-redux";
+import { SimpleLoader } from "../../Assets";
+import { useQuery } from "@tanstack/react-query";
 
 const tableHeadingData = [
   {
@@ -30,40 +31,50 @@ const tableHeadingData = [
   },
 ];
 function SeeProductDetails({ className }) {
-  const [customerData, setCustomerData] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
-  const fetchData = async (id) => {
-    const response = await databaseService.getInvoiceById(id);
-    setCustomerData(response);
-  };
-  useEffect(() => {
-    if (id) {
-      fetchData(id);
-    }
-  }, [id]);
+  const { data: customerData, isLoading } = useQuery({
+    queryKey: ["invoice", id],
+    queryFn: async () => await databaseService.getInvoiceById(id),
+  });
+  const totalAmount =
+    Array.isArray(customerData) &&
+    customerData.reduce((acc, current) => acc + current.productAmount, 0);
   const seeProductData = SeeProduct;
   return (
     <div
       className={`absolute w-[32%] ${className} bottom-1/2 right-1/2 z-50 h-3/4 translate-x-1/2 translate-y-1/2 overflow-hidden rounded-2xl bg-white shadow-2xl`}
     >
       <div
-        className="inline-block cursor-pointer p-1.5 text-4xl text-lightblue"
+        className="flex h-[10%] w-full cursor-pointer items-center px-3 text-4xl text-lightblue"
         onClick={() => {
           navigate(location.state, { state: { isDelete: false } });
         }}
       >
         <Xcross />
       </div>
-      <div className="mt-4 h-[85%] w-full">
-        <DataTable
-          tableHeading={tableHeadingData}
-          tableData={customerData}
-          renderRow={seeProductData}
-          dataNum={0}
-          pageNum={5}
-        />
+      {isLoading ? (
+        <div className="absolute top-0 flex h-full w-full items-center justify-center bg-white">
+          <SimpleLoader />
+        </div>
+      ) : (
+        <div className="h-[81%] w-full overflow-auto">
+          <DataTable
+            tableHeading={tableHeadingData}
+            tableData={customerData}
+            renderRow={seeProductData}
+            dataNum={0}
+            pageNum={5}
+          />
+        </div>
+      )}
+      <div
+        className="flex h-80 w-full items-center justify-between bg-blue-500 px-6 text-xl font-semibold text-white"
+        style={{ height: `calc(100% - (10% + 81%))` }}
+      >
+        <p>Total Price</p>
+        <p>₹ {totalAmount}</p>
       </div>
     </div>
   );
