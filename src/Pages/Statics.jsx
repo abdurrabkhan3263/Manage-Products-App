@@ -12,7 +12,7 @@ function Statics() {
       <Button
         onClick={() => {
           toastFunction({ type: "warn", message: "Something Went Wrong" });
-          dashBoardData.getMonthlySell();
+          dashBoardData.getTopBuyingCustomer();
         }}
       >
         Notify Him

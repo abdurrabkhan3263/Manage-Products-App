@@ -344,7 +344,7 @@ class DatabaseService {
         [
           Query.equal("userId", belongsTo),
           Query.limit(10),
-          Query.offset(offsetNumber || 0),
+          Query.offset(offsetNumber),
         ],
       );
       invoiceData = invoiceData?.documents;
@@ -359,7 +359,7 @@ class DatabaseService {
           return { ...data, customerName, phoneNumber, totalPrice, totalUdhar };
         }),
       );
-      return newArr;
+      return newArr.reverse();
     } catch (error) {
       throw new Error("Appwrite :: Error :: getInvice :: ", error.message);
     }
@@ -788,6 +788,72 @@ class DashBoardService extends DatabaseService {
     });
 
     return totalSellData;
+  }
+
+  async getTopBuyingCustomer() {
+    try {
+      const { documents = [] } = await this.databases.listDocuments(
+        conf.appWriteDatabase,
+        conf.appWriteCustomerDetailsCollId,
+        [Query.orderDesc("totalPrice")],
+      );
+      return documents;
+    } catch (error) {
+      throw new Error(
+        `Something went wrong while fetching the customer data ${error}`,
+      );
+    }
+  }
+
+  async getProductBySellAmount() {
+    try {
+      const { documents: sellDocList = [] } =
+        await this.databases.listDocuments(
+          conf.appWriteDatabase,
+          conf.appWriteCreateSell,
+        );
+
+      const totalProductAmount = sellDocList.reduce((acc, current) => {
+        const productList = JSON.parse(current.productList);
+        productList.forEach((items) => {
+          const isExit = acc.find((data) => data.$id === items.$id);
+          if (isExit) {
+            isExit.totalAmount += items.productAmount;
+          } else {
+            acc.push({
+              $id: items.$id,
+              totalAmount: items.productAmount,
+              name: items.productName,
+            });
+          }
+        });
+        return acc;
+      }, []);
+
+      // const totalProductAmount = [];
+      // sellDocList.forEach((items) => {
+      //   const listProduct = JSON.parse(items.productList);
+      //   listProduct.forEach((data) => {
+      //     const isExit = totalProductAmount.find(
+      //       (existData) => existData?.$id === data.$id,
+      //     );
+      //     if (isExit) {
+      //       isExit.totalAmount += data.productAmount;
+      //     } else {
+      //       totalProductAmount.push({
+      //         $id: data.$id,
+      //         totalAmount: data.productAmount,
+      //         productName: data.productName,
+      //       });
+      //     }
+      //   });
+      // });
+      return totalProductAmount;
+    } catch (error) {
+      throw new Error(
+        `Something went wrong while fetching the product by sell ${error}`,
+      );
+    }
   }
 }
 

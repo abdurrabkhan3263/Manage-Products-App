@@ -10,12 +10,17 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader, NoDataAvailable } from "../Assets";
 
 function Invoice() {
-  const [pageNum, setPageNum] = useState(1);
+  const [pageNum, setPageNum] = useState(0);
   const currentUser = useSelector((state) => state.user.user?.$id);
   const { data, isLoading } = useQuery({
-    queryKey: ["invoiceData"],
+    queryKey: ["invoiceData", pageNum],
     queryFn: async () => {
-      return await databaseService.getInvoice(currentUser);
+      const response = await databaseService.getInvoice(
+        currentUser,
+        pageNum * 10,
+      );
+      console.log(response);
+      return response;
     },
     refetchOnReconnect: "always",
     enabled: !!currentUser,
@@ -69,7 +74,7 @@ function Invoice() {
           ) : Array.isArray(data) && data.length > 0 ? (
             <DataTable
               tableHeading={tableHeading}
-              tableData={data.reverse()}
+              tableData={data}
               dataNum={10}
               pageNum={pageNum}
               renderRow={renderRow}
@@ -84,12 +89,12 @@ function Invoice() {
           )}
         </div>
       </div>
-      {data && data.length >= 15 && (
+      {data && data.length >= 9 && (
         <Pagination
           pageNum={pageNum}
           setPage={setPageNum}
           length={data.length}
-          dataCount={15}
+          dataCount={9}
         />
       )}
     </Container>

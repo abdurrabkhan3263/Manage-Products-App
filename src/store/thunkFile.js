@@ -40,6 +40,7 @@ const addProduct = createAsyncThunk(
           ...cartData.filter((value) => value.$id !== product.$id),
         ];
         // API CALL FOR UPDATING THE ORDER
+        console.log(allData);
         try {
           const response = await databaseService.updateOrder(
             product.$id,

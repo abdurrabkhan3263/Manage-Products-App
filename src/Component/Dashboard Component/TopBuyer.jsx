@@ -7,54 +7,34 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import { useQuery } from "@tanstack/react-query";
+import { dashBoardData } from "../../appwrite";
+import { admin } from "../../../public/Assets";
 
 const columns = [
-  { id: "name", label: "Name", minWidth: 170 },
-  { id: "code", label: "ISO\u00a0Code", minWidth: 100 },
   {
-    id: "population",
-    label: "Population",
+    id: "customerImage",
+    label: "Image",
     minWidth: 170,
-    align: "right",
+    align: "left",
     format: (value) => value.toLocaleString("en-US"),
   },
   {
-    id: "size",
-    label: "Size\u00a0(km\u00b2)",
+    id: "customerName",
+    label: "Customer Name",
     minWidth: 170,
-    align: "right",
+    align: "center",
     format: (value) => value.toLocaleString("en-US"),
   },
   {
-    id: "density",
-    label: "Density",
+    id: "customerAddress",
+    label: "Address",
     minWidth: 170,
-    align: "right",
+    align: "center",
     format: (value) => value.toFixed(2),
   },
-];
-
-function createData(name, code, population, size) {
-  const density = population / size;
-  return { name, code, population, size, density };
-}
-
-const rows = [
-  createData("India", "IN", 1324171354, 3287263),
-  createData("China", "CN", 1403500365, 9596961),
-  createData("Italy", "IT", 60483973, 301340),
-  createData("United States", "US", 327167434, 9833520),
-  createData("Canada", "CA", 37602103, 9984670),
-  createData("Australia", "AU", 25475400, 7692024),
-  createData("Germany", "DE", 83019200, 357578),
-  createData("Ireland", "IE", 4857000, 70273),
-  createData("Mexico", "MX", 126577691, 1972550),
-  createData("Japan", "JP", 126317000, 377973),
-  createData("France", "FR", 67022000, 640679),
-  createData("United Kingdom", "GB", 67545757, 242495),
-  createData("Russia", "RU", 146793744, 17098246),
-  createData("Nigeria", "NG", 200962417, 923768),
-  createData("Brazil", "BR", 210147125, 8515767),
+  { id: "totalPrice", label: "Total Amount", align: "center", minWidth: 170 },
+  { id: "phoneNumber", label: "Phone", align: "center", minWidth: 100 },
 ];
 
 export default function TopBuyer() {
@@ -69,6 +49,13 @@ export default function TopBuyer() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  const { data: rows = [] } = useQuery({
+    queryKey: ["row"],
+    queryFn: async () => {
+      return await dashBoardData.getTopBuyingCustomer();
+    },
+  });
 
   return (
     <Paper
@@ -105,28 +92,54 @@ export default function TopBuyer() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell
-                          key={column.id}
-                          align={column.align}
-                          sx={{ color: "yellow", fontWeight: 500 }}
-                        >
-                          {column.format && typeof value === "number"
-                            ? column.format(value)
-                            : value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+            {rows.length > 0 &&
+              rows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => {
+                  return (
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={row.code}
+                    >
+                      {columns.map((column) => {
+                        const columnRenders = {
+                          totalPrice: (value) => `₹ ${value}`,
+                          customerAddress: (value) =>
+                            value.trim().length === 0
+                              ? "Address is not available"
+                              : value,
+                          customerImage: (value) => (
+                            <div className="h-11 w-11 overflow-hidden rounded-full shadow-xl">
+                              <img
+                                src={value || admin}
+                                alt={"customer image"}
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                          ),
+                        };
+
+                        let value = row[column.id];
+
+                        if (columnRenders[column.id]) {
+                          value = columnRenders[column.id](value);
+                        }
+
+                        return (
+                          <TableCell
+                            key={column.id}
+                            align={column.align}
+                            sx={{ color: "yellow", fontWeight: 500 }}
+                          >
+                            {value}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
           </TableBody>
         </Table>
       </TableContainer>

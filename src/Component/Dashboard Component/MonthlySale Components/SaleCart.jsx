@@ -1,7 +1,7 @@
 import React from "react";
 import "./SaleCart.css";
 
-function SaleCart({ Icon, Amount, Grow, cartHeading }) {
+function SaleCart({ Icon, Amount, Grow, cartHeading, info }) {
   return (
     <div className="main__cart rounded-lg bg-blue-900 px-3.5 py-5 text-white">
       <div className="scale__elem flex h-full flex-col justify-between">
@@ -14,7 +14,7 @@ function SaleCart({ Icon, Amount, Grow, cartHeading }) {
         </div>
         <div className="flex justify-between">
           <i className="font-medium text-yellow-50">{Grow}</i>
-          <p className="font-medium">Since last month</p>
+          <p className="font-medium">{info}</p>
         </div>
       </div>
     </div>

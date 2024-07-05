@@ -4,7 +4,8 @@ import { RightArrow, LeftArrow } from "../../../public/Assets";
 function Pagination({ pageNum, setPage, length, dataCount, className }) {
   const handlePageNumber = (e) => {
     const btnNum = parseInt(e.target.textContent);
-    setPage(btnNum);
+    setPage(btnNum - 1);
+    console.log(pageNum);
   };
   return (
     <div className={`ml sticky bottom-0 flex w-full justify-between`}>

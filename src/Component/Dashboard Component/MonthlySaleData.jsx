@@ -15,7 +15,7 @@ function MonthlySaleData() {
 
   const { data: { currentDaySell } = "", data: { percentage: sellPer } = "" } =
     useQuery({
-      queryKey: [""],
+      queryKey: ["currentDaySell"],
       queryFn: async () => await dashBoardData.getSellToday(),
     });
 
@@ -23,7 +23,7 @@ function MonthlySaleData() {
     data: { currentMonthTotalSell } = "",
     data: { percentage: monthSellPer } = "",
   } = useQuery({
-    queryKey: [""],
+    queryKey: ["monthlySell"],
     queryFn: async () => await dashBoardData.getMonthlySell(),
   });
 
@@ -31,19 +31,9 @@ function MonthlySaleData() {
     data: { currentYearTotalAmount } = "",
     data: { percentage: yearlySellPer } = "",
   } = useQuery({
-    queryKey: [""],
+    queryKey: ["yearlySell"],
     queryFn: async () => await dashBoardData.getYearlySell(),
   });
-
-  useEffect(() => {
-    console.log(currentMonthTotalSell, monthSellPer);
-    console.log(currentYearTotalAmount, yearlySellPer);
-  }, [
-    currentMonthTotalSell,
-    currentYearTotalAmount,
-    monthSellPer,
-    yearlySellPer,
-  ]);
 
   return (
     <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-2.5">
@@ -52,24 +42,28 @@ function MonthlySaleData() {
         cartHeading={"Total Customers"}
         Amount={customerCount}
         Grow={customerPer}
+        info={"Since last month"}
       />
       <SaleCart
         Icon={Doller}
         cartHeading={"Sales Today"}
         Amount={currentDaySell}
         Grow={sellPer}
+        info={"Since last day"}
       />
       <SaleCart
         Icon={Calender}
         cartHeading={"Monthly Sales"}
         Amount={currentMonthTotalSell}
         Grow={monthSellPer}
+        info={"Since last month"}
       />
       <SaleCart
         Icon={All}
         cartHeading={"Yearly Sales"}
         Amount={currentYearTotalAmount}
         Grow={yearlySellPer}
+        info={"Since last year"}
       />
     </div>
   );

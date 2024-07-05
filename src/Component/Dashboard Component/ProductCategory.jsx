@@ -1,17 +1,15 @@
-import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import React, { useEffect } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { dashBoardData } from "../../appwrite";
 
-const data = [
-  { name: "Group A", value: 2000 },
-  { name: "Group B", value: 6000 },
-  { name: "Group C", value: 9000 },
-  { name: "Group D", value: 5000 },
-  { name: "Group E", value: 1000 },
-  { name: "Group F", value: 600 },
-];
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 function ProductCategory() {
+  const { data } = useQuery({
+    queryKey: ["productCat"],
+    queryFn: async () => await dashBoardData.getProductBySellAmount(),
+  });
   return (
     <div className="flex h-full w-full flex-col items-start justify-between bg-blue-900 px-6 pb-6 pt-6 text-white">
       <div>
@@ -29,14 +27,15 @@ function ProductCategory() {
               fill="#8884d8"
               stroke={"none"}
               paddingAngle={5}
-              dataKey="value"
+              dataKey="totalAmount"
             >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
+              {data &&
+                data.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
             </Pie>
             <Tooltip
               contentStyle={{
