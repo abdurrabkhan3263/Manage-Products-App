@@ -12,9 +12,9 @@ function SaleCart({ Icon, Amount, Grow, cartHeading, info }) {
         <div className="text-3xl font-medium text-yellow-100">
           <h1>{Amount}</h1>
         </div>
-        <div className="flex justify-between">
-          <i className="font-medium text-yellow-50">{Grow}</i>
-          <p className="font-medium">{info}</p>
+        <div className="flex items-center justify-between">
+          <i className="text-nowrap font-medium text-yellow-50">{Grow}</i>
+          <p className="text-nowrap font-medium">{info}</p>
         </div>
       </div>
     </div>

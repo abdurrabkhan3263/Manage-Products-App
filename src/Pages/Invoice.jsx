@@ -12,19 +12,23 @@ import { Loader, NoDataAvailable } from "../Assets";
 function Invoice() {
   const [pageNum, setPageNum] = useState(0);
   const currentUser = useSelector((state) => state.user.user?.$id);
-  const { data, isLoading } = useQuery({
+  const {
+    data: { data } = [],
+    data: { total } = "",
+    isLoading,
+  } = useQuery({
     queryKey: ["invoiceData", pageNum],
     queryFn: async () => {
       const response = await databaseService.getInvoice(
         currentUser,
         pageNum * 10,
       );
-      console.log(response);
       return response;
     },
     refetchOnReconnect: "always",
     enabled: !!currentUser,
   });
+
   const tableHeading = [
     {
       id: 1,
@@ -51,7 +55,9 @@ function Invoice() {
       name: "Action",
     },
   ];
+
   const renderRow = BuySellData;
+
   return (
     <Container className="relative">
       <Outlet />
@@ -89,12 +95,12 @@ function Invoice() {
           )}
         </div>
       </div>
-      {data && data.length >= 9 && (
+      {data && (total >= 10 || pageNum > 0) && (
         <Pagination
           pageNum={pageNum}
           setPage={setPageNum}
-          length={data.length}
-          dataCount={9}
+          length={total}
+          dataCount={10}
         />
       )}
     </Container>

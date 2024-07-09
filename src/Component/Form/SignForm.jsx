@@ -89,25 +89,25 @@ function SignForm() {
   return (
     <div className="flex h-[85%] w-full flex-col items-center justify-between">
       <div className="max-h-[75px] min-h-[75px] px-7 text-center capitalize"></div>
-      <div className="w-full flex-grow px-7">
+      <div className="w-full flex-grow px-7 sm:px-0 xl:px-7">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex h-full flex-col justify-between"
         >
           <div className="flex flex-col gap-y-6">
             <Input
-              className="h-[42px] w-full border border-black bg-white"
+              className="h-12 w-full border border-black bg-white sm:h-[42px]"
               placeholder="Your Name"
               type="text"
               {...register("name")}
             />
             <Input
-              className="h-[42px] w-full border border-black bg-white"
+              className="h-12 w-full border border-black bg-white sm:h-[42px]"
               placeholder="Your Email"
               type="email"
               {...register("email")}
             />
-            <div className="mr-2 flex h-[42px] w-full rounded-md border border-black bg-white">
+            <div className="mr-2 flex h-12 w-full rounded-md border border-black bg-white sm:h-[42px]">
               <Input
                 className="h-full w-full"
                 parentClass="flex-grow h-full"
@@ -126,7 +126,7 @@ function SignForm() {
           <div>
             <Button
               type="submit"
-              className="w-full bg-lightblue py-1.5 text-base text-white transition-all hover:bg-darkblue"
+              className="w-full bg-lightblue py-2.5 text-base text-white transition-all hover:bg-darkblue sm:py-1.5"
             >
               Sign Up
             </Button>
@@ -136,7 +136,7 @@ function SignForm() {
       <p className="mt-4">
         <span>Already have an account? </span>
         <Link to="/login" className="font-semibold underline">
-          Sign in
+          Log in
         </Link>
       </p>
     </div>

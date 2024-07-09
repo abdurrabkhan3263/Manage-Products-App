@@ -5,11 +5,7 @@ import { dashBoardData } from "../../appwrite";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-function ProductCategory() {
-  const { data } = useQuery({
-    queryKey: ["productCat"],
-    queryFn: async () => await dashBoardData.getProductBySellAmount(),
-  });
+function ProductCategory({ productSellData }) {
   return (
     <div className="flex h-full w-full flex-col items-start justify-between bg-blue-900 px-6 pb-6 pt-6 text-white">
       <div>
@@ -19,7 +15,7 @@ function ProductCategory() {
         <ResponsiveContainer width="100%" height="100%">
           <PieChart width={800} height={400}>
             <Pie
-              data={data}
+              data={productSellData}
               cx={"50%"}
               cy={"50%"}
               innerRadius={70}
@@ -29,8 +25,8 @@ function ProductCategory() {
               paddingAngle={5}
               dataKey="totalAmount"
             >
-              {data &&
-                data.map((entry, index) => (
+              {productSellData &&
+                productSellData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}

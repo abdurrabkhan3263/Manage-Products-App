@@ -46,7 +46,6 @@ const route = createBrowserRouter(
           <Route path="editproduct/:id" element={<EditProductLayout />} />
           <Route path="addproduct" element={<AddProductLayout />} />
         </Route>
-        <Route path="/statics" element={<Statics />}></Route>
         <Route path="/allcustomer" element={<AllCustomer />}>
           <Route path="addcontact" element={<AddContactLayout />} />
           <Route path="editcontact/:id" element={<EditContactLayout />} />

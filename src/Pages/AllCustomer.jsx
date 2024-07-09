@@ -12,7 +12,7 @@ import { Loader, NoDataAvailable } from "../Assets";
 
 function AllCustomer() {
   const navigate = useNavigate();
-  const [pageNum, setPage] = useState(1);
+  const [pageNum, setPage] = useState(0);
   const [deleteData, setDeleteData] = useState({
     isShow: false,
     deleteFun: databaseService.deleteCustomer,
@@ -20,15 +20,22 @@ function AllCustomer() {
     imgId: "",
   });
   const currentUser = useSelector((state) => state.user?.user);
-  const { data, isError, isLoading, isSuccess } = useQuery({
-    queryKey: ["customer"],
+  const {
+    data: { documents } = "",
+    data: { total } = "",
+    isError,
+    isLoading,
+    isSuccess,
+  } = useQuery({
+    queryKey: ["customer", pageNum],
     queryFn: async () => {
-      return await databaseService.gettingAllCustomer([
-        Query.equal("belongsTo", currentUser.$id),
-      ]);
+      const response = await databaseService.gettingAllCustomer(
+        currentUser?.$id,
+        pageNum * 9,
+      );
+      return response;
     },
     retryOnMount: true,
-    staleTime: 4000,
   });
   const handleAddContact = () => {
     navigate("addcontact", { state: "/allcustomer" });
@@ -64,8 +71,9 @@ function AllCustomer() {
     },
   ];
   const renderRow = AllCustomerData;
+
   return (
-    <Container>
+    <Container className={"relative"}>
       <div className="relative h-full w-full">
         <Outlet />
         <div className="flex h-[5%] items-center justify-between">
@@ -88,15 +96,17 @@ function AllCustomer() {
         </div>
         <div className="relative mt-4 h-[83%] w-full overflow-hidden overflow-y-scroll">
           <div className="h-full bg-white">
-            {isLoading ? (
+            {isLoading || !Array.isArray(documents) ? (
               <Loader />
-            ) : Array.isArray(data) && data.length > 0 ? (
+            ) : Array.isArray(documents) && documents.length > 0 ? (
               <DataTable
                 tableHeading={tableHeading}
-                tableData={data}
-                pageNum={pageNum}
+                tableData={documents}
                 dataNum={10}
+                pageNum={pageNum}
                 renderRow={renderRow}
+                tableHeadingClass={""}
+                tableRowClass={""}
               />
             ) : (
               <NoDataAvailable
@@ -106,15 +116,15 @@ function AllCustomer() {
             )}
           </div>
         </div>
+        {total && total >= 9 && (
+          <Pagination
+            pageNum={pageNum}
+            setPage={setPage}
+            length={total}
+            dataCount={9}
+          />
+        )}
       </div>
-      {Array.isArray(data) && data.length > 10 && (
-        <Pagination
-          pageNum={pageNum}
-          setPage={setPage}
-          length={data && data.documents && data.documents.length}
-          dataCount={10}
-        />
-      )}
     </Container>
   );
 }

@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { dashBoardData } from "../../appwrite";
 
-function SaleChart() {
+function SaleChart({ sellData }) {
   const CustomDot = (props) => {
     const { cx, cy, value } = props;
     const strokeColor = value >= 2000 ? "rgb(254 240 138)" : "rgb(254 240 138)";
@@ -21,22 +21,17 @@ function SaleChart() {
         r={5}
         stroke={strokeColor}
         fill="none"
-        strokeWidth={2}
+        strokeWidth={1}
       />
     );
   };
-
-  const { data } = useQuery({
-    queryKey: ["saleData"],
-    queryFn: async () => await dashBoardData.getYearlySellByMonth(),
-  });
 
   return (
     <div className="flex h-full w-full items-end overflow-hidden bg-blue-900">
       <div className="flex h-full w-full flex-col items-center justify-center px-4 py-4">
         <ResponsiveContainer width="100%" height={"95%"}>
           <AreaChart
-            data={data}
+            data={sellData || []}
             margin={{
               top: 10,
               right: 30,
@@ -53,7 +48,7 @@ function SaleChart() {
               }}
               axisLine={{ stroke: "rgb(254 240 138)" }}
               tickLine={{ stroke: "rgb(254 240 138)" }}
-              strokeWidth={2}
+              strokeWidth={1}
             />
             <YAxis
               tick={{
@@ -63,13 +58,14 @@ function SaleChart() {
               }}
               axisLine={{ stroke: "rgb(254 240 138)" }}
               tickLine={{ stroke: "rgb(254 240 138)s" }}
-              strokeWidth={2}
+              strokeWidth={1}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "#3243E0",
-                color: "#FFFF",
-                borderRadius: "6px",
+                backgroundColor: "red",
+                color: "white",
+                border: 1,
+                borderRadius: "8px",
               }}
               cursor={{ stroke: "#F0D55D" }}
             />
@@ -79,7 +75,7 @@ function SaleChart() {
               stroke="rgb(254 240 138)"
               fill="#F0D55D"
               dot={<CustomDot />}
-              strokeWidth={2}
+              strokeWidth={1}
               fillOpacity={0.3}
             />
           </AreaChart>

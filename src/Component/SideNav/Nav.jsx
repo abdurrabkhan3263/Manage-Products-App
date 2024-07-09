@@ -4,7 +4,6 @@ import {
   MdOutlineDashboard,
   Cart,
   Contact,
-  Graph,
   Invoice,
   Logout,
   FaLuggageCart,
@@ -16,7 +15,6 @@ import { ShowLogout } from "../index.js";
 function Nav() {
   const localIndex = JSON.parse(localStorage.getItem("index"));
   const currentUser = useSelector((state) => state.user.user);
-  const cartDataLen = useSelector((state) => state.cart.length);
   const [currentIndex, setCurrentIndex] = useState(
     (localIndex && localIndex.index) || 0,
   );
@@ -25,7 +23,6 @@ function Nav() {
   const navContent = [
     { name: "Dashboard", icon: <MdOutlineDashboard />, path: "/" },
     { name: "Products", icon: <Cart />, path: "/products" },
-    { name: "Statics", icon: <Graph />, path: "/statics" },
     { name: "Invoice", icon: <Invoice />, path: "/invoice" },
     { name: "All Customer", icon: <Contact />, path: "/allcustomer" },
     { name: "Cart", icon: <FaLuggageCart />, path: "/cart" },
@@ -33,9 +30,9 @@ function Nav() {
   return (
     <>
       <ShowLogout isShow={handleLogout} setShow={setHandleLogout} />
-      <div className="fixed h-screen w-[15vw] py-5 pl-5">
-        <div className="flex h-full w-full flex-col rounded-xl bg-blue-600">
-          <div>
+      <div className="fixed top-0 hidden h-screen w-[60vw] sm:w-[15vw] sm:py-5 sm:pl-5">
+        <div className="flex h-full w-full flex-col bg-blue-600 sm:rounded-xl">
+          <div className="hidden sm:block">
             <SideNavLogo
               onClick={() => {
                 setCurrentIndex(0);

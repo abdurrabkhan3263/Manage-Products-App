@@ -5,14 +5,13 @@ function Pagination({ pageNum, setPage, length, dataCount, className }) {
   const handlePageNumber = (e) => {
     const btnNum = parseInt(e.target.textContent);
     setPage(btnNum - 1);
-    console.log(pageNum);
   };
   return (
     <div className={`ml sticky bottom-0 flex w-full justify-between`}>
       <button
         className="rounded-md bg-darkblue p-2 text-white"
         onClick={() => {
-          if (pageNum > 1) setPage((prev) => prev - 1);
+          if (pageNum > 0) setPage((prev) => prev - 1);
         }}
       >
         <LeftArrow />
@@ -22,7 +21,7 @@ function Pagination({ pageNum, setPage, length, dataCount, className }) {
           <button
             key={i}
             className={` ${
-              pageNum === i + 1
+              pageNum === i
                 ? "bg-lightblue text-white"
                 : "bg-gray-200 text-black"
             } rounded-md px-4`}
@@ -35,7 +34,7 @@ function Pagination({ pageNum, setPage, length, dataCount, className }) {
       <button
         className="rounded-md bg-darkblue p-2 text-white"
         onClick={() => {
-          if (pageNum < length / dataCount) setPage((prev) => prev + 1);
+          if (pageNum < length) setPage((prev) => prev + 1);
         }}
       >
         <RightArrow />

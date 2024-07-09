@@ -124,16 +124,19 @@ class DatabaseService {
     }
   }
 
-  async gettingAllCustomer(Query = []) {
+  async gettingAllCustomer(belongsTo, offsetNumber = 0) {
+    if (!belongsTo) return [];
     try {
-      const response = await this.databases.listDocuments(
+      const { documents = [], total } = await this.databases.listDocuments(
         conf.appWriteDatabase,
         conf.appWriteCustomerDetailsCollId,
-        Query && Query,
+        [
+          Query.equal("belongsTo", belongsTo),
+          Query.limit(9),
+          Query.offset(offsetNumber),
+        ],
       );
-      return (
-        Array.isArray(response?.documents) && response?.documents.reverse()
-      );
+      return { documents, total };
     } catch (error) {
       throw ("AppWrite :: Error :: gettingAllCustomer :: ", error);
     }
@@ -338,7 +341,7 @@ class DatabaseService {
   async getInvoice(belongsTo, offsetNumber) {
     if (!belongsTo) return [];
     try {
-      let invoiceData = await this.databases.listDocuments(
+      let { documents = [], total = "" } = await this.databases.listDocuments(
         conf.appWriteDatabase,
         conf.appWriteCreateSell,
         [
@@ -347,19 +350,25 @@ class DatabaseService {
           Query.offset(offsetNumber),
         ],
       );
-      invoiceData = invoiceData?.documents;
       const newArr = await Promise.all(
-        invoiceData.map(async (data) => {
-          const response = await this.gettingCustomerById(
-            data?.customerDetails,
-          );
-          const { customerName, phoneNumber, totalPrice, totalUdhar } =
-            response;
-          data.productList = JSON.parse(data.productList);
-          return { ...data, customerName, phoneNumber, totalPrice, totalUdhar };
-        }),
+        Array.isArray(documents) &&
+          documents.map(async (data) => {
+            const response = await this.gettingCustomerById(
+              data?.customerDetails,
+            );
+            const { customerName, phoneNumber, totalPrice, totalUdhar } =
+              response;
+            data.productList = JSON.parse(data.productList);
+            return {
+              ...data,
+              customerName,
+              phoneNumber,
+              totalPrice,
+              totalUdhar,
+            };
+          }),
       );
-      return newArr.reverse();
+      return { data: newArr.reverse(), total };
     } catch (error) {
       throw new Error("Appwrite :: Error :: getInvice :: ", error.message);
     }
@@ -587,6 +596,8 @@ class DatabaseService {
 class DashBoardService extends DatabaseService {
   constructor() {
     super();
+    this.totalCustomerWithPercentage =
+      this.totalCustomerWithPercentage.bind(this);
   }
   async getAllSellData() {
     try {
@@ -606,6 +617,7 @@ class DashBoardService extends DatabaseService {
         conf.appWriteDatabase,
         conf.appWriteCustomerDetailsCollId,
       );
+
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const previousMonth = currentMonth === 0 ? 1 : currentMonth - 1;
@@ -615,7 +627,6 @@ class DashBoardService extends DatabaseService {
       const [currentMonDocs, prevMonDocs] = documents.reduce(
         (acc, current) => {
           const [year, month] = current.$createdAt.split("-").map(Number);
-
           if (year === currentYear && month === currentMonth) {
             acc[0].push(current);
           } else if (
@@ -853,6 +864,40 @@ class DashBoardService extends DatabaseService {
       throw new Error(
         `Something went wrong while fetching the product by sell ${error}`,
       );
+    }
+  }
+
+  async allData() {
+    try {
+      const [
+        totalCustomer,
+        sellToday,
+        monthlySell,
+        yearlySell,
+        yearlySellByMonth,
+        TopBuyingCustomer,
+        productBySell,
+      ] = await Promise.all([
+        this.totalCustomerWithPercentage(),
+        this.getSellToday(),
+        this.getMonthlySell(),
+        this.getYearlySell(),
+        this.getYearlySellByMonth(),
+        this.getTopBuyingCustomer(),
+        this.getProductBySellAmount(),
+      ]);
+
+      return {
+        totalCustomer,
+        sellToday,
+        monthlySell,
+        yearlySell,
+        yearlySellByMonth,
+        TopBuyingCustomer,
+        productBySell,
+      };
+    } catch (error) {
+      throw new Error(`Something went wrong ${error}`);
     }
   }
 }

@@ -18,6 +18,7 @@
     "@tanstack/react-query": "^5.37.1",
     "@tanstack/react-query-devtools": "^5.40.0",
     "appwrite": "^14.0.1",
+    "lucide-react": "^0.403.0",
     "prettier": "^3.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

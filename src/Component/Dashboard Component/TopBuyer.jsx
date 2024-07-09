@@ -37,7 +37,7 @@ const columns = [
   { id: "phoneNumber", label: "Phone", align: "center", minWidth: 100 },
 ];
 
-export default function TopBuyer() {
+export default function TopBuyer({ buyerData }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -49,13 +49,6 @@ export default function TopBuyer() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
-  const { data: rows = [] } = useQuery({
-    queryKey: ["row"],
-    queryFn: async () => {
-      return await dashBoardData.getTopBuyingCustomer();
-    },
-  });
 
   return (
     <Paper
@@ -92,9 +85,10 @@ export default function TopBuyer() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.length > 0 &&
-              rows
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            {Array.isArray(buyerData) &&
+              buyerData?.length > 0 &&
+              buyerData
+                ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
                   return (
                     <TableRow
@@ -146,7 +140,7 @@ export default function TopBuyer() {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={rows.length}
+        count={buyerData?.length || "...."}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
