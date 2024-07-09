@@ -44,7 +44,7 @@ function SeeProductDetails({ className }) {
   const seeProductData = SeeProduct;
   return (
     <div
-      className={`absolute w-[32%] ${className} bottom-1/2 right-1/2 z-50 h-3/4 translate-x-1/2 translate-y-1/2 overflow-hidden rounded-2xl bg-white shadow-2xl`}
+      className={`fixed h-full w-full lg:w-[70%] xl:absolute xl:w-[32%] ${className} bottom-1/2 right-1/2 z-50 translate-x-1/2 translate-y-1/2 overflow-hidden bg-white shadow-2xl sm:h-3/4 sm:rounded-2xl`}
     >
       <div
         className="flex h-[10%] w-full cursor-pointer items-center px-3 text-4xl text-lightblue"

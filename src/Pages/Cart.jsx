@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Container from "../Container/Container";
 import { ProductList, ProductTotal } from "../Component";
 import SearchSection from "../Component/ProductCart/Product Table/SearchSection";
@@ -8,7 +8,7 @@ function Cart() {
   return (
     <Container className={"relative grid grid-rows-12 gap-y-3"}>
       <Outlet />
-      <div className="col-span-7 row-start-1 row-end-3 rounded-xl bg-slate-200 px-4 py-4 font-semibold">
+      <div className="col-span-7 row-start-1 row-end-3 bg-slate-200 font-semibold sm:rounded-xl sm:px-4 sm:py-4">
         <SearchSection />
       </div>
       <ProductList />

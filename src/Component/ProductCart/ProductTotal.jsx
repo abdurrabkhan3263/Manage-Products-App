@@ -15,7 +15,7 @@ function ProductTotal({ className }) {
   };
   return (
     <div
-      className={`${className} col-span-7 row-start-12 row-end-13 flex items-center justify-between overflow-hidden rounded-xl bg-lightblue px-4 text-white`}
+      className={`${className} col-span-7 row-start-12 row-end-13 flex items-center justify-between overflow-hidden bg-lightblue px-2 text-white sm:rounded-xl sm:px-4`}
     >
       <div className="text-xl font-medium">Total Price:- ₹ {totalAmount}</div>
       <Button

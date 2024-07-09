@@ -37,7 +37,7 @@ function DataDelete({ deleteData, setDeleteData, QueryKey }) {
     <div
       className={`${
         deleteData.isShow ? "flex" : "hidden"
-      } border-1 absolute bottom-1/2 right-[55%] z-50 flex h-fit w-1/4 translate-x-[55%] translate-y-1/2 items-center justify-center gap-y-5 rounded-[20px] border-[0.5px] border-gray-400`}
+      } border-1 fixed bottom-1/2 right-[55%] z-50 flex h-fit w-[90%] translate-x-[55%] translate-y-1/2 items-center justify-center gap-y-5 rounded-[20px] border-[0.5px] border-gray-400 sm:absolute sm:w-1/4`}
     >
       <div className={`card`}>
         {deleteMutation.isPending ? (

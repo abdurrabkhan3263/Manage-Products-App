@@ -289,7 +289,10 @@ function AddProduct({ productData }) {
                       let idd = useGenerateUniqueId();
                       setValue(`productPriceOption[${i}.opId]`, idd);
                       return (
-                        <div key={i} className="my-3 flex justify-between">
+                        <div
+                          key={i}
+                          className="my-3 flex w-full flex-wrap justify-between gap-4"
+                        >
                           <input
                             type="text"
                             required={true}
@@ -297,13 +300,13 @@ function AddProduct({ productData }) {
                             {...register(`productPriceOption[${i}].name`, {
                               required: true,
                             })}
-                            className="rounded-md border-none bg-lightgray px-2 py-2 font-medium outline-none"
+                            className="w-full rounded-md border-none bg-lightgray px-2 py-2 font-medium outline-none sm:w-auto"
                           />
                           <input
                             type="text"
                             required={true}
                             placeholder="Enter Price"
-                            className="rounded-md border-none bg-lightgray px-2 py-1.5 outline-none"
+                            className="w-full rounded-md border-none bg-lightgray px-2 py-1.5 outline-none sm:w-auto"
                             {...register(`productPriceOption[${i}].price`, {
                               required: true,
                               validate: {

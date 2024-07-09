@@ -71,9 +71,7 @@ function Invoice() {
           Search <Search />
         </button>
       </div>
-      <div
-        className={`relative mt-4 h-[89%] w-full overflow-hidden overflow-y-scroll`}
-      >
+      <div className={`relative mt-4 h-[89%] w-full overflow-hidden`}>
         <div className="h-full">
           {isLoading ? (
             <Loader />

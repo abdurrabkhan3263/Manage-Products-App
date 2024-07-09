@@ -30,7 +30,7 @@ function ProductTableRow({ proData }) {
   }, [inputValue]);
   return (
     <>
-      <td className="relative rounded-l-xl py-7">
+      <td className="relative py-7 sm:rounded-l-xl">
         <img
           src={proData?.productImage || image__not__available}
           className="m-auto w-24 rounded-md"
@@ -78,7 +78,7 @@ function ProductTableRow({ proData }) {
           </span>
         </div>
       </td>
-      <td className="rounded-r-xl">
+      <td className="sm:rounded-r-xl">
         <div className="m-auto flex justify-center">
           <span
             className="cursor-pointer rounded-full bg-white p-3 text-2xl transition-all hover:bg-slate-200"

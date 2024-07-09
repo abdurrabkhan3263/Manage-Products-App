@@ -68,3 +68,9 @@
 .exit-button svg {
   fill: rgb(175, 175, 175);
 }
+
+@media (max-width: 636px) {
+  .card {
+    border-radius: 12px;
+  }
+}

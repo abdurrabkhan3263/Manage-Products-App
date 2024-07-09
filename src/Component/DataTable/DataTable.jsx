@@ -11,15 +11,15 @@ function DataTable({
   tableRowClass,
 }) {
   return (
-    <div>
-      <table className="w-full table-fixed">
+    <div className="overflow-auto">
+      <table className="w-full lg:table-fixed">
         <thead className="sticky top-0 z-10">
           <tr>
             {tableHeading &&
               tableHeading.map((hData) => (
                 <th
                   key={hData.name}
-                  className={`border bg-lightblue ${tableHeadingClass} py-2 text-lg text-white`}
+                  className={`border bg-lightblue px-14 ${tableHeadingClass} py-2 text-lg text-white`}
                 >
                   {hData.name}
                 </th>
@@ -27,7 +27,7 @@ function DataTable({
           </tr>
         </thead>
         {/* Add The Data */}
-        <tbody className="overflow-y-scroll">
+        <tbody>
           {tableData &&
             tableData.map((rowData, index) => (
               <TableRow

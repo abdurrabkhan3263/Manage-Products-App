@@ -94,7 +94,7 @@ function AllCustomer() {
             Add New Customer
           </button>
         </div>
-        <div className="relative mt-4 h-[83%] w-full overflow-hidden overflow-y-scroll">
+        <div className="relative mt-4 h-[83%] w-full overflow-hidden">
           <div className="h-full bg-white">
             {isLoading || !Array.isArray(documents) ? (
               <Loader />

@@ -52,10 +52,10 @@ function DashBoard() {
             <Add /> Add Product
           </Button>
         </div>
-        <div className="grid h-[90%] w-full grid-cols-[repeat(15,1fr)] grid-rows-[repeat(4,470px)] gap-x-4 gap-y-4 pt-4 sm:grid-rows-[repeat(15,1fr)] sm:pt-0">
-          <div className="col-start-1 col-end-[16] w-full rounded-lg transition-shadow sm:col-end-7 sm:row-start-1 sm:row-end-8">
+        <div className="grid h-[90%] w-full grid-cols-[repeat(15,1fr)] grid-rows-[repeat(6,470px)] gap-x-4 gap-y-4 pt-4 sm:grid-rows-[repeat(15,1fr)] sm:pt-0">
+          <div className="col-start-1 col-end-[16] row-start-1 row-end-3 w-full rounded-lg transition-shadow sm:col-end-7 sm:row-start-1 sm:row-end-8">
             {isLoading ? (
-              <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-2.5">
+              <div className="grid h-full w-full grid-cols-1 grid-rows-4 gap-2.5 sm:grid-cols-2 sm:grid-rows-2">
                 <div className="main__cart_loading animate-pulse rounded-lg bg-gray-400 px-3.5 py-5 text-white"></div>
                 <div className="main__cart_loading animate-pulse rounded-lg bg-gray-400 px-3.5 py-5 text-white"></div>
                 <div className="main__cart_loading animate-pulse rounded-lg bg-gray-400 px-3.5 py-5 text-white"></div>
@@ -71,7 +71,7 @@ function DashBoard() {
             )}
           </div>
           <div
-            className="col-start-1 col-end-[16] overflow-hidden rounded-lg text-center sm:col-start-7 sm:col-end-[16] sm:row-start-1 sm:row-end-8"
+            className="col-start-1 col-end-[16] row-start-3 row-end-4 overflow-hidden rounded-lg text-center sm:col-start-7 sm:col-end-[16] sm:row-start-1 sm:row-end-8"
             style={{ boxShadow: "0px 0px 28px #00000028" }}
           >
             {isLoading ? (
@@ -81,7 +81,7 @@ function DashBoard() {
             )}
           </div>
           <div
-            className="col-start-1 col-end-[16] overflow-hidden rounded-lg text-center sm:col-start-1 sm:col-end-11 sm:row-start-8 sm:row-end-[16]"
+            className="col-start-1 col-end-[16] row-start-4 row-end-6 overflow-hidden rounded-lg text-center sm:col-start-1 sm:col-end-11 sm:row-start-8 sm:row-end-[16]"
             style={{ boxShadow: "0px 0px 28px #00000028" }}
           >
             {isLoading ? (
@@ -91,7 +91,7 @@ function DashBoard() {
             )}
           </div>
           <div
-            className="col-start-1 col-end-[16] overflow-hidden rounded-lg text-center sm:col-start-11 sm:col-end-[16] sm:row-start-8 sm:row-end-[16]"
+            className="col-start-1 col-end-[16] row-start-6 row-end-7 overflow-hidden rounded-lg text-center sm:col-start-11 sm:col-end-[16] sm:row-start-8 sm:row-end-[16]"
             style={{ boxShadow: "0px 0px 28px #00000028" }}
           >
             {isLoading ? (

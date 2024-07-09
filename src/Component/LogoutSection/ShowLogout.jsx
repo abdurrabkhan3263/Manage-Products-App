@@ -30,7 +30,7 @@ function ShowLogout({ isShow, setShow }) {
     <div
       className={`${
         isShow ? "flex" : "hidden"
-      } absolute bottom-1/2 right-1/2 z-50 h-[45%] w-1/5 translate-x-1/2 translate-y-1/2 flex-col justify-between gap-y-5 rounded-xl border bg-white py-8 text-center shadow-lightBox`}
+      } fixed bottom-1/2 right-1/2 z-[999999] h-[45%] w-[90%] translate-x-1/2 translate-y-1/2 flex-col justify-between gap-y-5 rounded-xl border bg-white py-8 text-center shadow-lightBox sm:absolute sm:w-1/5`}
     >
       {logoutMutation.isError ? (
         <>
