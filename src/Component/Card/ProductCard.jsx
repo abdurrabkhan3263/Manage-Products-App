@@ -8,6 +8,7 @@ import { DataDelete } from "../index";
 import { databaseService } from "../../appwrite";
 import { addProduct } from "../../store/thunkFile";
 import { toastFunction } from "../../utils/toastFunction";
+import AddButton from "../../Assets/AddButton";
 
 function ProductCard({ productData }) {
   const {
@@ -136,7 +137,7 @@ function ProductCard({ productData }) {
           className="h-[250px] w-full rounded-lg object-cover"
         />
       </div>
-      <div className="mb-3 h-max px-3">
+      <div className="mb-3 mt-4 h-max px-4">
         <h1 className="text-[22px] font-bold text-lightblue">
           {productName && productName}
         </h1>
@@ -165,13 +166,21 @@ function ProductCard({ productData }) {
               />
             )}
           </div>
-          <div className="flex w-full justify-end">
-            <Button
-              type={"submit"}
-              className={"mt-5 bg-darkblue px-16 py-1 text-white"}
-            >
-              Add
-            </Button>
+          <div className="flex w-full justify-end pb-[0.3rem] pt-4">
+            <AddButton type={"submit"}>
+              <span className="IconContainer">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="1em"
+                  viewBox="0 0 576 512"
+                  fill="#FEFEFA"
+                  className="cart"
+                >
+                  <path d="M0 24C0 10.7 10.7 0 24 0H69.5c22 0 41.5 12.8 50.6 32h411c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3H170.7l5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24 10.7 24 24s-10.7 24-24 24H199.7c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5H24C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"></path>
+                </svg>
+              </span>
+              <p className="text">Add to Cart</p>
+            </AddButton>
           </div>
         </form>
       </div>

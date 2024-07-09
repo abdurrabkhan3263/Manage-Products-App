@@ -4,6 +4,7 @@ import AddContact from "./AddContact";
 import { Xcross } from "../../../public/Assets";
 import { useQuery } from "@tanstack/react-query";
 import { databaseService } from "../../appwrite";
+import { SimpleLoader } from "../../Assets/index";
 
 function EditContactLayout({ className }) {
   const navigate = useNavigate();
@@ -28,7 +29,9 @@ function EditContactLayout({ className }) {
         <Xcross />
       </div>
       {isLoading ? (
-        <p>Loading.......</p>
+        <div className="flex h-full w-full items-center justify-center">
+          <SimpleLoader />
+        </div>
       ) : (
         <div className="h-[92%] w-full">
           {data && <AddContact contactData={data} />}

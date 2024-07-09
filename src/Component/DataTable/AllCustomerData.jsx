@@ -1,13 +1,19 @@
-import { useDispatch } from "react-redux";
-import { Edit, Delete, Phone, admin } from "../../../public/Assets";
+import {
+  Edit,
+  Delete,
+  Phone,
+  admin,
+  LongLeftArrow,
+} from "../../../public/Assets";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { databaseService } from "../../appwrite";
 import { DataDelete } from "../index";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const AllCustomerData = (data, setIsDelete) => {
   const navigate = useNavigate();
+  const seeProduct = useSelector((state) => state.seeProductList);
   const [deleteData, setDeleteData] = useState({
     isShow: false,
     deleteFun: databaseService.deleteCustomer,
@@ -41,23 +47,28 @@ const AllCustomerData = (data, setIsDelete) => {
             />
           </div>
         </td>
-        <td className="py-1.5 text-center text-lg capitalize">
+        <td className="py-1.5 text-center text-lg font-medium capitalize">
           {data.customerName}
         </td>
-        <td className="py-1.5 text-center text-lg">{data.phoneNumber}</td>
-        <td className="py-1.5 text-center text-lg">
+        <td className="py-1.5 text-center text-lg font-medium">
+          {data.phoneNumber}
+        </td>
+        <td className="py-1.5 text-center text-lg font-medium">
           {data?.customerAddress || "No Address Available"}
         </td>
-        <td className="cursor-pointer py-1.5 text-center text-lg underline">
+        <td className="cursor-pointer py-1.5 text-center text-lg font-medium hover:text-blue-500 hover:underline">
           <span
             onClick={() =>
-              navigate(`customerdetails/${555}`, { state: "/allcustomer" })
+              navigate(`customerdetails/${data.$id}`, { state: "/allcustomer" })
             }
           >
             See More
           </span>
         </td>
-        <td className="gap-x-8 py-1.5 text-center text-lg">
+        <td className="cursor-pointer py-1.5 text-center text-lg font-medium">
+          ₹ {data?.totalPrice}
+        </td>
+        <td className="gap-x-8 py-1.5 text-center text-lg font-medium">
           <div className="flex items-center justify-center gap-x-6 py-1.5 text-xl">
             <a href={`tel:${data.phoneNumber}`}>
               <Phone />

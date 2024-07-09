@@ -6,6 +6,7 @@ import add__product__error from "./add__product__error.jpg";
 import butterfly__img from "./butterfly__img.jpg";
 import login__img from "./login__img.jpg";
 import google__logo from "./google__logo.png";
+import internet__off from "./internet__off.jpg";
 
 // ICONES
 import { MdOutlineDashboard } from "react-icons/md";
@@ -30,12 +31,18 @@ import { IoMdEyeOff as CloseEye } from "react-icons/io";
 import { MdLogout as Logout } from "react-icons/md";
 import { FaLuggageCart } from "react-icons/fa";
 import { BsCashCoin as Money } from "react-icons/bs";
+import { FaArrowLeftLong as LongLeftArrow } from "react-icons/fa6";
+import { IoPerson as Person } from "react-icons/io5";
+import { MdAttachMoney as Doller } from "react-icons/md";
+import { MdOutlineCalendarMonth as Calender } from "react-icons/md";
+import { MdDoneAll as All } from "react-icons/md";
 
 export {
   Logo,
   image__not__available,
   no__data,
   add__product__error,
+  internet__off,
   butterfly__img,
   login__img,
   google__logo,
@@ -62,4 +69,9 @@ export {
   Logout,
   FaLuggageCart,
   Money,
+  LongLeftArrow,
+  Person,
+  Doller,
+  Calender,
+  All,
 };

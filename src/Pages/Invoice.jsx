@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Container from "../Container/Container";
 import { Search } from "../../public/Assets/index";
 import { Outlet } from "react-router-dom";
@@ -7,28 +7,36 @@ import BuySellData from "../Component/DataTable/BuySellData";
 import { databaseService } from "../appwrite";
 import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
+import { Loader, NoDataAvailable } from "../Assets";
 
 function Invoice() {
-  const [pageNum, setPageNum] = useState(1);
+  const [pageNum, setPageNum] = useState(0);
   const currentUser = useSelector((state) => state.user.user?.$id);
-  const { data, isLoading } = useQuery({
-    queryKey: ["invoiceData"],
+  const {
+    data: { data } = [],
+    data: { total } = "",
+    isLoading,
+  } = useQuery({
+    queryKey: ["invoiceData", pageNum],
     queryFn: async () => {
-      if (currentUser) {
-        return await databaseService.getInvoice(currentUser);
-      }
-      return [];
+      const response = await databaseService.getInvoice(
+        currentUser,
+        pageNum * 10,
+      );
+      return response;
     },
     refetchOnReconnect: "always",
+    enabled: !!currentUser,
   });
+
   const tableHeading = [
     {
       id: 1,
-      name: "Date",
+      name: "Image",
     },
     {
       id: 2,
-      name: "Image",
+      name: "Date",
     },
     {
       id: 3,
@@ -39,10 +47,6 @@ function Invoice() {
       name: "Phone Number",
     },
     {
-      id: 5,
-      name: "Total Price",
-    },
-    {
       id: 6,
       name: "Products",
     },
@@ -51,7 +55,9 @@ function Invoice() {
       name: "Action",
     },
   ];
+
   const renderRow = BuySellData;
+
   return (
     <Container className="relative">
       <Outlet />
@@ -70,31 +76,31 @@ function Invoice() {
       >
         <div className="h-full">
           {isLoading ? (
-            <div>
-              <p>Loading....</p>
-            </div>
+            <Loader />
+          ) : Array.isArray(data) && data.length > 0 ? (
+            <DataTable
+              tableHeading={tableHeading}
+              tableData={data}
+              dataNum={10}
+              pageNum={pageNum}
+              renderRow={renderRow}
+              tableHeadingClass={""}
+              tableRowClass={""}
+            />
           ) : (
-            data &&
-            data.length > 0 && (
-              <DataTable
-                tableHeading={tableHeading}
-                tableData={data}
-                dataNum={10}
-                pageNum={pageNum}
-                renderRow={renderRow}
-                tableHeadingClass={""}
-                tableRowClass={""}
-              />
-            )
+            <NoDataAvailable
+              className={"flex h-full w-full items-center justify-center"}
+              imageClassName={"h-[70%] w-[70%]"}
+            />
           )}
         </div>
       </div>
-      {data && data.length >= 15 && (
+      {data && (total >= 10 || pageNum > 0) && (
         <Pagination
           pageNum={pageNum}
           setPage={setPageNum}
-          length={data.length}
-          dataCount={15}
+          length={total}
+          dataCount={10}
         />
       )}
     </Container>

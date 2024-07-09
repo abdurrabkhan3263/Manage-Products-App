@@ -13,6 +13,7 @@ import { databaseService } from "../../appwrite";
 import { useSelector } from "react-redux";
 import useGenerateUniqueId from "../../Hook/useGenerateUniqueId";
 import { toastFunction } from "../../utils/toastFunction";
+import { SimpleLoader } from "../../Assets";
 
 function AddProduct({ productData }) {
   const [priceData, setPriceData] = useState({
@@ -172,7 +173,7 @@ function AddProduct({ productData }) {
     <div className="relative h-full w-full overflow-hidden overflow-x-scroll">
       {mutation.isPending || mutationforUpdate.isPending ? (
         <div className="flex h-full w-full items-center justify-center">
-          <p>Product Adding........</p>
+          <SimpleLoader />
         </div>
       ) : (
         <form className="h-full" onSubmit={handleSubmit(formSubmit)}>

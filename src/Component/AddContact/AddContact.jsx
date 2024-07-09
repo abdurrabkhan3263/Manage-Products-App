@@ -7,6 +7,7 @@ import { databaseService } from "../../appwrite";
 import { useSelector } from "react-redux";
 import { toastFunction } from "../../utils/toastFunction";
 import { useLocation, useNavigate } from "react-router-dom";
+import SimpleLoader from "../../Assets/SimpleLoader";
 function AddContact({ contactData }) {
   const currentUser = useSelector((state) => state.user?.user);
   const [customerImg, setCustomerImg] = useState(
@@ -116,7 +117,11 @@ function AddContact({ contactData }) {
     }
   };
   if (customerAdd.isPending || customerUpdate.isPending) {
-    return <div>adding........</div>;
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <SimpleLoader />
+      </div>
+    );
   }
   return (
     <div className="relative h-full w-full">

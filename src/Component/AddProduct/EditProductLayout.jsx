@@ -4,6 +4,7 @@ import AddProduct from "./AddProduct";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { databaseService } from "../../appwrite";
+import { SimpleLoader } from "../../Assets";
 
 function EditProductLayout({ className }) {
   // const [productData, setProductData] = useState(null);
@@ -34,7 +35,9 @@ function EditProductLayout({ className }) {
       </div>
       <div className="h-[92%] w-full">
         {productData.isLoading ? (
-          <div>Loading........</div>
+          <div className="flex h-full w-full items-center justify-center">
+            <SimpleLoader />
+          </div>
         ) : (
           productData.data && <AddProduct productData={productData.data} />
         )}

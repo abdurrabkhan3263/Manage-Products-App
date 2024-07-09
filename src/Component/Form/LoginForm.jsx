@@ -59,8 +59,8 @@ function LoginForm() {
   return (
     <div className="flex h-[85%] flex-col items-center justify-between">
       <div className="max-h-[75px] min-h-[75px] px-7 text-center capitalize"></div>
-      <div className="h-full w-full px-7">
-        <div className="flex h-[50px] w-full cursor-pointer items-center justify-center gap-x-2 rounded-full border border-black bg-white">
+      <div className="h-full w-full px-7 sm:px-0 xl:px-7">
+        <div className="flex h-[55px] w-full cursor-pointer items-center justify-center gap-x-2 rounded-full border border-black bg-white sm:h-[50px]">
           <img src={google__logo} alt="google__logo" className="h-[60%]" />
           <p className="font-semibold">Sign in with Google</p>
         </div>
@@ -72,11 +72,13 @@ function LoginForm() {
             <div className="flex flex-col gap-y-6">
               <Input
                 type={"email"}
-                className={"h-[42px] w-full border border-black bg-white"}
+                className={
+                  "h-12 w-full border border-black bg-white sm:h-[42px]"
+                }
                 placeholder={"Your Email"}
                 {...register("email")}
               ></Input>
-              <div className="flex h-[42px] w-full rounded-md border border-black">
+              <div className="flex h-12 w-full rounded-md border border-black sm:h-[42px]">
                 <Input
                   type={passHidden ? "password" : "text"}
                   className="h-full w-full"
@@ -92,14 +94,14 @@ function LoginForm() {
                 </span>
               </div>
             </div>
-            <div className="flex flex-col gap-y-4">
+            <div className="flex flex-col gap-[18px] pt-3 sm:gap-y-4 sm:pt-0">
               <div className="text-end font-semibold underline">
                 <Link to={"/forget"}>Forget Password</Link>
               </div>
               <Button
                 type={"submit"}
                 className={
-                  "w-full bg-lightblue py-1.5 text-base text-white transition-all hover:bg-darkblue"
+                  "w-full bg-lightblue py-2.5 text-base text-white transition-all hover:bg-darkblue sm:py-1.5"
                 }
               >
                 Login In
@@ -108,7 +110,7 @@ function LoginForm() {
           </form>
         </div>
       </div>
-      <p className="mt-4">
+      <p className="mt-5 sm:mt-4">
         Don’t have an account get ?
         <span className="font-semibold underline">
           <Link to="/signup"> Sign up</Link>

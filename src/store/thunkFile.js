@@ -40,6 +40,7 @@ const addProduct = createAsyncThunk(
           ...cartData.filter((value) => value.$id !== product.$id),
         ];
         // API CALL FOR UPDATING THE ORDER
+        console.log(allData);
         try {
           const response = await databaseService.updateOrder(
             product.$id,
@@ -141,6 +142,7 @@ const submitForm = createAsyncThunk(
       });
       return;
     }
+
     const filterCartData = cartData.map((items) => {
       return {
         isOption: items.isOption,
@@ -151,16 +153,19 @@ const submitForm = createAsyncThunk(
         productName: items.productName,
       };
     });
-    const dataToSend = {
-      productList: JSON.stringify(filterCartData),
-      customerDetails: customerDetails?.$id,
-      userId: user?.$id,
-    };
 
     const totalAmount = filterCartData.reduce(
       (acc, current) => acc + current.productAmount,
       0,
     );
+
+    const dataToSend = {
+      productList: JSON.stringify(filterCartData),
+      customerDetails: customerDetails?.$id,
+      userId: user?.$id,
+      totalAmount,
+    };
+
     try {
       const addDataIntoData = await databaseService.createSell(dataToSend);
       if (addDataIntoData) {

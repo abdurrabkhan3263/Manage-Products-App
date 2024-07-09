@@ -1,0 +1,16 @@
+.main__cart {
+  transition: all 0.2s;
+}
+
+.scale__elem {
+  transition: all 0.2s;
+}
+
+.main__cart:hover {
+  box-shadow: 0px 0px 30px rgba(128, 128, 128, 0.473);
+  transform: scale(0.99);
+}
+
+.main__cart:hover .scale__elem {
+  transform: scale(0.98);
+}

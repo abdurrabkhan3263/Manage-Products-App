@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import Container from "../Container/Container";
 import ProductCard from "../Component/Card/ProductCard";
 import { Button } from "../Component/UI";
-import { Add, no__data } from "../../public/Assets";
+import { Add } from "../../public/Assets";
 import "../index.css";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Query } from "appwrite";
 import { useQuery } from "@tanstack/react-query";
 import { databaseService } from "../appwrite";
+import { Loader, NoDataAvailable } from "../Assets";
+import AddButton from "../Assets/AddButton";
 
 function Products() {
   const currentUser = useSelector((state) => state.user?.user);
@@ -35,18 +37,17 @@ function Products() {
     <Container className={"relative"}>
       <div className="h-full w-full">
         <Outlet />
-        <div className="flex h-[5%] w-full justify-end">
-          <Button
-            type={"button"}
-            className={"flex items-center bg-blue-600 px-4 py-1 text-white"}
-            onClick={handleAddProduct}
-          >
-            <Add /> Add Product
-          </Button>
+        <div className="flex w-full justify-end">
+          <AddButton type={"submit"} onClick={handleAddProduct}>
+            <span className={`IconContainer text-[22px] text-[#FEFEFA]`}>
+              <Add />
+            </span>
+            <p className="text">Add Product</p>
+          </AddButton>
         </div>
         {productDataList.isLoading && (
-          <div className="flex h-[95%] w-full items-center justify-center bg-blue-500 text-5xl text-white">
-            Loading.....
+          <div className="flex h-[95%] w-full items-center justify-center text-5xl text-white">
+            <Loader />
           </div>
         )}
         {productDataList.isError && (
@@ -69,24 +70,18 @@ function Products() {
         {productDataList?.data && (
           <div className="grid h-[95%] w-full gap-10 overflow-y-scroll scroll-smooth py-4 sm:grid-cols-3 lg:grid-cols-4">
             {productDataList.data.length <= 0 ? (
-              <div className="col-start-1 col-end-5 flex flex-col items-center justify-center">
-                <div className="h-[36%] w-[36%] text-center">
-                  <img
-                    src={no__data}
-                    alt="no__data"
-                    className="h-full w-full object-contain"
-                  />
-                  <p className="mt-2 select-none text-[26px] font-semibold text-red-500">
-                    No Product Available
-                  </p>
-                </div>
-              </div>
+              <NoDataAvailable
+                className={
+                  "flex items-center justify-center sm:col-span-3 lg:col-span-4"
+                }
+                imageClassName={"h-[53%] w-[53%]"}
+              />
             ) : (
               productDataList.data.map((data, index) => {
                 return (
                   <div
                     key={index}
-                    className="h-max select-none overflow-hidden rounded-lg shadow-2xl"
+                    className="h-max select-none overflow-hidden rounded-2xl border py-1 shadow-xl duration-100 ease-in hover:shadow-2xl"
                   >
                     <ProductCard productData={data} />
                   </div>

@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { Xcross } from "../../../../public/Assets";
+import { LeftArrow, LongLeftArrow, Xcross } from "../../../../public/Assets";
 import { DataTable } from "../../index";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CustomerRowData from "./CustomerRowData";
+import { useQuery } from "@tanstack/react-query";
+import { databaseService } from "../../../appwrite";
+import { useRef } from "react";
+import { NoDataAvailable, SimpleLoader } from "../../../Assets";
 
 function CustomerSeeDetails({ className }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
-  const [customerData, setCustomerData] = useState(null);
-  const dispatch = useDispatch();
-  const fetchData = async () => {
-    const response = await fetch(`https://dummyjson.com/carts/user/${id}`);
-    const data = await response.json();
-    if (data.carts.length >= 0) {
-      setCustomerData(data.carts[0]);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["customerDetails", id],
+    queryFn: async () => {
+      return await databaseService.getCustomerBuyHistory(id);
+    },
+    enabled: !!id,
+    gcTime: 1000,
+  });
   const tableHeadingData = [
     {
       id: 1,
@@ -42,24 +42,37 @@ function CustomerSeeDetails({ className }) {
   const renderData = CustomerRowData;
   return (
     <div
-      className={`absolute w-[32%]  ${className} z-50  h-3/4 rounded-2xl border-2 border-[#0000001f] bg-white shadow-2xl right-1/2 translate-x-1/2 bottom-1/2 translate-y-1/2 overflow-hidden`}
+      className={`absolute w-[32%] ${className} bottom-1/2 right-1/2 z-50 h-3/4 translate-x-1/2 translate-y-1/2 overflow-hidden rounded-2xl border-2 border-[#0000001f] bg-white shadow-2xl`}
     >
-      <div
-        className="p-1.5 text-4xl text-lightblue cursor-pointer inline-block"
-        onClick={() => {
-          navigate(location.state);
-        }}
-      >
-        <Xcross />
-      </div>
-      <div className="w-full h-[85%] overflow-y-scroll">
-        <DataTable
-          tableHeading={tableHeadingData}
-          tableData={customerData}
-          dataNum={0}
-          pageNum={5}
-          renderRow={renderData}
-        />
+      <div className="relative h-full w-full overflow-hidden">
+        <div
+          className="inline-block cursor-pointer p-1.5 text-4xl text-lightblue"
+          onClick={() => {
+            navigate(location.state);
+          }}
+        >
+          <Xcross />
+        </div>
+        {isLoading ? (
+          <div className="absolute top-0 flex h-full w-full items-center justify-center bg-white">
+            <SimpleLoader />
+          </div>
+        ) : Array.isArray(data) && data.length > 0 ? (
+          <div className={`h-[85%] w-full overflow-auto`}>
+            <DataTable
+              tableHeading={tableHeadingData}
+              tableData={data.reverse()}
+              dataNum={0}
+              pageNum={5}
+              renderRow={renderData}
+            />
+          </div>
+        ) : (
+          <NoDataAvailable
+            className={"flex h-full w-full items-center justify-center"}
+            imageClassName={"h-[70%] w-[70%] mb-[100px]"}
+          />
+        )}
       </div>
     </div>
   );

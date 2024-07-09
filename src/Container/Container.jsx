@@ -2,7 +2,9 @@ import React from "react";
 
 function Container({ children, className }) {
   return (
-    <div className={`ml-[16%] h-screen py-5 pr-5 ${className} overflow-hidden`}>
+    <div
+      className={`min-h-screen px-3 py-5 sm:ml-[16%] sm:h-screen ${className} `}
+    >
       {children}
     </div>
   );
