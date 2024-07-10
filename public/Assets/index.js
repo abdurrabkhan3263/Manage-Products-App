@@ -7,6 +7,7 @@ import butterfly__img from "./butterfly__img.jpg";
 import login__img from "./login__img.jpg";
 import google__logo from "./google__logo.png";
 import internet__off from "./internet__off.jpg";
+import new__logo from "./new__logo.png";
 
 // ICONES
 import { MdOutlineDashboard } from "react-icons/md";
@@ -46,6 +47,7 @@ export {
   butterfly__img,
   login__img,
   google__logo,
+  new__logo,
   MdOutlineDashboard,
   Cart,
   Graph,

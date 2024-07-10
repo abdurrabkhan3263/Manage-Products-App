@@ -40,13 +40,15 @@ function DashBoard() {
         <div className="flex h-[10%] items-center justify-between">
           <div>
             <p className="text-lg font-medium">Welcome Back</p>
-            <h2 className="text-2xl font-bold text-gray-800 sm:text-3xl">
+            <h2 className="text-3xl font-bold text-gray-800">
               {currentUser?.name || ""}
             </h2>
           </div>
           <Button
             type={"button"}
-            className={"flex items-center bg-blue-600 px-4 py-1 text-white"}
+            className={
+              "hidden items-center bg-blue-600 px-4 py-1 text-white sm:flex"
+            }
             onClick={handleAddProduct}
           >
             <Add /> Add Product

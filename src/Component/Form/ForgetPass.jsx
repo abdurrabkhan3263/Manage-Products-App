@@ -129,7 +129,7 @@ function ForgetPass() {
               </span>
             </div>
           </div>
-          <div>
+          <div className="mt-[40px]">
             <Button
               type="submit"
               className="w-full bg-lightblue py-2.5 text-base text-white transition-all hover:bg-darkblue sm:py-1.5"

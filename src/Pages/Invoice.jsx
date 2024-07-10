@@ -59,9 +59,9 @@ function Invoice() {
   const renderRow = BuySellData;
 
   return (
-    <Container className="relative">
+    <Container className="relative flex flex-col sm:block">
       <Outlet />
-      <div className="flex h-[5%] items-center justify-between">
+      <div className="flex h-fit items-center justify-between sm:h-[5%]">
         <input
           type="text"
           placeholder={"Search"}
@@ -71,7 +71,7 @@ function Invoice() {
           Search <Search />
         </button>
       </div>
-      <div className={`relative mt-4 h-[89%] w-full overflow-hidden`}>
+      <div className={`relative mt-4 w-full flex-1 overflow-hidden sm:h-[89%]`}>
         <div className="h-full">
           {isLoading ? (
             <Loader />
@@ -99,6 +99,7 @@ function Invoice() {
           setPage={setPageNum}
           length={total}
           dataCount={10}
+          className={"h-fit sm:h-auto"}
         />
       )}
     </Container>

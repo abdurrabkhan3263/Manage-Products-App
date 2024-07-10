@@ -103,10 +103,10 @@ function Nav({ isSlide, setSlide }) {
                       setCurrentIndex(index);
                     }}
                   >
-                    <i className="slide_nav_bar pl-4 text-[5vw] sm:text-[2.5rem] xl:text-[1.3vw]">
+                    <i className="slide_nav_bar pl-4 text-[6vw] sm:text-[2.5rem] xl:text-[1.3vw]">
                       {navData.icon}
                     </i>
-                    <p className="slide_nav_bar text-[3vw] font-semibold sm:text-[1.5rem] xl:text-[0.9vw]">
+                    <p className="slide_nav_bar text-[3.5vw] font-semibold sm:text-[1.5rem] xl:text-[0.9vw]">
                       {navData.name}
                     </p>
                   </li>

@@ -7,7 +7,9 @@ function Pagination({ pageNum, setPage, length, dataCount, className }) {
     setPage(btnNum - 1);
   };
   return (
-    <div className={`ml sticky bottom-0 flex w-full justify-between`}>
+    <div
+      className={`ml sticky bottom-0 flex w-full justify-between ${className}`}
+    >
       <button
         className="rounded-md bg-darkblue p-2 text-white"
         onClick={() => {

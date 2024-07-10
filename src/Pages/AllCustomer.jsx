@@ -74,9 +74,9 @@ function AllCustomer() {
 
   return (
     <Container className={"relative"}>
-      <div className="relative h-full w-full">
+      <div className="relative flex h-full w-full flex-col sm:block">
         <Outlet />
-        <div className="flex h-[5%] items-center justify-between">
+        <div className="flex h-fit items-center justify-between sm:h-[5%]">
           <input
             type="text"
             placeholder={"Search"}
@@ -86,7 +86,7 @@ function AllCustomer() {
             Search <Search />
           </button>
         </div>
-        <div className="flex w-full justify-end">
+        <div className="flex h-fit w-full justify-end">
           <button
             className="mt-4 rounded-lg bg-darkblue px-4 py-2 text-base font-semibold text-white"
             onClick={handleAddContact}
@@ -94,27 +94,25 @@ function AllCustomer() {
             Add New Customer
           </button>
         </div>
-        <div className="relative mt-4 h-[83%] w-full overflow-hidden">
-          <div className="h-full bg-white">
-            {isLoading || !Array.isArray(documents) ? (
-              <Loader />
-            ) : Array.isArray(documents) && documents.length > 0 ? (
-              <DataTable
-                tableHeading={tableHeading}
-                tableData={documents}
-                dataNum={10}
-                pageNum={pageNum}
-                renderRow={renderRow}
-                tableHeadingClass={""}
-                tableRowClass={""}
-              />
-            ) : (
-              <NoDataAvailable
-                className={"flex h-full w-full items-center justify-center"}
-                imageClassName={"h-[70%] w-[70%]"}
-              />
-            )}
-          </div>
+        <div className="relative mt-4 w-full flex-1 overflow-hidden sm:h-[83%]">
+          {isLoading || !Array.isArray(documents) ? (
+            <Loader />
+          ) : Array.isArray(documents) && documents.length > 0 ? (
+            <DataTable
+              tableHeading={tableHeading}
+              tableData={documents}
+              dataNum={10}
+              pageNum={pageNum}
+              renderRow={renderRow}
+              tableHeadingClass={""}
+              tableRowClass={""}
+            />
+          ) : (
+            <NoDataAvailable
+              className={"flex h-full w-full items-center justify-center"}
+              imageClassName={"h-[70%] w-[70%]"}
+            />
+          )}
         </div>
         {total && total >= 9 && (
           <Pagination
@@ -122,6 +120,7 @@ function AllCustomer() {
             setPage={setPage}
             length={total}
             dataCount={9}
+            className={"h-fit"}
           />
         )}
       </div>
