@@ -95,7 +95,7 @@ function AllCustomer() {
           </button>
         </div>
         <div className="relative mt-4 w-full flex-1 overflow-hidden sm:h-[83%]">
-          {isLoading || !Array.isArray(documents) ? (
+          {isLoading ? (
             <Loader />
           ) : Array.isArray(documents) && documents.length > 0 ? (
             <DataTable

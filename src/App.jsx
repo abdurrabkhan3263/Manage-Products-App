@@ -18,9 +18,9 @@ function App() {
   const navigate = useNavigate();
   const { data, isError, isSuccess, isLoading } = useCurrentUser();
   const currentUser = useSelector((state) => state.user.user?.$id);
-  const cartData = useSelector((state) => state.cart);
+
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && data) {
       navigate("/");
       dispatch(login(data));
     } else if (isError) {
@@ -29,13 +29,15 @@ function App() {
     }
   }, [data, dispatch, isError, isSuccess, navigate]);
   useEffect(() => {
-    (async function () {
-      const response = await databaseService.getAllOrder(currentUser);
-      if (response && response.documents.length > 0) {
-        dispatch(addProduct({ fromDataBase: response.documents.reverse() }));
-      }
-    })();
-  }, [currentUser, navigate]);
+    if (data) {
+      (async function () {
+        const response = await databaseService.getAllOrder(currentUser);
+        if (response && response.documents.length > 0) {
+          dispatch(addProduct({ fromDataBase: response.documents.reverse() }));
+        }
+      })();
+    }
+  }, [currentUser, navigate, data]);
 
   useEffect(() => {
     const handleOnline = () => {
@@ -51,6 +53,7 @@ function App() {
       window.removeEventListener("offline", handleOffline);
     };
   }, []);
+
   if (!isOnline) {
     return (
       <div className="flex h-screen w-screen items-center justify-center">
@@ -71,21 +74,21 @@ function App() {
       ) : (
         <>
           <Outlet />
-          <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="dark"
-            transition:Bounce
-          />
         </>
       )}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition:Bounce
+      />
     </main>
   );
 }

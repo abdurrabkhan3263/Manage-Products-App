@@ -214,12 +214,13 @@ class DatabaseService {
     }
   }
 
-  async getProductList(Query = []) {
+  async getProductList(id) {
+    if (!id) return [];
     try {
       return await this.databases.listDocuments(
         conf.appWriteDatabase,
         conf.appWriteProductsListCollId,
-        Query,
+        [Query.equal("userId", id)],
       );
     } catch (error) {
       throw ("AppWrite :: Error :: Getting ProductData :: ", error);
@@ -312,7 +313,6 @@ class DatabaseService {
   }
 
   async createSell({ customerDetails, productList, userId, totalAmount }) {
-    console.log("hello");
     try {
       return await this.databases.createDocument(
         conf.appWriteDatabase,

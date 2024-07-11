@@ -8,6 +8,7 @@ import login__img from "./login__img.jpg";
 import google__logo from "./google__logo.png";
 import internet__off from "./internet__off.jpg";
 import new__logo from "./new__logo.png";
+import spinner from "./spinner.gif";
 
 // ICONES
 import { MdOutlineDashboard } from "react-icons/md";
@@ -48,6 +49,7 @@ export {
   login__img,
   google__logo,
   new__logo,
+  spinner,
   MdOutlineDashboard,
   Cart,
   Graph,

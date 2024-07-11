@@ -21,9 +21,7 @@ function Products() {
   const productDataList = useQuery({
     queryKey: ["productList"],
     queryFn: async () => {
-      const response = await databaseService.getProductList([
-        Query.equal("userId", currentUser.$id),
-      ]);
+      const response = await databaseService.getProductList(currentUser?.$id);
       if (response) {
         return response.documents;
       }
@@ -74,7 +72,7 @@ function Products() {
                 className={
                   "flex items-center justify-center sm:col-span-3 lg:col-span-4"
                 }
-                imageClassName={"h-[53%] w-[53%]"}
+                imageClassName={"sm:h-[53%] h-[100%] w-[80%] sm:w-[53%]"}
               />
             ) : (
               productDataList.data.map((data, index) => {

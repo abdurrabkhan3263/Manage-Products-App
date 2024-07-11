@@ -5,11 +5,9 @@ import "./index.css";
 import {
   DashBoard,
   Products,
-  Statics,
   AllCustomer,
   Invoice,
   Navigation,
-  Login,
   Cart,
 } from "./Pages/index.js";
 import {

@@ -31,7 +31,6 @@ function CustomerRowData(data, sr) {
       });
     }
   }, [isShow]);
-  console.log(data);
   return (
     <>
       <tr>

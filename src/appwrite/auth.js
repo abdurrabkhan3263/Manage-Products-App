@@ -78,7 +78,6 @@ object with `name`, `email`, and `password` properties as parameters. */
     } catch (error) {
       throw new Error("AppWrite :: Error :: Get Current User :: , ", error);
     }
-    return null;
   }
 
   //   async phoneVerification() {

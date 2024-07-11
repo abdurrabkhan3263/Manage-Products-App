@@ -19,9 +19,6 @@ function ShowLogout({ isShow, setShow }) {
       navigate("/login");
       dispatch(logout());
     },
-    onError: (error) => {
-      console.log(error);
-    },
   });
   const handleLogout = () => {
     logoutMutation.mutate();

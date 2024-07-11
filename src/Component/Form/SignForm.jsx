@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Input } from "../UI";
 import { useForm } from "react-hook-form";
-import { CloseEye, OpenEye } from "../../../public/Assets";
+import { CloseEye, OpenEye, spinner } from "../../../public/Assets";
 import { authService } from "../../appwrite";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toastFunction } from "../../utils/toastFunction";
+import Loader from "../../Assets/Loader";
 
 function SignForm() {
   const {
@@ -13,9 +14,12 @@ function SignForm() {
     handleSubmit,
     setFocus,
     getValues,
+    setError,
     formState: { errors },
   } = useForm();
   const [passHidden, setPassHidden] = useState(true);
+  const [submitError, setSubmitError] = useState("");
+  const [submissionLoading, setSubmissionLoading] = useState(false);
   const useClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -33,43 +37,35 @@ function SignForm() {
   }, [setFocus]);
   const auth = useMutation({
     mutationKey: ["sign"],
-    mutationFn: async (data) => await authService.createAccount(data),
+    mutationFn: async (data) => {
+      const response = await authService.createAccount(data);
+      return response;
+    },
     onError: (error) => {
+      setSubmissionLoading(false);
+      setSubmitError(error.message);
       toastFunction({ type: "error", message: error.message });
     },
     onSuccess: async () => {
-      toastFunction({
-        type: "success",
-        message: "Your account has been created successfully!",
-        theme: "colored",
-        closeTime: 1500,
-      });
+      setSubmissionLoading(false);
       const loginData = await authService.loginAccount({
         email: getValues("email"),
         password: getValues("password"),
       });
-      if (loginData) {
-        setTimeout(() => {
-          navigate("/");
-        }, 1600);
-      }
+      navigate("/");
       useClient.invalidateQueries({ queryKey: ["signup"] });
     },
   });
   const onSubmit = async (data) => {
     if (!data.name.trim()) {
       setFocus("name");
+      setError("name", { message: "Name is required" });
       toastFunction({ type: "warn", message: "Name is Required" });
       return;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
       setFocus("email");
+      setError("email", { message: "Invalid email address" });
       toastFunction({ type: "warn", message: "Invalid Email Address" });
-      return;
-    } else if (data.password.trim().length < 8) {
-      toastFunction({
-        type: "warn",
-        message: "Password is required and must be 8 to 13 character long",
-      });
       return;
     } else if (
       !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
@@ -77,6 +73,10 @@ function SignForm() {
       )
     ) {
       setFocus("password");
+      setError("password", {
+        message:
+          "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character",
+      });
       toastFunction({
         type: "warn",
         message:
@@ -84,11 +84,26 @@ function SignForm() {
       });
       return;
     }
+    setSubmissionLoading(true);
     auth.mutate(data);
   };
+
   return (
     <div className="flex h-[85%] w-full flex-col items-center justify-between">
-      <div className="max-h-[75px] min-h-[75px] px-7 text-center capitalize"></div>
+      <div className="max-h-[75px] min-h-[75px] px-7 text-center capitalize">
+        <p className="font-semibold text-red-500">
+          {errors?.name && errors.name.message}
+        </p>
+        <p className="font-semibold text-red-500">
+          {errors?.email && errors.email.message}
+        </p>
+        <p className="font-semibold text-red-500">
+          {errors?.password && errors.password.message}
+        </p>
+        <p className="font-semibold text-red-500">
+          {submitError && submitError}
+        </p>
+      </div>
       <div className="w-full flex-grow px-7 sm:px-0 xl:px-7">
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -126,9 +141,15 @@ function SignForm() {
           <div className="mt-[40px]">
             <Button
               type="submit"
-              className="w-full bg-lightblue py-2.5 text-base text-white transition-all hover:bg-darkblue sm:py-1.5"
+              className="flex w-full items-center justify-center gap-2 bg-lightblue py-2.5 text-base text-white transition-all hover:bg-darkblue sm:py-1.5"
             >
-              Sign Up
+              <p>Sign Up</p>
+              <img
+                src={spinner}
+                alt="loading"
+                width={"12%"}
+                className={`${submissionLoading ? "block" : "hidden"} `}
+              />
             </Button>
           </div>
         </form>

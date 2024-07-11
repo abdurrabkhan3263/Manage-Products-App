@@ -81,7 +81,7 @@ function AddProduct({ productData }) {
   const mutation = useMutation({
     mutationKey: ["addProduct"],
     mutationFn: async (data) => {
-      data.userId = currentUser.$id;
+      data.userId = currentUser?.$id;
       return await databaseService.createProductDetails({ ...data });
     },
     onError: (error) => {
@@ -99,7 +99,7 @@ function AddProduct({ productData }) {
   const mutationforUpdate = useMutation({
     mutationKey: ["addProduct"],
     mutationFn: async (data) => {
-      data.userId = currentUser.$id;
+      data.userId = currentUser?.$id;
       return await databaseService.updateProductDetails(id, { ...data });
     },
     onError: (error) => {

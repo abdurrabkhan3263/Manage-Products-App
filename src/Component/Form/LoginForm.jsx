@@ -11,54 +11,75 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authService } from "../../appwrite";
 import { useDispatch } from "react-redux";
-import { login, logout } from "../../store/slice";
 import { toastFunction } from "../../utils/toastFunction";
+import { spinner } from "../../../public/Assets";
 
 function LoginForm() {
   const {
     register,
     handleSubmit,
     setFocus,
+    setError,
     formState: { errors },
   } = useForm();
   const [passHidden, setPassHidden] = useState(true);
+  const [submissionLoading, setSubmissionLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const useClient = useQueryClient();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+
   useEffect(() => {
     setFocus("email");
   }, [setFocus]);
   const authLogin = useMutation({
     mutationKey: ["login"],
-    mutationFn: async (data) => authService.loginAccount(data),
+    mutationFn: async (data) => {
+      const response = await authService.loginAccount(data);
+      return response;
+    },
     onError: (error) => {
+      setSubmissionLoading(false);
+      setSubmitError(error.message);
       toastFunction({ type: "error", message: error.message });
     },
     onSuccess: () => {
-      toastFunction({
-        type: "success",
-        message: "Logged In Successfully",
-        closeTime: 1500,
-      });
-      setTimeout(() => {
-        navigate("/");
-      }, 1600);
+      setSubmissionLoading(false);
+      navigate("/");
       useClient.invalidateQueries({ queryKey: ["login"] });
     },
   });
   const formSubmit = (data) => {
     if (!data.email.trim() || !data.password.trim()) {
+      setError("email", {
+        type: "manual",
+        message: "Email is required",
+      });
+      setError("password", {
+        type: "manual",
+        message: "Password is required",
+      });
       toastFunction({
         type: "warn",
         message: "Email and Password is Required",
       });
       return;
     }
+    setSubmissionLoading(true);
     authLogin.mutate(data);
   };
   return (
     <div className="flex h-[85%] flex-col items-center justify-between">
-      <div className="max-h-[75px] min-h-[75px] px-7 text-center capitalize"></div>
+      <div className="max-h-[75px] min-h-[75px] px-7 text-center capitalize">
+        <p className="font-semibold text-red-500">
+          {errors.email && errors.email.message}
+        </p>
+        <p className="font-semibold text-red-500">
+          {errors.password && errors.password.message}
+        </p>
+        <p className="font-semibold text-red-500">
+          {submitError && submitError}
+        </p>
+      </div>
       <div className="h-full w-full px-7 sm:px-0 xl:px-7">
         <div className="flex h-[55px] w-full cursor-pointer items-center justify-center gap-x-2 rounded-full border border-black bg-white sm:h-[50px]">
           <img src={google__logo} alt="google__logo" className="h-[60%]" />
@@ -99,12 +120,16 @@ function LoginForm() {
                 <Link to={"/forget"}>Forget Password</Link>
               </div>
               <Button
-                type={"submit"}
-                className={
-                  "w-full bg-lightblue py-2.5 text-base text-white transition-all hover:bg-darkblue sm:py-1.5"
-                }
+                type="submit"
+                className="relative flex w-full items-center justify-center gap-2 bg-lightblue py-2.5 text-base text-white transition-all hover:bg-darkblue sm:py-1.5"
               >
-                Login In
+                <p>Login In</p>
+                <img
+                  src={spinner}
+                  alt="loading"
+                  width={"12%"}
+                  className={`${submissionLoading ? "block" : "hidden"} h-fit`}
+                />
               </Button>
             </div>
           </form>

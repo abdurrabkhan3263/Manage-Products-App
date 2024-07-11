@@ -112,7 +112,7 @@ function AddContact({ contactData }) {
       const imageData = await addImage(data.customerImage[0]);
       data.customerImage = imageData.href;
       data.customerImageId = imageData.id;
-      data.belongsTo = currentUser.$id;
+      data.belongsTo = currentUser?.$id;
       customerAdd.mutate(data);
     }
   };

@@ -14,6 +14,7 @@ import { ShowLogout } from "../index.js";
 
 function Nav({ isSlide, setSlide }) {
   const localIndex = JSON.parse(localStorage.getItem("index"));
+  const [userData, setUserData] = useState({});
   const currentUser = useSelector((state) => state.user.user);
   const [currentIndex, setCurrentIndex] = useState(
     (localIndex && localIndex.index) || 0,
