@@ -7,6 +7,8 @@ import { authService } from "../../appwrite";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toastFunction } from "../../utils/toastFunction";
 import Loader from "../../Assets/Loader";
+import { useDispatch } from "react-redux";
+import { login } from "../../store/slice";
 
 function SignForm() {
   const {
@@ -22,6 +24,7 @@ function SignForm() {
   const [submissionLoading, setSubmissionLoading] = useState(false);
   const useClient = useQueryClient();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     register("email", {
@@ -53,7 +56,8 @@ function SignForm() {
         password: getValues("password"),
       });
       navigate("/");
-      useClient.invalidateQueries({ queryKey: ["signup"] });
+      dispatch(login(loginData));
+      useClient.invalidateQueries({ queryKey: ["login"] });
     },
   });
   const onSubmit = async (data) => {

@@ -7,7 +7,6 @@ import useCurrentUser from "./Hook/useCurrentUser";
 import { databaseService } from "./appwrite";
 import { addProduct } from "./store/thunkFile";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, Bounce } from "react-toastify";
 import { MainLoader } from "./Assets";
 import { internet__off } from "../public/Assets";
 
@@ -76,19 +75,6 @@ function App() {
           <Outlet />
         </>
       )}
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-        transition:Bounce
-      />
     </main>
   );
 }

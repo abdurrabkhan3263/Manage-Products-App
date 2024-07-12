@@ -32,6 +32,7 @@ import {
 } from "./Component/index.js";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ToastContainer, Bounce } from "react-toastify";
 
 const route = createBrowserRouter(
   createRoutesFromElements(
@@ -89,11 +90,27 @@ const useClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    {/* <React.StrictMode> */}
-    <QueryClientProvider client={useClient}>
-      <RouterProvider router={route} />
-      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
-    </QueryClientProvider>
-    {/* </React.StrictMode> */}
+    <React.StrictMode>
+      <QueryClientProvider client={useClient}>
+        <RouterProvider router={route} />
+        <ReactQueryDevtools
+          initialIsOpen={false}
+          buttonPosition="bottom-left"
+        />
+      </QueryClientProvider>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition={false}
+      />
+    </React.StrictMode>
   </Provider>,
 );

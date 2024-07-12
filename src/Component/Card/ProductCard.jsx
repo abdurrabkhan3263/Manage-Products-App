@@ -9,6 +9,7 @@ import { databaseService } from "../../appwrite";
 import { addProduct } from "../../store/thunkFile";
 import { toastFunction } from "../../utils/toastFunction";
 import AddButton from "../../Assets/AddButton";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 function ProductCard({ productData }) {
   const {
@@ -28,12 +29,9 @@ function ProductCard({ productData }) {
   });
   const dispatch = useDispatch();
   const [quantity, setQuantity] = useState(1);
-  const [deleteData, setDeleteData] = useState({
-    isShow: false,
-    deleteFun: databaseService.deleteProduct,
-    mainId: $id,
-    imgId: productImageId,
-  });
+  const [showDelete, setShowDelete] = useState(false);
+  const [confirm, setConfirm] = useState(false);
+
   const { register, handleSubmit, setValue, getValues } = useForm({
     defaultValues: {
       productQuantity: 1,
@@ -82,8 +80,8 @@ function ProductCard({ productData }) {
   const handleProductEdit = () => {
     navigate(`editproduct/${$id}`, { state: "/products" });
   };
-  const handleProductDelete = () => {
-    setDeleteData((prev) => ({ ...prev, isShow: true }));
+  const handleProductShowDelete = () => {
+    setShowDelete((prev) => !prev);
   };
   const optionMemo = useMemo(
     () => priceData.productOptionData,
@@ -108,12 +106,50 @@ function ProductCard({ productData }) {
       message: "Product is Added Successfully",
     });
   };
+
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationKey: ["deleteProduct"],
+    mutationFn: async (id) => {
+      return await databaseService.deleteProduct(id);
+    },
+    onSuccess: () => {
+      setShowDelete(false);
+      queryClient.invalidateQueries({
+        queryKey: ["productList"],
+      });
+      toastFunction({
+        type: "success",
+        message: "Deleted SuccessFully",
+      });
+    },
+    onError: (error) => {
+      console.log(error.message);
+    },
+  });
+
+  const handleProductDelete = async () => {
+    if (!$id) return;
+    deleteMutation.mutate($id);
+    if (!productImageId) return;
+    await databaseService.deleteProductImg(productImageId);
+  };
+
+  useEffect(() => {
+    if (confirm) {
+      handleProductDelete();
+    }
+  }, [confirm]);
+
   return (
     <div className="w-full">
       <DataDelete
-        deleteData={deleteData}
-        setDeleteData={setDeleteData}
-        key={"productList"}
+        showDelete={showDelete}
+        setShowDelete={setShowDelete}
+        confirm={confirm}
+        setConfirm={setConfirm}
+        deletionLoader={deleteMutation.isPending}
       />
       <div className="relative">
         <Outlet />
@@ -126,7 +162,7 @@ function ProductCard({ productData }) {
           <Edit />
         </div>
         <div
-          onClick={handleProductDelete}
+          onClick={handleProductShowDelete}
           className="absolute left-0 top-0 flex cursor-pointer items-center justify-center rounded-full p-3 text-[26px]"
         >
           <Delete />

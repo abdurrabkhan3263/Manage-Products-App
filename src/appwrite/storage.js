@@ -1,6 +1,6 @@
-import { current } from "@reduxjs/toolkit";
 import conf from "../config/config";
 import { Client, Databases, Storage, ID, Query } from "appwrite";
+import authService from "./auth";
 
 const findPercentage = (thisMonth, lastMonth) => {
   if (lastMonth === 0) {
@@ -591,6 +591,31 @@ class DatabaseService {
       throw ("AppWrite :: Error :: Get Pdf For Download :: ", error);
     }
   }
+
+  async deleteCustomerInvoice(user_id) {
+    if (!user_id) return;
+    try {
+      const invoiceList = await this.databases.listDocuments(
+        conf.appWriteDatabase,
+        conf.appWriteCreateSell,
+        [Query.equal("userId", user_id)],
+      );
+
+      await Promise.all(
+        invoiceList.map(async (data) => {
+          return await this.databases.deleteDocument(
+            conf.appWriteDatabase,
+            conf.appWriteCreateSell,
+            data?.$id,
+          );
+        }),
+      );
+    } catch (error) {
+      throw new Error(
+        `Something went wrong while deleting the customer ${error}`,
+      );
+    }
+  }
 }
 
 class DashBoardService extends DatabaseService {
@@ -599,11 +624,12 @@ class DashBoardService extends DatabaseService {
     this.totalCustomerWithPercentage =
       this.totalCustomerWithPercentage.bind(this);
   }
-  async getAllSellData() {
+  async getAllSellData(user_id) {
     try {
       const { documents, total } = await this.databases.listDocuments(
         conf.appWriteDatabase,
         conf.appWriteCreateSell,
+        [Query.equal("userId", user_id)],
       );
       return { documents, total };
     } catch (error) {
@@ -611,11 +637,12 @@ class DashBoardService extends DatabaseService {
     }
   }
 
-  async totalCustomerWithPercentage() {
+  async totalCustomerWithPercentage(user_id) {
     try {
       const { documents, total } = await this.databases.listDocuments(
         conf.appWriteDatabase,
         conf.appWriteCustomerDetailsCollId,
+        [Query.equal("belongsTo", user_id)],
       );
 
       const currentDate = new Date();
@@ -653,22 +680,23 @@ class DashBoardService extends DatabaseService {
     }
   }
 
-  async getSellToday() {
+  async getSellToday(user_id) {
     const currentDay = getCustomDate(0);
     const yesterDay = getCustomDate(1);
     const nextToYesterDay = getCustomDate(2);
 
-    const { documents } = await this.getAllSellData();
+    const { documents } = await this.getAllSellData(user_id);
 
     let currentDaySell = 0;
     let previousDaySell = 0;
 
-    for (let i = documents.length - 1; i > 0; i--) {
+    for (let i = documents.length - 1; i >= 0; i--) {
       const current = documents[i];
       let [year, month, day] = current.$createdAt.split("-");
       year = Number(year);
       month = Number(month);
       day = Number(day.slice(0, 2));
+      // console.log(current);
       if (
         year === currentDay.year &&
         month === currentDay.month &&
@@ -695,8 +723,8 @@ class DashBoardService extends DatabaseService {
     return { currentDaySell, percentage };
   }
 
-  async getMonthlySell() {
-    const { documents } = await this.getAllSellData();
+  async getMonthlySell(user_id) {
+    const { documents } = await this.getAllSellData(user_id);
 
     const date = new Date();
     const currentMonth = date.getMonth() + 1;
@@ -726,8 +754,8 @@ class DashBoardService extends DatabaseService {
     return { currentMonthTotalSell, percentage };
   }
 
-  async getYearlySell() {
-    const { documents } = await this.getAllSellData();
+  async getYearlySell(user_id) {
+    const { documents } = await this.getAllSellData(user_id);
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const previousYear = currentYear - 1;
@@ -752,8 +780,8 @@ class DashBoardService extends DatabaseService {
     return { currentYearTotalAmount, percentage };
   }
 
-  async getYearlySellByMonth() {
-    const { documents } = await this.getAllSellData();
+  async getYearlySellByMonth(user_id) {
+    const { documents } = await this.getAllSellData(user_id);
     const date = new Date();
     const fullYear = date.getFullYear();
 
@@ -801,12 +829,12 @@ class DashBoardService extends DatabaseService {
     return totalSellData;
   }
 
-  async getTopBuyingCustomer() {
+  async getTopBuyingCustomer(user_id) {
     try {
       const { documents = [] } = await this.databases.listDocuments(
         conf.appWriteDatabase,
         conf.appWriteCustomerDetailsCollId,
-        [Query.orderDesc("totalPrice")],
+        [Query.orderDesc("totalPrice"), Query.equal("belongsTo", user_id)],
       );
       return documents;
     } catch (error) {
@@ -816,14 +844,14 @@ class DashBoardService extends DatabaseService {
     }
   }
 
-  async getProductBySellAmount() {
+  async getProductBySellAmount(user_id) {
     try {
       const { documents: sellDocList = [] } =
         await this.databases.listDocuments(
           conf.appWriteDatabase,
           conf.appWriteCreateSell,
+          [Query.equal("userId", user_id)],
         );
-
       const totalProductAmount = sellDocList.reduce((acc, current) => {
         const productList = JSON.parse(current.productList);
         productList.forEach((items) => {
@@ -869,33 +897,38 @@ class DashBoardService extends DatabaseService {
 
   async allData() {
     try {
-      const [
-        totalCustomer,
-        sellToday,
-        monthlySell,
-        yearlySell,
-        yearlySellByMonth,
-        TopBuyingCustomer,
-        productBySell,
-      ] = await Promise.all([
-        this.totalCustomerWithPercentage(),
-        this.getSellToday(),
-        this.getMonthlySell(),
-        this.getYearlySell(),
-        this.getYearlySellByMonth(),
-        this.getTopBuyingCustomer(),
-        this.getProductBySellAmount(),
-      ]);
+      const currentSession = await authService.getCurrentUser();
+      console.log(currentSession?.$id);
 
-      return {
-        totalCustomer,
-        sellToday,
-        monthlySell,
-        yearlySell,
-        yearlySellByMonth,
-        TopBuyingCustomer,
-        productBySell,
-      };
+      if (currentSession) {
+        const [
+          totalCustomer,
+          sellToday,
+          monthlySell,
+          yearlySell,
+          yearlySellByMonth,
+          TopBuyingCustomer,
+          productBySell,
+        ] = await Promise.all([
+          this.totalCustomerWithPercentage(currentSession?.$id),
+          this.getSellToday(currentSession?.$id),
+          this.getMonthlySell(currentSession?.$id),
+          this.getYearlySell(currentSession?.$id),
+          this.getYearlySellByMonth(currentSession?.$id),
+          this.getTopBuyingCustomer(currentSession?.$id),
+          this.getProductBySellAmount(currentSession?.$id),
+        ]);
+
+        return {
+          totalCustomer,
+          sellToday,
+          monthlySell,
+          yearlySell,
+          yearlySellByMonth,
+          TopBuyingCustomer,
+          productBySell,
+        };
+      }
     } catch (error) {
       throw new Error(`Something went wrong ${error}`);
     }

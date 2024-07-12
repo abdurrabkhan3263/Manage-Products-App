@@ -13,6 +13,7 @@ import { authService } from "../../appwrite";
 import { useDispatch } from "react-redux";
 import { toastFunction } from "../../utils/toastFunction";
 import { spinner } from "../../../public/Assets";
+import { login } from "../../store/slice";
 
 function LoginForm() {
   const {
@@ -27,6 +28,7 @@ function LoginForm() {
   const [submitError, setSubmitError] = useState("");
   const useClient = useQueryClient();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setFocus("email");
@@ -42,8 +44,9 @@ function LoginForm() {
       setSubmitError(error.message);
       toastFunction({ type: "error", message: error.message });
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       setSubmissionLoading(false);
+      dispatch(login(data));
       navigate("/");
       useClient.invalidateQueries({ queryKey: ["login"] });
     },
