@@ -18,6 +18,7 @@ const AllCustomerData = (data, setIsDelete) => {
   const seeProduct = useSelector((state) => state.seeProductList);
   const [showDelete, setShowDelete] = useState(false);
   const [confirm, setConfirm] = useState(false);
+
   // const [deleteData, setDeleteData] = useState({
   //   isShow: false,
   //   deleteFun: databaseService.deleteCustomer,
@@ -30,7 +31,10 @@ const AllCustomerData = (data, setIsDelete) => {
   const deleteMutation = useMutation({
     mutationKey: ["deleteProduct"],
     mutationFn: async (id) => {
-      return await databaseService.deleteCustomer(id);
+      let deleteCustomer = await databaseService.deleteCustomer(id);
+      if ("message" in deleteCustomer) {
+        return await databaseService.deleteCustomerInvoice(id);
+      }
     },
     onSuccess: async (data) => {
       queryClient.invalidateQueries({
@@ -40,7 +44,6 @@ const AllCustomerData = (data, setIsDelete) => {
         type: "success",
         message: `${data?.customerName || ""} Deleted SuccessFully`,
       });
-      await databaseService.deleteCustomerInvoice(data?.$id);
       setShowDelete(false);
     },
     onError: (error) => {

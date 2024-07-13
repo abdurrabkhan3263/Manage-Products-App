@@ -36,7 +36,7 @@ const BuySellData = (data) => {
       });
       toastFunction({
         type: "success",
-        message: `${(customerName, " s")} Invoice Deleted SuccessFully`,
+        message: `Invoice Deleted SuccessFully`,
       });
     },
     onError: (error) => {

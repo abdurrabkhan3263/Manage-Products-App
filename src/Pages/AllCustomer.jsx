@@ -1,26 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Container from "../Container/Container";
-import { Search, Edit, Phone, Delete } from "../../public/Assets";
+import { Search } from "../../public/Assets";
 import { useNavigate, Outlet } from "react-router-dom";
-import { DataDelete, DataTable, Pagination } from "../Component";
+import { DataTable, Pagination } from "../Component";
 import AllCustomerData from "../Component/DataTable/AllCustomerData";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { databaseService } from "../appwrite";
-import { Query } from "appwrite";
 import { useSelector } from "react-redux";
 import { Loader, NoDataAvailable } from "../Assets";
+import _debounce from "lodash/debounce";
 
 function AllCustomer() {
   const navigate = useNavigate();
   const [pageNum, setPage] = useState(0);
-  const [deleteData, setDeleteData] = useState({
-    isShow: false,
-    deleteFun: databaseService.deleteCustomer,
-    mainId: "",
-    imgId: "",
-  });
+
+  // const [deleteData, setDeleteData] = useState({
+  //   isShow: false,
+  //   deleteFun: databaseService.deleteCustomer,
+  //   mainId: "",
+  //   imgId: "",
+  // });
+
   const currentUser = useSelector((state) => state.user?.user);
-  const {
+  let {
     data: { documents } = "",
     data: { total } = "",
     isError,
@@ -37,6 +39,7 @@ function AllCustomer() {
     },
     retryOnMount: true,
   });
+
   const handleAddContact = () => {
     navigate("addcontact", { state: "/allcustomer" });
   };
@@ -70,6 +73,20 @@ function AllCustomer() {
       name: "Action",
     },
   ];
+
+  const handleGettingCustomer = _debounce((e) => {
+    const value = e.target.value.toLowerCase();
+    if (!value.trim()) {
+      console.log(documents);
+    } else {
+      const newDocuments = documents.filter((items) => {
+        const customerName = items.customerName.toLowerCase();
+        return customerName.includes(value);
+      });
+      console.log(newDocuments);
+    }
+  }, 800);
+
   const renderRow = AllCustomerData;
 
   return (
@@ -79,12 +96,10 @@ function AllCustomer() {
         <div className="flex h-fit items-center justify-between sm:h-[5%]">
           <input
             type="text"
-            placeholder={"Search"}
+            placeholder={"Search customer"}
             className="w-full rounded-md bg-[#f1f1f1] px-2 py-2 text-black outline-none focus:bg-[#e4e4e4]"
+            onChange={handleGettingCustomer}
           />
-          <button className="ml-7 flex items-center justify-center gap-4 rounded-md bg-darkblue px-4 py-1 text-xl text-white">
-            Search <Search />
-          </button>
         </div>
         <div className="flex h-fit w-full justify-end">
           <button
@@ -118,7 +133,7 @@ function AllCustomer() {
           <Pagination
             pageNum={pageNum}
             setPage={setPage}
-            length={total}
+            length={total2 || total}
             dataCount={9}
             className={"h-fit"}
           />

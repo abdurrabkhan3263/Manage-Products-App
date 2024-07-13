@@ -7,6 +7,7 @@ import { databaseService } from "../../../appwrite";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { addCustomer, clearCustomer } from "../../../store/slice";
+import _debounce from "lodash/debounce";
 
 function SearchSection() {
   const customerName =
@@ -19,16 +20,32 @@ function SearchSection() {
   const userDetails = useSelector((state) => state.customerDetailsOfOrder);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  React.useEffect(() => {
-    if (inputValue.trim().length <= 0) {
-      return setCustomer([]);
-    }
-    if (userId && inputValue.trim().length > 0) {
-      databaseService
-        .getCustomerBySearch(userId, inputValue)
-        .then((response) => {
+
+  const getCustomer = React.useCallback(
+    _debounce((value) => {
+      console.log("hello");
+      if (value.trim().length <= 0) {
+        return setCustomer([]);
+      }
+      if (userId && value.trim().length > 0) {
+        databaseService.getCustomerBySearch(userId, value).then((response) => {
           setCustomer(response.documents);
         });
+      }
+    }, 800),
+    [userId],
+  );
+
+  const changeInput = (value) => {
+    setInputValue(value);
+    getCustomer(value);
+  };
+
+  React.useEffect(() => {
+    if (inputValue.trim().length <= 0) {
+      setCustomer([]);
+    }
+    if (userId && inputValue.trim().length > 0) {
       if (
         Object.keys(userDetails).length > 0 &&
         inputValue !== userDetails.customerName
@@ -36,7 +53,8 @@ function SearchSection() {
         dispatch(clearCustomer());
       }
     }
-  }, [inputValue, userId]);
+  }, [inputValue, userId, userDetails, dispatch]);
+
   return (
     <div className="relative flex h-full w-full flex-col items-center justify-center gap-y-4 px-2 py-0.5">
       <div className="flex w-full justify-end">
@@ -60,7 +78,9 @@ function SearchSection() {
               "flex-1 border-none p-2 outline-none placeholder:text-gray-500"
             }
             placeholder="Search Customer"
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              changeInput(e.target.value);
+            }}
           />
           <span className="ml-2 flex-none cursor-pointer text-2xl text-gray-500">
             {inputValue.length > 0 ? (

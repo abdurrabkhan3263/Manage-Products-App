@@ -44,8 +44,8 @@ function ProductCard({ productData }) {
       return;
     }
     productPrice
-      ? setValue("productAmount", quantity * productPrice)
-      : setValue("productAmount", quantity * priceData.productPrice);
+      ? setValue("productAmount", (quantity || 1) * productPrice)
+      : setValue("productAmount", (quantity || 1) * priceData.productPrice);
   }, [priceData.productPrice, productPrice, quantity]);
   useEffect(() => {
     const parsedData = JSON.parse(productPriceOption);
@@ -87,6 +87,9 @@ function ProductCard({ productData }) {
     () => priceData.productOptionData,
     [priceData.productOptionData],
   );
+
+  // Cart Submit functionality
+
   const handleFormSubmit = async (data) => {
     dispatch(
       addProduct({
@@ -98,14 +101,16 @@ function ProductCard({ productData }) {
           price: priceData.productPrice,
         }),
         productPrice: parseFloat(priceData.productPrice),
-        productQuantity: parseInt(priceData.quantity),
+        productQuantity: parseInt(priceData.quantity || 1),
       }),
     );
     toastFunction({
       type: "success",
-      message: "Product is Added Successfully",
+      message: `${productName || ""} is Added Successfully`,
     });
   };
+
+  // Card Delete functionality
 
   const queryClient = useQueryClient();
 
@@ -121,7 +126,7 @@ function ProductCard({ productData }) {
       });
       toastFunction({
         type: "success",
-        message: "Deleted SuccessFully",
+        message: `${productName || ""} is Deleted SuccessFully`,
       });
     },
     onError: (error) => {

@@ -593,23 +593,30 @@ class DatabaseService {
   }
 
   async deleteCustomerInvoice(user_id) {
+    console.log(user_id);
     if (!user_id) return;
     try {
-      const invoiceList = await this.databases.listDocuments(
+      const { documents = "" } = await this.databases.listDocuments(
         conf.appWriteDatabase,
         conf.appWriteCreateSell,
-        [Query.equal("userId", user_id)],
+        [Query.equal("customerDetails", user_id)],
       );
 
-      await Promise.all(
-        invoiceList.map(async (data) => {
-          return await this.databases.deleteDocument(
-            conf.appWriteDatabase,
-            conf.appWriteCreateSell,
-            data?.$id,
-          );
-        }),
-      );
+      console.log(documents);
+
+      Array.isArray(documents) &&
+        documents.length > 0 &&
+        (await Promise.all(
+          documents.map((data) => {
+            return this.databases.deleteDocument(
+              conf.appWriteDatabase,
+              conf.appWriteCreateSell,
+              data?.$id,
+            );
+          }),
+        ));
+      console.log("successful");
+      return { status: "successful" };
     } catch (error) {
       throw new Error(
         `Something went wrong while deleting the customer ${error}`,

@@ -8,6 +8,7 @@ import { databaseService } from "../appwrite";
 import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 import { Loader, NoDataAvailable } from "../Assets";
+import _debounce from "lodash/debounce";
 
 function Invoice() {
   const [pageNum, setPageNum] = useState(0);
@@ -56,6 +57,10 @@ function Invoice() {
     },
   ];
 
+  const handleGettingCustomerInvoice = _debounce((e) => {
+    console.log(e.target.value);
+  }, 1200);
+
   const renderRow = BuySellData;
 
   return (
@@ -66,6 +71,7 @@ function Invoice() {
           type="text"
           placeholder={"Search"}
           className="w-full rounded-md bg-[#f1f1f1] px-2 py-2 text-black outline-none focus:bg-[#e4e4e4]"
+          onChange={handleGettingCustomerInvoice}
         />
         <button className="ml-7 flex items-center justify-center gap-4 rounded-md bg-darkblue px-4 py-1 text-xl text-white">
           Search <Search />
