@@ -23,7 +23,6 @@ function SearchSection() {
 
   const getCustomer = React.useCallback(
     _debounce((value) => {
-      console.log("hello");
       if (value.trim().length <= 0) {
         return setCustomer([]);
       }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Container from "../Container/Container";
 import { Search } from "../../public/Assets/index";
 import { Outlet } from "react-router-dom";
@@ -10,14 +10,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader, NoDataAvailable } from "../Assets";
 import _debounce from "lodash/debounce";
 
+const PAGE_SIZE = 9;
+
 function Invoice() {
   const [pageNum, setPageNum] = useState(0);
+  const [searchVal, setSearchVal] = useState("");
   const currentUser = useSelector((state) => state.user.user?.$id);
-  const {
-    data: { data } = [],
-    data: { total } = "",
-    isLoading,
-  } = useQuery({
+
+  const { data, isLoading } = useQuery({
     queryKey: ["invoiceData", pageNum],
     queryFn: async () => {
       const response = await databaseService.getInvoice(
@@ -29,6 +29,9 @@ function Invoice() {
     refetchOnReconnect: "always",
     enabled: !!currentUser,
   });
+
+  const documents = data?.data || [];
+  const total = data?.total || 0;
 
   const tableHeading = [
     {
@@ -57,9 +60,18 @@ function Invoice() {
     },
   ];
 
+  const filteredData = useMemo(() => {
+    if (!searchVal.trim()) return documents;
+    return documents.filter((item) =>
+      item.customerName.toLowerCase().includes(searchVal.toLowerCase()),
+    );
+  }, [searchVal, documents]);
+
   const handleGettingCustomerInvoice = _debounce((e) => {
-    console.log(e.target.value);
-  }, 1200);
+    setSearchVal(e.target.value);
+  }, 300);
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   const renderRow = BuySellData;
 
@@ -69,23 +81,20 @@ function Invoice() {
       <div className="flex h-fit items-center justify-between sm:h-[5%]">
         <input
           type="text"
-          placeholder={"Search"}
+          placeholder={"Search invoice"}
           className="w-full rounded-md bg-[#f1f1f1] px-2 py-2 text-black outline-none focus:bg-[#e4e4e4]"
           onChange={handleGettingCustomerInvoice}
         />
-        <button className="ml-7 flex items-center justify-center gap-4 rounded-md bg-darkblue px-4 py-1 text-xl text-white">
-          Search <Search />
-        </button>
       </div>
       <div className={`relative mt-4 w-full flex-1 overflow-hidden sm:h-[89%]`}>
         <div className="h-full">
           {isLoading ? (
             <Loader />
-          ) : Array.isArray(data) && data.length > 0 ? (
+          ) : filteredData.length > 0 ? (
             <DataTable
               tableHeading={tableHeading}
-              tableData={data}
-              dataNum={10}
+              tableData={filteredData}
+              dataNum={PAGE_SIZE}
               pageNum={pageNum}
               renderRow={renderRow}
               tableHeadingClass={""}
@@ -99,12 +108,12 @@ function Invoice() {
           )}
         </div>
       </div>
-      {data && (total >= 10 || pageNum > 0) && (
+      {totalPages > 1 && (
         <Pagination
           pageNum={pageNum}
           setPage={setPageNum}
           length={total}
-          dataCount={10}
+          dataCount={PAGE_SIZE}
           className={"h-fit sm:h-auto"}
         />
       )}

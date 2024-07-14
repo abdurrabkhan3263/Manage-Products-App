@@ -1,102 +1,78 @@
-import { useState } from "react";
-import Container from "../Container/Container";
-import { Search } from "../../public/Assets";
+import React, { useMemo, useState, useCallback } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
+import _debounce from "lodash/debounce";
+
+import Container from "../Container/Container";
 import { DataTable, Pagination } from "../Component";
 import AllCustomerData from "../Component/DataTable/AllCustomerData";
-import { useQuery } from "@tanstack/react-query";
 import { databaseService } from "../appwrite";
-import { useSelector } from "react-redux";
 import { Loader, NoDataAvailable } from "../Assets";
-import _debounce from "lodash/debounce";
+
+const PAGE_SIZE = 9;
+
+const tableHeading = [
+  { id: 1, name: "Image" },
+  { id: 2, name: "Name" },
+  { id: 3, name: "Phone Number" },
+  { id: 4, name: "Address" },
+  { id: 5, name: "History" },
+  { id: 6, name: "Total Amount" },
+  { id: 7, name: "Action" },
+];
 
 function AllCustomer() {
   const navigate = useNavigate();
   const [pageNum, setPage] = useState(0);
-
-  // const [deleteData, setDeleteData] = useState({
-  //   isShow: false,
-  //   deleteFun: databaseService.deleteCustomer,
-  //   mainId: "",
-  //   imgId: "",
-  // });
+  const [searchVal, setSearchVal] = useState("");
 
   const currentUser = useSelector((state) => state.user?.user);
-  let {
-    data: { documents } = "",
-    data: { total } = "",
-    isError,
-    isLoading,
-    isSuccess,
-  } = useQuery({
-    queryKey: ["customer", pageNum],
-    queryFn: async () => {
-      const response = await databaseService.gettingAllCustomer(
-        currentUser?.$id,
-        pageNum * 9,
-      );
-      return response;
-    },
-    retryOnMount: true,
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["customer", pageNum, currentUser?.$id],
+    queryFn: () =>
+      databaseService.gettingAllCustomer(currentUser?.$id, pageNum * PAGE_SIZE),
+    enabled: !!currentUser?.$id,
   });
 
-  const handleAddContact = () => {
+  const documents = data?.documents || [];
+  const total = data?.total || 0;
+
+  const filteredData = useMemo(() => {
+    if (!searchVal.trim()) return documents;
+    return documents.filter((item) =>
+      item.customerName.toLowerCase().includes(searchVal.toLowerCase()),
+    );
+  }, [searchVal, documents]);
+
+  const handleAddContact = useCallback(() => {
     navigate("addcontact", { state: "/allcustomer" });
-  };
-  const tableHeading = [
-    {
-      id: 1,
-      name: "Image",
-    },
-    {
-      id: 2,
-      name: "Name",
-    },
-    {
-      id: 3,
-      name: "Phone Number",
-    },
-    {
-      id: 4,
-      name: "Address",
-    },
-    {
-      id: 5,
-      name: "History",
-    },
-    {
-      id: 6,
-      name: "Total Amount",
-    },
-    {
-      id: 7,
-      name: "Action",
-    },
-  ];
+  }, [navigate]);
 
-  const handleGettingCustomer = _debounce((e) => {
-    const value = e.target.value.toLowerCase();
-    if (!value.trim()) {
-      console.log(documents);
-    } else {
-      const newDocuments = documents.filter((items) => {
-        const customerName = items.customerName.toLowerCase();
-        return customerName.includes(value);
-      });
-      console.log(newDocuments);
-    }
-  }, 800);
+  const handleGettingCustomer = useMemo(
+    () =>
+      _debounce((e) => {
+        setSearchVal(e.target.value);
+        setPage(0);
+      }, 300),
+    [],
+  );
 
-  const renderRow = AllCustomerData;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
+  if (isError) {
+    return <div>Error loading customers</div>;
+  }
 
   return (
-    <Container className={"relative"}>
+    <Container className="relative">
       <div className="relative flex h-full w-full flex-col sm:block">
         <Outlet />
         <div className="flex h-fit items-center justify-between sm:h-[5%]">
           <input
             type="text"
-            placeholder={"Search customer"}
+            placeholder="Search customer"
             className="w-full rounded-md bg-[#f1f1f1] px-2 py-2 text-black outline-none focus:bg-[#e4e4e4]"
             onChange={handleGettingCustomer}
           />
@@ -112,30 +88,30 @@ function AllCustomer() {
         <div className="relative mt-4 w-full flex-1 overflow-hidden sm:h-[83%]">
           {isLoading ? (
             <Loader />
-          ) : Array.isArray(documents) && documents.length > 0 ? (
+          ) : filteredData.length > 0 ? (
             <DataTable
               tableHeading={tableHeading}
-              tableData={documents}
-              dataNum={10}
+              tableData={filteredData}
+              dataNum={PAGE_SIZE}
               pageNum={pageNum}
-              renderRow={renderRow}
-              tableHeadingClass={""}
-              tableRowClass={""}
+              renderRow={AllCustomerData}
+              tableHeadingClass=""
+              tableRowClass=""
             />
           ) : (
             <NoDataAvailable
-              className={"flex h-full w-full items-center justify-center"}
-              imageClassName={"h-[70%] w-[70%]"}
+              className="flex h-full w-full items-center justify-center"
+              imageClassName="h-[70%] w-[70%]"
             />
           )}
         </div>
-        {total && total >= 9 && (
+        {totalPages > 1 && (
           <Pagination
             pageNum={pageNum}
             setPage={setPage}
-            length={total2 || total}
-            dataCount={9}
-            className={"h-fit"}
+            length={total}
+            dataCount={PAGE_SIZE}
+            className="h-fit"
           />
         )}
       </div>

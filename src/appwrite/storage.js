@@ -593,7 +593,6 @@ class DatabaseService {
   }
 
   async deleteCustomerInvoice(user_id) {
-    console.log(user_id);
     if (!user_id) return;
     try {
       const { documents = "" } = await this.databases.listDocuments(
@@ -601,8 +600,6 @@ class DatabaseService {
         conf.appWriteCreateSell,
         [Query.equal("customerDetails", user_id)],
       );
-
-      console.log(documents);
 
       Array.isArray(documents) &&
         documents.length > 0 &&
@@ -615,7 +612,6 @@ class DatabaseService {
             );
           }),
         ));
-      console.log("successful");
       return { status: "successful" };
     } catch (error) {
       throw new Error(
@@ -703,7 +699,6 @@ class DashBoardService extends DatabaseService {
       year = Number(year);
       month = Number(month);
       day = Number(day.slice(0, 2));
-      // console.log(current);
       if (
         year === currentDay.year &&
         month === currentDay.month &&
@@ -905,7 +900,6 @@ class DashBoardService extends DatabaseService {
   async allData() {
     try {
       const currentSession = await authService.getCurrentUser();
-      console.log(currentSession?.$id);
 
       if (currentSession) {
         const [

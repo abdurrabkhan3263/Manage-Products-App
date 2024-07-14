@@ -40,7 +40,7 @@ const BuySellData = (data) => {
       });
     },
     onError: (error) => {
-      console.log(error.message);
+      throw new Error(error);
     },
   });
 

@@ -47,7 +47,7 @@ const AllCustomerData = (data, setIsDelete) => {
       setShowDelete(false);
     },
     onError: (error) => {
-      console.log(error.message);
+      throw new Error(error);
     },
   });
 
