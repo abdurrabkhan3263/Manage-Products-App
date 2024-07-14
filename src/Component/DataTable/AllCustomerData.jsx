@@ -8,32 +8,72 @@ import {
 import { useNavigate } from "react-router-dom";
 import { databaseService } from "../../appwrite";
 import { DataDelete } from "../index";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toastFunction } from "../../utils/toastFunction";
 
 const AllCustomerData = (data, setIsDelete) => {
   const navigate = useNavigate();
   const seeProduct = useSelector((state) => state.seeProductList);
-  const [deleteData, setDeleteData] = useState({
-    isShow: false,
-    deleteFun: databaseService.deleteCustomer,
-    mainId: data?.$id,
-    imgId: data?.customerImageId || "",
+  const [showDelete, setShowDelete] = useState(false);
+  const [confirm, setConfirm] = useState(false);
+
+  // const [deleteData, setDeleteData] = useState({
+  //   isShow: false,
+  //   deleteFun: databaseService.deleteCustomer,
+  //   mainId: data?.$id,
+  //   imgId: data?.customerImageId || "",
+  // });
+
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationKey: ["deleteProduct"],
+    mutationFn: async (id) => {
+      let deleteCustomer = await databaseService.deleteCustomer(id);
+      if ("message" in deleteCustomer) {
+        return await databaseService.deleteCustomerInvoice(id);
+      }
+    },
+    onSuccess: async (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ["customer"],
+      });
+      toastFunction({
+        type: "success",
+        message: `${data?.customerName || ""} Deleted SuccessFully`,
+      });
+      setShowDelete(false);
+    },
+    onError: (error) => {
+      throw new Error(error);
+    },
   });
-  const handleCustomerDelete = async () => {
-    setDeleteData((prev) => ({
-      ...prev,
-      isShow: true,
-    }));
+
+  const handleProductDelete = async () => {
+    if (!data?.$id) return;
+    deleteMutation.mutate(data?.$id);
+    if (!data?.customerImageId) return;
+    await databaseService.deleteProductImg(data?.customerImageId);
   };
+
+  useEffect(() => {
+    if (confirm) {
+      handleProductDelete();
+    }
+  }, [confirm]);
+
   return (
     <>
       <tr>
         <td>
           <DataDelete
-            deleteData={deleteData}
-            setDeleteData={setDeleteData}
-            QueryKey={"customer"}
+            showDelete={showDelete}
+            setShowDelete={setShowDelete}
+            confirm={confirm}
+            setConfirm={setConfirm}
+            deletionLoader={deleteMutation.isPending}
           />
         </td>
       </tr>
@@ -85,7 +125,7 @@ const AllCustomerData = (data, setIsDelete) => {
             </span>
             <span
               className="cursor-pointer text-xl"
-              onClick={handleCustomerDelete}
+              onClick={() => setShowDelete(() => true)}
             >
               <Delete />
             </span>

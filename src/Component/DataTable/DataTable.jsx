@@ -19,7 +19,7 @@ function DataTable({
               tableHeading.map((hData) => (
                 <th
                   key={hData.name}
-                  className={`border bg-lightblue px-14 ${tableHeadingClass} py-2 text-lg text-white`}
+                  className={`border bg-lightblue px-14 ${tableHeadingClass} py-2 text-lg text-white sm:px-0`}
                 >
                   {hData.name}
                 </th>

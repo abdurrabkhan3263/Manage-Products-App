@@ -1,46 +1,15 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { databaseService } from "../../appwrite";
-import { Error } from "../index";
-import { toastFunction } from "../../utils/toastFunction";
 import "./DeleteCard.css";
 import { SimpleLoader } from "../../Assets";
 
-function DataDelete({ deleteData, setDeleteData, QueryKey }) {
-  const queryClient = useQueryClient();
-  const deleteMutation = useMutation({
-    mutationKey: ["deleteProduct"],
-    mutationFn: async (id) => {
-      return await deleteData.deleteFun(id);
-    },
-    onSuccess: () => {
-      setDeleteData((prev) => ({ ...prev, isShow: false }));
-      queryClient.invalidateQueries({
-        queryKey: [QueryKey],
-        refetchType: "active",
-      });
-      toastFunction({
-        type: "success",
-        message: "Deleted SuccessFully",
-      });
-    },
-    onError: (error) => {
-      console.log(error.message);
-    },
-  });
-  const handleProductDelete = async () => {
-    if (!deleteData.mainId) return;
-    deleteMutation.mutate(deleteData.mainId);
-    if (!deleteData.imgId) return;
-    await databaseService.deleteProductImg(deleteData.imgId);
-  };
+function DataDelete({ showDelete, setShowDelete, setConfirm, deletionLoader }) {
   return (
     <div
       className={`${
-        deleteData.isShow ? "flex" : "hidden"
+        showDelete ? "flex" : "hidden"
       } border-1 fixed bottom-1/2 right-[55%] z-50 flex h-fit w-[90%] translate-x-[55%] translate-y-1/2 items-center justify-center gap-y-5 rounded-[20px] border-[0.5px] border-gray-400 sm:absolute sm:w-1/4`}
     >
       <div className={`card`}>
-        {deleteMutation.isPending ? (
+        {deletionLoader ? (
           <div className="flex h-full w-full items-center justify-center">
             <SimpleLoader />
           </div>
@@ -56,14 +25,14 @@ function DataDelete({ deleteData, setDeleteData, QueryKey }) {
               <button
                 className="card-button secondary"
                 onClick={() => {
-                  setDeleteData((prev) => ({ ...prev, isShow: false }));
+                  setShowDelete(() => false);
                 }}
               >
                 Cancel
               </button>
               <button
                 className="card-button primary"
-                onClick={handleProductDelete}
+                onClick={() => setConfirm(true)}
               >
                 Delete
               </button>
@@ -71,7 +40,7 @@ function DataDelete({ deleteData, setDeleteData, QueryKey }) {
             <button
               className="exit-button"
               onClick={() => {
-                setDeleteData((prev) => ({ ...prev, isShow: false }));
+                setShowDelete(() => false);
               }}
             >
               <svg height="20px" viewBox="0 0 384 512">

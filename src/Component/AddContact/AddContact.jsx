@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { toastFunction } from "../../utils/toastFunction";
 import { useLocation, useNavigate } from "react-router-dom";
 import SimpleLoader from "../../Assets/SimpleLoader";
+import { toast } from "react-toastify";
 function AddContact({ contactData }) {
   const currentUser = useSelector((state) => state.user?.user);
   const [customerImg, setCustomerImg] = useState(
@@ -63,10 +64,12 @@ function AddContact({ contactData }) {
         queryKey: ["customer"],
         refetchType: "active",
       });
-      toastFunction({
-        type: "success",
-        message: "Customer Added SuccessFully",
-      });
+      setTimeout(() => {
+        toastFunction({
+          type: "success",
+          message: "Customer Added SuccessFully",
+        });
+      }, 200);
     },
   });
   const customerUpdate = useMutation({
@@ -79,10 +82,12 @@ function AddContact({ contactData }) {
     onSuccess: () => {
       navigate(location.state);
       client.invalidateQueries({ queryKey: ["customer"] });
-      toastFunction({
-        type: "success",
-        message: "Customer Updated SuccessFully",
-      });
+      setTimeout(() => {
+        toastFunction({
+          type: "success",
+          message: "Customer Updated SuccessFully",
+        });
+      }, 200);
     },
   });
   const submitContact = async (data) => {

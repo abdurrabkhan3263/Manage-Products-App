@@ -9,6 +9,7 @@ import { databaseService } from "../../appwrite";
 import { addProduct } from "../../store/thunkFile";
 import { toastFunction } from "../../utils/toastFunction";
 import AddButton from "../../Assets/AddButton";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 function ProductCard({ productData }) {
   const {
@@ -28,12 +29,9 @@ function ProductCard({ productData }) {
   });
   const dispatch = useDispatch();
   const [quantity, setQuantity] = useState(1);
-  const [deleteData, setDeleteData] = useState({
-    isShow: false,
-    deleteFun: databaseService.deleteProduct,
-    mainId: $id,
-    imgId: productImageId,
-  });
+  const [showDelete, setShowDelete] = useState(false);
+  const [confirm, setConfirm] = useState(false);
+
   const { register, handleSubmit, setValue, getValues } = useForm({
     defaultValues: {
       productQuantity: 1,
@@ -46,8 +44,8 @@ function ProductCard({ productData }) {
       return;
     }
     productPrice
-      ? setValue("productAmount", quantity * productPrice)
-      : setValue("productAmount", quantity * priceData.productPrice);
+      ? setValue("productAmount", (quantity || 1) * productPrice)
+      : setValue("productAmount", (quantity || 1) * priceData.productPrice);
   }, [priceData.productPrice, productPrice, quantity]);
   useEffect(() => {
     const parsedData = JSON.parse(productPriceOption);
@@ -82,13 +80,16 @@ function ProductCard({ productData }) {
   const handleProductEdit = () => {
     navigate(`editproduct/${$id}`, { state: "/products" });
   };
-  const handleProductDelete = () => {
-    setDeleteData((prev) => ({ ...prev, isShow: true }));
+  const handleProductShowDelete = () => {
+    setShowDelete((prev) => !prev);
   };
   const optionMemo = useMemo(
     () => priceData.productOptionData,
     [priceData.productOptionData],
   );
+
+  // Cart Submit functionality
+
   const handleFormSubmit = async (data) => {
     dispatch(
       addProduct({
@@ -100,20 +101,60 @@ function ProductCard({ productData }) {
           price: priceData.productPrice,
         }),
         productPrice: parseFloat(priceData.productPrice),
-        productQuantity: parseInt(priceData.quantity),
+        productQuantity: parseInt(priceData.quantity || 1),
       }),
     );
     toastFunction({
       type: "success",
-      message: "Product is Added Successfully",
+      message: `${productName || ""} is Added Successfully`,
     });
   };
+
+  // Card Delete functionality
+
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationKey: ["deleteProduct"],
+    mutationFn: async (id) => {
+      return await databaseService.deleteProduct(id);
+    },
+    onSuccess: () => {
+      setShowDelete(false);
+      queryClient.invalidateQueries({
+        queryKey: ["productList"],
+      });
+      toastFunction({
+        type: "success",
+        message: `${productName || ""} is Deleted SuccessFully`,
+      });
+    },
+    onError: (error) => {
+      throw new Error(error);
+    },
+  });
+
+  const handleProductDelete = async () => {
+    if (!$id) return;
+    deleteMutation.mutate($id);
+    if (!productImageId) return;
+    await databaseService.deleteProductImg(productImageId);
+  };
+
+  useEffect(() => {
+    if (confirm) {
+      handleProductDelete();
+    }
+  }, [confirm]);
+
   return (
     <div className="w-full">
       <DataDelete
-        deleteData={deleteData}
-        setDeleteData={setDeleteData}
-        key={"productList"}
+        showDelete={showDelete}
+        setShowDelete={setShowDelete}
+        confirm={confirm}
+        setConfirm={setConfirm}
+        deletionLoader={deleteMutation.isPending}
       />
       <div className="relative">
         <Outlet />
@@ -126,7 +167,7 @@ function ProductCard({ productData }) {
           <Edit />
         </div>
         <div
-          onClick={handleProductDelete}
+          onClick={handleProductShowDelete}
           className="absolute left-0 top-0 flex cursor-pointer items-center justify-center rounded-full p-3 text-[26px]"
         >
           <Delete />

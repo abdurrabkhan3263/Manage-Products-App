@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import useGenerateUniqueId from "../../Hook/useGenerateUniqueId";
 import { toastFunction } from "../../utils/toastFunction";
 import { SimpleLoader } from "../../Assets";
+import { toast } from "react-toastify";
 
 function AddProduct({ productData }) {
   const [priceData, setPriceData] = useState({
@@ -90,10 +91,12 @@ function AddProduct({ productData }) {
     onSuccess: () => {
       navigate(location.state);
       queryClient.invalidateQueries({ queryKey: ["productList"] });
-      toastFunction({
-        type: "success",
-        message: "Product Added SuccessFully",
-      });
+      setTimeout(() => {
+        toastFunction({
+          type: "success",
+          message: "Product Added SuccessFully",
+        });
+      }, 200);
     },
   });
   const mutationforUpdate = useMutation({
@@ -108,10 +111,12 @@ function AddProduct({ productData }) {
     onSuccess: () => {
       navigate(location.state);
       queryClient.invalidateQueries({ queryKey: ["productList"] });
-      toastFunction({
-        type: "success",
-        message: "Product Updated SuccessFully",
-      });
+      setTimeout(() => {
+        toastFunction({
+          type: "success",
+          message: "Product Updated SuccessFully",
+        });
+      }, 200);
     },
   });
   const formSubmit = async (data) => {

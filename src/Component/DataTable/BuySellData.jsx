@@ -1,33 +1,70 @@
-import { useDispatch } from "react-redux";
-import {
-  Print,
-  Delete,
-  image__not__available,
-  admin,
-} from "../../../public/Assets";
+import { Print, Delete, admin } from "../../../public/Assets";
 import { useNavigate } from "react-router-dom";
 import convertToIST from "../../Hook/userCovertDate";
 import { toastFunction } from "../../utils/toastFunction";
 import DataDelete from "../Delete/DataDelete";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { databaseService } from "../../appwrite";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const BuySellData = (data) => {
   const navigate = useNavigate();
   const { $id, customerName, customerImage, phoneNumber, $createdAt } = data;
   const formatedDate = convertToIST($createdAt)?.fullDate;
-  const [deleteData, setDeleteData] = useState({
-    isShow: false,
-    deleteFun: databaseService.deleteSell,
-    mainId: $id,
-    imgId: "",
-    QueryKey: "invoiceData",
+  const [showDelete, setShowDelete] = useState(false);
+  const [confirm, setConfirm] = useState(false);
+
+  // const [deleteData, setDeleteData] = useState({
+  //   isShow: false,
+  //   deleteFun: databaseService.deleteSell,
+  //   mainId: $id,
+  //   imgId: "",
+  //   QueryKey: "invoiceData",
+  // });
+
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationKey: ["deleteProduct"],
+    mutationFn: async (id) => {
+      return await databaseService.deleteSell(id);
+    },
+    onSuccess: () => {
+      setShowDelete(false);
+      queryClient.invalidateQueries({
+        queryKey: ["invoiceData"],
+      });
+      toastFunction({
+        type: "success",
+        message: `Invoice Deleted SuccessFully`,
+      });
+    },
+    onError: (error) => {
+      throw new Error(error);
+    },
   });
+
+  const handleProductDelete = async () => {
+    if (!$id) return;
+    deleteMutation.mutate($id);
+  };
+
+  useEffect(() => {
+    if (confirm) {
+      handleProductDelete();
+    }
+  }, [confirm]);
   return (
     <>
       <tr>
         <td>
-          <DataDelete deleteData={deleteData} setDeleteData={setDeleteData} />
+          <DataDelete
+            showDelete={showDelete}
+            setShowDelete={setShowDelete}
+            confirm={confirm}
+            setConfirm={setConfirm}
+            deletionLoader={deleteMutation.isPending}
+          />
         </td>
       </tr>
       <tr className="col-span-1 border-b-2 border-black">
@@ -74,7 +111,7 @@ const BuySellData = (data) => {
             <span
               className="cursor-pointer text-xl"
               onClick={() => {
-                setDeleteData((prev) => ({ ...prev, isShow: true }));
+                setShowDelete(() => true);
               }}
             >
               <Delete />

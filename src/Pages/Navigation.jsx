@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { Outlet } from "react-router-dom";
 import { Nav } from "../Component/SideNav";
-import { Bounce, ToastContainer } from "react-toastify";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 import { SideNavLogo } from "../Component/SideNav";
 import { new__logo, Xcross } from "../../public/Assets/index";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Menu, X } from "lucide-react";
+import { toastFunction } from "../utils/toastFunction";
 
 function Navigation() {
   const [slide, setSlide] = React.useState(false);
@@ -36,7 +37,9 @@ function Navigation() {
         <div className="flex h-[25%] w-full items-center justify-end bg-[#2563EB] pr-4 text-2xl text-white">
           <p
             className="slide_button relative"
-            onClick={() => setSlide((prev) => !prev)}
+            onClick={() => {
+              setSlide((prev) => !prev);
+            }}
           >
             <span
               ref={menu}

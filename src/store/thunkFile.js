@@ -46,10 +46,7 @@ const addProduct = createAsyncThunk(
             proData,
           );
         } catch (error) {
-          console.log(
-            "something went wrong while updating the order :: ",
-            error,
-          );
+          throw new Error(error);
         }
         return { allData, actionType: "updated" };
       } else {
