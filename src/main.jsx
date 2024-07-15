@@ -93,10 +93,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
       <QueryClientProvider client={useClient}>
         <RouterProvider router={route} />
-        <ReactQueryDevtools
-          initialIsOpen={false}
-          buttonPosition="bottom-left"
-        />
+        <ReactQueryDevtools initialIsOpen={false} buttonPosition="top-left" />
       </QueryClientProvider>
       <ToastContainer
         position="top-right"
