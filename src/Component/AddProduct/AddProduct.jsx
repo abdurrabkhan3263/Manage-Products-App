@@ -96,7 +96,7 @@ function AddProduct({ productData }) {
       //     type: "success",
       //     message: "Product Added SuccessFully",
       //   });
-      }, 200);
+      // }, 200);
     },
   });
   const mutationforUpdate = useMutation({
