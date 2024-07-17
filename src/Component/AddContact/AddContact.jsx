@@ -64,12 +64,12 @@ function AddContact({ contactData }) {
         queryKey: ["customer"],
         refetchType: "active",
       });
-      setTimeout(() => {
-        toastFunction({
-          type: "success",
-          message: "Customer Added SuccessFully",
-        });
-      }, 200);
+      // setTimeout(() => {
+      //   toastFunction({
+      //     type: "success",
+      //     message: "Customer Added SuccessFully",
+      //   });
+      // }, 200);
     },
   });
   const customerUpdate = useMutation({
