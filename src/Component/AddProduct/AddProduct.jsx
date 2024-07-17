@@ -91,11 +91,11 @@ function AddProduct({ productData }) {
     onSuccess: () => {
       navigate(location.state);
       queryClient.invalidateQueries({ queryKey: ["productList"] });
-      setTimeout(() => {
-        toastFunction({
-          type: "success",
-          message: "Product Added SuccessFully",
-        });
+      // setTimeout(() => {
+      //   toastFunction({
+      //     type: "success",
+      //     message: "Product Added SuccessFully",
+      //   });
       }, 200);
     },
   });
