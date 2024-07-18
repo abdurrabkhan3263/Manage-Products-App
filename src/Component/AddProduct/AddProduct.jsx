@@ -91,12 +91,12 @@ function AddProduct({ productData }) {
     onSuccess: () => {
       navigate(location.state);
       queryClient.invalidateQueries({ queryKey: ["productList"] });
-      // setTimeout(() => {
-      //   toastFunction({
-      //     type: "success",
-      //     message: "Product Added SuccessFully",
-      //   });
-      // }, 200);
+      setTimeout(() => {
+        toastFunction({
+          type: "success",
+          message: "Product Added SuccessFully",
+        });
+      }, 200);
     },
   });
   const mutationforUpdate = useMutation({
