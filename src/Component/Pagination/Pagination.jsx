@@ -17,21 +17,15 @@ function Pagination({ pageNum, setPage, length, dataCount, className }) {
     const min = Math.min(pageNum, pageNum - 2);
 
     if (pageNum >= totalPages - 2) {
-      console.log("hit 1");
-      console.log(pageNum);
       return [
         "First",
         ...Array.from({ length: 3 }, (_, i) => totalPages - 2 + i),
       ];
     }
     if (min < 0) {
-      console.log("hit 2");
-      console.log(pageNum);
       return [...Array.from({ length: 3 }, (_, i) => i + 1), "Last"];
     }
     if (min >= 1) {
-      console.log("hit 3");
-      console.log(pageNum);
       return [
         "First",
         ...Array.from({ length: 5 }, (_, i) => pageNum - 2 + (i + 1)),
@@ -39,8 +33,6 @@ function Pagination({ pageNum, setPage, length, dataCount, className }) {
       ];
     }
     if (min <= 1) {
-      console.log("hit 4");
-      console.log(pageNum);
       return [
         ...Array.from({ length: 5 }, (_, i) => pageNum - 2 + (i + 1)),
         "Last",
@@ -52,16 +44,11 @@ function Pagination({ pageNum, setPage, length, dataCount, className }) {
   const handlePageChange = useCallback(
     (newPage) => {
       if (newPage >= 0 && newPage < totalPages) {
-        console.log(newPage);
         setPage(newPage);
       }
     },
     [setPage, totalPages],
   );
-
-  React.useEffect(() => {
-    console.log(pageNumbers);
-  }, [totalPages, pageNum]);
 
   const handlePageButtonClick = useCallback(
     (e) => {
